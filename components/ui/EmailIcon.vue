@@ -1,0 +1,34 @@
+<template>
+  <svg
+    id="email-icon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 318.38 186.03"
+  >
+    <path
+      class="cls-1"
+      d="M159.19,101.63L314.77,5.48c-2.82-3.35-7.04-5.48-11.76-5.48H15.37C10.65,0,6.43,2.13,3.61,5.48L159.19,101.63Z"
+    />
+    <path
+      class="cls-1"
+      d="M159.29,132.69l-.1-.16-.1,.16L0,34.36V170.66c0,8.49,6.88,15.37,15.37,15.37H303.01c8.49,0,15.37-6.88,15.37-15.37V34.36l-159.09,98.33Z"
+    />
+  </svg>
+</template>
+
+<style lang="scss">
+#email-icon {
+  
+  width: 100%;
+
+  .cls-1 {
+    fill: #c8c8c8;
+    transition: .2s;
+  }
+  
+  &:hover{
+    .cls-1 {
+      fill: #990000;
+    }
+  }
+}
+</style>
