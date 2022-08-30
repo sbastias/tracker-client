@@ -5,7 +5,8 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: process.env.npm_package_name || '',
+    title: 'Placement Manager | The Bullitt Group',
+    titleTemplate: '%s | Placement Manager | The Bullitt Group',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -29,7 +30,8 @@ export default {
   */
   plugins: [
     { src: '~/plugins/persistedState.client.js' },
-    { src: '~/plugins/datepicker.client.js' }
+    { src: '~/plugins/datepicker.client.js' },
+    { src: '~/plugins/bus.js' }
   ],
   /*
   ** Nuxt.js dev-modules

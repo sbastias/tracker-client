@@ -1,6 +1,6 @@
 <template>
 <client-only>
-  <div class="placement-row-contents" :class="placement.Rotation_Communication__c && placement.Rotation_Communication__c.toLowerCase().split(' ').join('-') || 'None'">
+  <div class="placement-row-contents" :class="[placement.Rotation_Communication__c && placement.Rotation_Communication__c.toLowerCase().split(' ').join('-') || 'None',{edited}]" :active="active">
     <div class="row" @click="activate">
       <div class="id">
         <label>Placement #</label>
@@ -50,30 +50,40 @@
 
     
 
-    <div class="row" v-show="placement.active">  
-      <div class="">
+    <div class="row" v-show="active">  
+      <div data-field="shift">
         <label>Shift</label>
-        {{placement.Shift__c}}
+        <select v-if="editing == 'shift'" v-model="placement.Shift__c">
+          <option v-for="(shift, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Shift__c').valueSet.valueSetDefinition.value" :key="`shift-option-${idx}`" :value="shift.label">{{shift.fullName}}</option>
+        </select>
+        <span @click="edit" v-else>{{placement.Shift__c || 'N/A'}}</span>
       </div>
       <div class="">
         <label>Department</label>
         {{placement.Department__c}}
       </div>
-      <div class="">
+      <div data-field="crew">
         <label>Crew</label>
-        {{placement.Crew__c}}
+        <select v-if="editing == 'crew'" v-model="placement.Crew__c">
+          <option v-for="(crew, idx) in $bus.metadata.find(el => el.fullName == 'Crews').customValue" :key="`crew-option-${idx}`" :value="crew.label">{{crew.fullName}}</option>
+        </select>
+        <span @click="edit" v-else>{{placement.Crew__c}}</span>
       </div>
       <div class="">
         <label>Location</label>
         {{placement.Client_Location__c}}
       </div>
-      <div class="">
+      <div data-field="rot-comm">
         <label>Rotation Communication</label>
-        {{placement.Rotation_Communication__c}}
+        <select v-if="editing == 'rot-comm'" v-model="placement.Rotation_Communication__c">
+          <option v-for="(comm, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Rotation_Communication__c').valueSet.valueSetDefinition.value" :key="`comm-option-${idx}`" :value="comm.label">{{comm.fullName}}</option>
+        </select>
+        <span @click="edit" v-else>{{placement.Rotation_Communication__c}}</span>
+        
       </div>
     </div>
 
-    <div class="row" v-show="placement.active">
+    <div class="row" v-show="active">
       <div class="" data-field="notes">
         <label>Notes</label>
         <textarea v-model="placement.Additional_Notes__c" v-if="editing == 'notes'"></textarea>
@@ -97,10 +107,10 @@
       </div>
     </div>
 
-    <div class="controls-row" v-show="placement.active">
-      <button @click="deactivate">Close Details</button>
-      <button @click="update">Update Placement</button>
+    <div class="controls-row" v-show="active">
+      <button @click="deactivate">Close</button>
       <button @click="extend">Extend Placement</button>
+      <button @click="update" :disabled="!edited">Save Changes</button>
     </div>
 
   
@@ -116,7 +126,7 @@ import EmailIcon from '~/components/ui/EmailIcon'
 
 
 export default {
-  props: ['placement'],
+  props: ['original-placement','active'],
   components: {
     EmailIcon
   },
@@ -124,42 +134,77 @@ export default {
     return {
       moment,
       mode: 'classic',
-      editing: false
+      editing: false,
+      edited: false
     }
+  },
+  created () {
+    this.replicateOriginal()
   },
   computed: {
     
   },
   methods: {
+    replicateOriginal () {
+      this.placement = Object.assign({}, this.originalPlacement)
+    },
     activate () {
       this.$emit('activate', this.placement.Id)
     },
     deactivate () {
-      this.$emit('deactivate', this.placement.Id)
+      
+      if (this.edited) {
+        if (confirm('This placement has unsaved edits. You will lose any unsaved changes. Close anyway?')) {
+          this.$emit('deactivate', this.placement.Id)
+          this.replicateOriginal()
+        }
+      } else this.$emit('deactivate', this.placement.Id)
+      
     },
-    update () {
+    async update () {
 
-      let updatedPlacement = Object.assign({}, this.placement)
+      let update = Object.assign({}, this.placement)
 
-      updatedPlacement.AVTRRT__Start_Date__c = this.moment.utc(new Date(updatedPlacement.AVTRRT__Start_Date__c)).format('YYYY/MM/DD')
-      updatedPlacement.AVTRRT__End_Date__c = this.moment.utc(new Date(updatedPlacement.AVTRRT__End_Date__c)).format('YYYY/MM/DD')
+      delete update.Candidate
+      delete update.Compensation__r
+      delete update.AVTRRT__Employer__r
+      delete update.CreatedDate
+      delete update.Name
+      
+      await this.$axios.post(`/tracker/update`, update)
+      .then(({data}) => {
+        console.log(data)
+        this.$bus.$emit('toaster', {status: 'success', message: 'Placement has been updated!'})
+        this.edited = false
+      })
+      .catch(e => {
+        let {message, stack} = e.response.data
+        this.$bus.$emit('toaster', {status: 'error', message})
+        console.log(stack)
+      })
 
-      this.$emit('update', updatedPlacement)
     },
     extend () {
       this.$emit('extend', this.placement)
     },
     edit ($ev) {
 
-      if (!this.placement.active) return
+      if (!this.active) return
 
       let fieldContainer = $ev.target.closest('div[data-field]')
 
       this.editing = fieldContainer.dataset.field
 
+      //console.log('Trying to edit', this.editing)
+
       this.$nextTick(() => {
-        let inputField = fieldContainer.querySelector('input, textarea')
-        inputField.addEventListener('blur', () => this.editing = false)
+        let inputField = fieldContainer.querySelector('input, textarea,select')
+        inputField.addEventListener('blur', () => {
+          this.editing = false
+          this.placement.AVTRRT__Start_Date__c = this.moment.utc(new Date(this.placement.AVTRRT__Start_Date__c)).format('YYYY-MM-DD')
+          this.placement.AVTRRT__End_Date__c = this.moment.utc(new Date(this.placement.AVTRRT__End_Date__c)).format('YYYY-MM-DD')
+          this.edited = JSON.stringify(this.placement) != JSON.stringify(this.originalPlacement)
+        })
         inputField.focus()
         inputField.click()
       })
@@ -185,6 +230,9 @@ export default {
       
       return payRate && '$' + payRate.toFixed(2) + adjustment || 'N/A'
     }
+  },
+  watch: {
+    
   }
 }
 </script>
@@ -217,7 +265,7 @@ export default {
     border-color: red;
   }
 
-  &.active {
+  &[active] {
     margin-left: 0;
     padding: 20px;
     border-width: 1px; 
@@ -230,7 +278,7 @@ export default {
     }
   }
 
-  &:not(.active) > .row:first-child {
+  &:not([active]) > .row:first-child {
     cursor:pointer;
     padding: 5px 0;
     &:hover{
@@ -256,7 +304,7 @@ export default {
         display: block;
         position: absolute;
         left: -18px;
-        top: 10px;
+        top: 15px;
         height: 8px;
         width: 8px;
         border-radius: 50%;
@@ -265,7 +313,7 @@ export default {
       
     }
     &:nth-child(2) {
-      grid-template-columns: 80px 300px 80px auto 300px;
+      grid-template-columns: 80px 300px 80px auto 400px;
     }
     &:nth-child(3) {
       grid-template-columns: 400px 350px 150px auto 150px;
@@ -331,12 +379,35 @@ export default {
     margin-top: 20px;
 
     button {
-      margin: 0 20px;
+      margin: 0 10px;
     }
   }
 
   a {
     color: rgb(0,0,238);
+  }
+
+  button {
+    appearance: none;
+    display: inline-block;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &[disabled] {
+      background: #ccc;
+      color: #888;
+      cursor: not-allowed;
+    }
+    &:not([disabled]) {
+      background: #990000;
+      color: white;
+
+      &:hover{
+        background: #bb0000;
+      }
+    }
   }
 
 }

@@ -1,0 +1,65 @@
+.form {
+  .form-row {
+    display: grid;
+    grid-gap: 20px;
+    //grid-template-columns: repeat(4, auto);
+    width: 100%;
+    margin-bottom: 20px;
+
+    .form-cell {
+      position: relative;
+      
+
+      label {
+        
+        margin: 5px;
+        z-index: 2;
+        font-size: 10px;
+        color: #888;
+        display: block;
+      }
+
+      input,
+      select,
+      textarea{
+        //width: 100%;
+        font-family: sans-serif;
+        width: 100%;
+      }
+
+      input,
+      select {
+        border: none;
+        padding-bottom: 5px;
+        border-bottom: 1px dotted #888;
+      }
+    }
+  }
+  .form-controls {
+    padding: 40px 0;
+    text-align: center;
+
+    button {
+      appearance: none;
+      display: inline-block;
+      border: none;
+      padding: 18px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+
+      &[disabled] {
+        background: #ccc;
+        color: #888;
+        cursor: not-allowed;
+      }
+      &:not([disabled]) {
+        background: #990000;
+        color: white;
+
+        &:hover{
+          background: #bb0000;
+        }
+      }
+    }
+  }
+}

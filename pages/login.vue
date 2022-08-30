@@ -1,9 +1,12 @@
 <template>
 <div id="login-screen">
 
+
+
   <div id="login-container">
+    <div v-if="expired" expired>Session expired. Please login again.</div>
   <Logo orientation="vertical" />
-  <h1 id="title">Payroll Administration</h1>
+  <h1 id="title">Placement Management</h1>
   <form>
     <div class="form-row">
       <div class="form-cell">
@@ -40,14 +43,19 @@ export default {
         username: '',
         password: ''
       },
-      loggingIn: false
-
+      loggingIn: false,
+      expired: false
     }
   },
   created () {
-    if (process.client && location.hostname.indexOf('localhost') > -1) {
-      this.loginData.username = 'serge@yorksearchgroup.com'
-      this.loginData.password = 'YORK1232020@@@'
+    if (process.client) {
+
+      if (location.hostname.indexOf('localhost') > -1) {
+        this.loginData.username = 'serge@yorksearchgroup.com'
+        this.loginData.password = 'YORK1232020@@@'
+      }
+
+      if (location.search.substring(1) == 'expired') this.expired = true
     }
   },
   methods: {
@@ -155,5 +163,11 @@ export default {
       }
     }
   }
+}
+
+[expired] {
+  text-align: center;
+  color: #cc0000;
+  margin-bottom: 15px;
 }
 </style>

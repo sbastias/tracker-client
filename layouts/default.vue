@@ -1,9 +1,10 @@
 <template>
   <div>
+    <Toaster />
     <header>
       <div>
         <Logo />
-        <h1>Placement Manager</h1>
+        <h1>Placement Management</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
       <nav>
@@ -19,16 +20,23 @@
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import Logo from '~/components/Logo'
+import Toaster from '~/components/Toaster'
 
 export default {
-  components: {Logo},
-  created () {
+  components: {Logo, Toaster},
+  async created () {
 
     //console.log(this.$store.state.accessToken, '<< accessToken')
+    console.log('DEFAULT CREATED')
 
-    if (!this.$store.state.accessToken) this.$router.push('/login')
+    if (!this.$store.state.accessToken) return this.$router.push('/login')
+
     this.$axios.defaults.headers.common['Authorization'] = `Bearer ${this.$store.state.accessToken}`
+
+    return await this.$axios.get(`/check-token`)
+    .then(({data}) => data || this.$router.push('/login?expired'))
+    .catch(() => this.$router.push('/login?invalid'))
     //console.log(this.$axios.defaults.headers.common['Authorization'])
 
   },
@@ -73,8 +81,26 @@ html {
 header {
   display: grid;
   width: 100%;
-  align-items: center;
+  
   grid-template-columns: auto min-content;
+  
+
+  > div {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+
+    h1 {
+
+      display: inline-block;
+      
+      font-weight: 600;
+      margin-left: 10px;
+      font-size: 1.3rem;
+      line-height: 1.3rem;
+      vertical-align: middle;
+    }
+  }
 
   nav {
     
@@ -99,19 +125,6 @@ header {
         }
       }
     }
-  }
-
-  h1 {
-    display: inline-block;
-    font-weight: 200;
-    margin-left: 10px;
-    font-size: 1.6rem;
-  }
-
-  > div {
-    display: flex;
-    align-content: center;
-    padding: 10px 20px;
   }
 }
 
