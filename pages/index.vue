@@ -1,15 +1,15 @@
 <template>
   <div class="container">
-
+    <Loader message="Testing..." />
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import Loader from '~/components/ui/LoadingGraphic'
 
 export default {
   components: {
-    Logo
+    Loader
   }
 }
 </script>

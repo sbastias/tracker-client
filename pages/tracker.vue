@@ -11,7 +11,7 @@
         <input type="text" v-model="textSearch" />
       </section>
 
-      <section v-if="$fetchState.pending">Loading Placements...</section>
+      <section v-if="$fetchState.pending"><Loader message="Loading Placements..." /></section>
       
       <section v-else id="placements">
         <ul>
@@ -35,6 +35,7 @@
 <script>
 import PlacementRow from '~/components/PlacementRow'
 import TrackerOverlay from '~/components/TrackerOverlay'
+import Loader from '~/components/ui/LoadingGraphic'
 import moment from 'moment'
 
 export default {
@@ -43,7 +44,8 @@ export default {
   },
   components: {
     PlacementRow,
-    TrackerOverlay
+    TrackerOverlay,
+    Loader
   },
   data () {
     return {
