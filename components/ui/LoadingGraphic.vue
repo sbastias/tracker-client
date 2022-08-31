@@ -42,19 +42,31 @@ export default {
       position: absolute;
       top: 0;
       left: 0;
+      animation-timing-function: linear;
+      animation-name: spin;
+      animation-iteration-count: infinite;
+      opacity: .5;
 
       &:first-child {
-        animation: spin ease-in-out 1s infinite;
+        animation-duration: 1s;
+        animation-timing-function: linear;
       }
       &:nth-child(2) {
-        animation: spin ease-in-out 2s infinite;
+        animation-duration: 1.25s;
+        animation-delay: .1s;
+        animation-timing-function: ease-in-out;
       }
       &:nth-child(3) {
-        animation: spin ease-in-out 3s infinite;
+        animation-duration: 1.5s;
+        animation-delay: .2s;
+        animation-timing-function: ease-in-out;
       }
-      &:last-child {
-        animation: spin ease-in-out 4s infinite;
+      &:nth-child(4) {
+        animation-duration: 1.75s;
+        animation-delay: .3s;
+        animation-timing-function: ease-in-out;
       }
+      
     }
   }
 
@@ -70,4 +82,6 @@ export default {
     transform: rotate(360deg);
   }
 }
+
+
 </style>

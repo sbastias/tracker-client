@@ -50,7 +50,7 @@ export default {
     logout () {
       this.$store.commit('LOGOUT')
       delete this.$axios.defaults.headers.common['Authorization']
-      location.reload()
+      return location.reload()
     },
   }
 }
@@ -137,6 +137,6 @@ a {
 }
 
 .container {
-  padding: 20px;
+  padding: 0 20px;
 }
 </style>

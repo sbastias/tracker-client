@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Loader message="Testing..." />
+    <h1>Welcome!</h1>
   </div>
 </template>
 
