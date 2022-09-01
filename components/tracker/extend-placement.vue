@@ -7,6 +7,7 @@
 
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
     <h5>{{placement.AVTRRT__Employer__r.Name}}</h5>
+    <h5>{{placement.Candidate.Name}}</h5>
     <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.Candidate.Pay_Rate_Adjustment__c">(+{{placement.Candidate.Pay_Rate_Adjustment__c}})</span></h5>
 
 <!--

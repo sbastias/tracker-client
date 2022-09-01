@@ -8,7 +8,11 @@
 
       <div class="overlay-content">
         <CancelX @cancel="cancelOverlay" class="overlay-cancel" />
-        <component :is='mode' :original-placement="placement" @edited="flagEdited" />
+        <component :is='mode' 
+          :original-placement="placement" 
+          @edited="flagEdited"
+          @update-row="updateRow"
+        />
       </div>
 
     </div>
@@ -20,7 +24,8 @@
 </template>
 
 <script>
-import ExtendPlacement from '~/components/tracker-overlays/extend-placement'
+import ExtendPlacement from '~/components/tracker/extend-placement'
+import UpdatePlacement from '~/components/tracker/update-placement'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement'],
@@ -31,6 +36,7 @@ export default {
   },
   components: {
     ExtendPlacement,
+    UpdatePlacement,
     CancelX
   },
   methods: {
@@ -45,6 +51,9 @@ export default {
     flagEdited (bool) {
       console.log('Editing detected... changed from original?', bool)
       this.edited = bool
+    },
+    updateRow (update) {
+      this.$emit('update-row', update)
     }
   }
 }

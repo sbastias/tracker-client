@@ -1,8 +1,15 @@
 <template>
-<client-only>
-  <tr class="placement-row" @click="activate" :class="[placement.Rotation_Communication__c && placement.Rotation_Communication__c.toLowerCase().split(' ').join('-') || 'None']" :active="active">
+  <tr class="placement-row" @click="activate" :class="rotationCommGroup" :active="active">
+
+      <td class="controls">
+        <PlacementControls 
+          ref="placement-controls"
+          v-if="active"
+          :placement="placement"
+        />
+      </td>
+
       <td class="id">
-        <!--label>Placement #</label-->
         <a class="icon" :href="sfLink(placement.Id, 'AVTRRT__Placement__c')" target="_blank" :title="placement.Name">
           <Icon name="salesforce" />
         </a>
@@ -15,90 +22,74 @@
       </td>
 
       <td class="name ellipses">
-        <label>Contractor Name</label>
         <a :href="sfLink(placement.Candidate.Id, 'Contact')" target="_blank">{{placement.Candidate.Name}}</a>
       </td>
       
-      
       <td class="job-title ellipses">
-        <label>Job Title</label>
         <span>{{placement.AVTRRT__Job_Title__c}}</span>
       </td>
 
       <td class="dept ellipses">
-        <label>Department</label>
         <span>{{placement.Department__c || '&nbsp;'}}</span>
       </td>
 
-      <!--td class="pay-rate">
-        <label>Pay Rate</label>
-        {{ payRateString(placement) }}
-      </td-->
-
       <td class="crew">
-        <label>Crew</label>
         <span>{{placement.Crew__c || '&nbsp;'}}</span>
       </td>
 
       <td class="shift">
-        <label>Shift</label>
         <span>{{placement.Shift__c || '&nbsp;'}}</span>
       </td>
 
       <td class="start-date">
-        <label>Inbound</label>
         <span>{{moment.utc(placement.AVTRRT__Start_Date__c).format('YYYY/MM/DD')}}</span>
       </td>
       <td class="end-date">
-        <label>Outbound</label>
         <span>{{moment.utc(placement.AVTRRT__End_Date__c).format('YYYY/MM/DD')}}</span>
       </td>
 
       <td class="location ellipses">
-        <label>Location</label>
         <span>{{placement.Client_Location__c || '&nbsp;'}}</span>
       </td>
 
       <td class="flight ellipses">
-        <label>Flight</label>
         <span>{{placement.Flight__c || 'N/A'}}</span>
       </td>
 
       <td class="notes ellipses">
-        <label>Notes</label>
+        <span>{{placement.Rotation_Communication__c || '&nbsp;'}}</span>
+      </td>
+
+      <td class="rot-comm ellipses">
         <span>{{placement.Additional_Notes__c || '&nbsp;'}}</span>
       </td>
 
       <td class="coverage ellipses">
-        <label>Coverage</label>
         <span>{{placement.Coverage__c || '&nbsp;'}}</span>
       </td>
 
       <td class="airport ellipses">
-        <label>Airport</label>
         <span>{{placement.Client_Airport__c || '&nbsp;'}}</span>
       </td>
 
       <td class="po">
-        <label>PO</label>
         <span>{{placement.PO__c || '&nbsp;'}}</span>
       </td>
 
       <td class="supplier">
-        <label>Supplier</label>
         <span>{{placement.Supplier__c || '&nbsp;'}}</span>
       </td>
 
       <td class="deployment ellipses">
-        <label>Deployemnt</label>
         <span>{{placement.Deployment_Forms__c || '&nbsp;'}}</span>
       </td>
 
-
-
+      
       
     </tr>
-</client-only>
+    
+    
+
 </template>
 
 
@@ -106,13 +97,15 @@
 <script>
 import moment from 'moment'
 import Icon from '~/components/ui/Icons'
+import PlacementControls from '~/components/PlacementControls'
 //import SalesforceIcon from '~/components/ui/SalesforceIcon'
 
 
 export default {
-  props: ['original-placement','active'],
+  props: ['placement','active'],
   components: {
-    Icon
+    Icon,
+    PlacementControls
   },
   data () {
     return {
@@ -123,18 +116,30 @@ export default {
     }
   },
   created () {
-    this.replicateOriginal()
+    
   },
   computed: {
-    
+    rotationCommGroup () {
+      let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
+      if (/confirmation received/.test(lcRotComm)) return 'confirmed'
+      else if (/cancel|cancelled/.test(lcRotComm)) return 'cancelled'
+      else if (/declined|missed/.test(lcRotComm)) return 'declined'
+      else if (/sent/.test(lcRotComm)) return 'sent'
+      else return 'unknown'
+    }
   },
   methods: {
-    replicateOriginal () {
-      this.placement = Object.assign({}, this.originalPlacement)
-    },
     
+    
+    toggle () {
+      this.$emit(this.active ? 'deactivate' : 'activate', this.placement)
+    },
     activate () {
-      this.$emit('activate', this.placement.Id)
+      if (!this.active) this.$emit('activate', this.placement)
+    },
+    deactivate () {
+      console.log('deactivating')
+      this.$emit('deactivate', this.placement)
     },
     update () {
       this.$emit('update', this.placement)
@@ -174,36 +179,43 @@ export default {
 
   
   margin-left: 15px;
+  
 
   display: table-row;
   table-layout: fixed;
+  position: relative;
   
 
-  &.confirmation-received {
+  &.confirmed {
     &:before {background-color: green;}
-    border-color: green;
+    background-color: rgba(rgb(74, 193, 5),0.2);
+    &:hover {
+      background-color: rgba(rgb(74, 193, 5),0.4);
+    }
   }
-  &.rotation-information-sent {
+  &.sent {
     &:before {background-color: orange;}
-    border-color: orange;
+    background-color: rgba(orange, 0.2);
+    &:hover {
+      background-color: rgba(orange, 0.4);
+    }
   } 
-  &.rotation-declined {
+  &.declined {
     &:before {background-color: darkred;}
-    border-color: darkred;
+    background-color: darkred;
+    animation: declinedAlert 1s linear infinite
   }
-  &.cancelled-hired-by-client {
-    &:before:before {background-color: red;}
-    border-color: red;
-  }
-  &.rotation-cancelled-by-client {
-    &:before:first-child:before {background-color: red;}
-    border-color: red;
+  &.cancelled {
+    &:before {background-color: red;}
+    background-color: rgba(red, .2);
+    &:hover {
+      background-color: rgba(red, .4);
+    }
+    text-decoration: line-through;
+    span {opacity: .5;}
   }
 
-  &[active] {
-    
-    background: #ffff00;
-  }
+  
 
 
 
@@ -218,6 +230,22 @@ export default {
   &:hover{
     background-color: #eee;
   }
+  
+  &[active] {
+    color: white;
+    &:hover {
+      background-color: #666;
+    }
+    background-color: #666;
+    animation: none;
+
+    td {
+      padding: 10px 5px 70px;
+    }
+
+    a {color: lightblue}
+    
+  }
 
 
     
@@ -228,10 +256,14 @@ export default {
 
   > td {
 
+    margin-bottom: 1px;
     line-height: 1rem;
     vertical-align: middle;
     height: 100%;
     overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .9em;
+    padding: 0 5px;
 
     label {display: none;}
     span {display: block;}
@@ -239,6 +271,9 @@ export default {
 
     &:last-child {
       padding-right: 20px;
+    }
+    &:first-child {
+      padding-left: 20px;
     }
     
 
@@ -285,30 +320,14 @@ export default {
     color: rgb(0,0,238);
   }
 
-  button {
-    appearance: none;
-    display: inline-block;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-
-    &[disabled] {
-      background: #ccc;
-      color: #888;
-      cursor: not-allowed;
-    }
-    &:not([disabled]) {
-      background: #990000;
-      color: white;
-
-      &:hover{
-        background: #bb0000;
-      }
-    }
-  }
-
 }
 
+@keyframes declinedAlert {
+  0%, 100% {
+    background-color: red;
+  } 50% {
+    background-color: rgba(red, 0.3);
+  }
+}
 
 </style>

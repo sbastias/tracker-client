@@ -1,37 +1,66 @@
 <template>
   <div class="container">
 
-    <TrackerOverlay :mode="overlayMode" :placement="overlayPlacement" v-if="overlayMode" @cancel-overlay="cancelOverlay" />
+    <TrackerOverlay 
+      v-if="overlayMode"
+      :mode="overlayMode" 
+      :placement="overlayPlacement"  
+      @cancel-overlay="cancelOverlay"
+      @update-row="updateRow"
+    />
 
     <div class="main-content">
 
       <h1>Tracker</h1>
 
+      <client-only>
+      <section id="date-range">
+        <div>
+          Starting on or after <Datepicker class="inline" v-model="filters.startAfter" name="start-after" format="yyyy-MM-dd" :use-utc="true" />
+        </div>
+        <div>
+          Ending on or before <Datepicker class="inline" v-model="filters.endBefore" name="end-before" format="yyyy-MM-dd" :use-utc="true" />
+        </div>
+      </section>
+      </client-only>
+
+      <section id="filters">
+        <div>
+          <label>Rotation Communication</label>
+        </div>
+      </section>
+
+      <button @click="loadPlacements">Load Placements</button>
+
       <section id="search-bar">
         <input type="text" v-model="textSearch" />
       </section>
 
-      
-      
-      <section id="placements">
+      <div id="status-bar-container">
+        <div id="loading-container" v-if="loadingPlacements"><Loader message="Loading Placements..." /></div>
+        <div id="status-bar" v-else-if="!!placements.length">
+          <div>Found {{placements.length}} placements</div>
+        </div>
+      </div>
 
-        <div v-if="$fetchState.pending" style="margin-left: 20px;"><Loader message="Loading Placements..." /></div>
+      <section id="placements" :class="{disabled: loadingPlacements}">
 
         <table id="placements-table" v-show="placements.length" cellspacing="0">
           <thead>
             <tr>
-              <th v-for="(col, idx) in columns" :key="`col-${idx}`" :style="{width: col.width + 'px'}">{{col.label}}</th>
+              <th @click="sortBy" :data-sort="col.sort" v-for="(col, idx) in trackerColumns" :class="{sortable: !!col.sort, sorted: sortedBy == col.sort}" :key="`col-${idx}`" :style="{width: col.width + 'px'}">{{col.label}}</th>
             </tr>
           </thead>
           <tbody>
             <PlacementRow 
               v-for="(placement, idx) in placements" 
               :key="placement.Id" :id="`placement-${idx}`"
-              :original-placement="placement"
-              :active="activatedPlacementId == placement.Id"
+              :placement="placement"
+              :active="activatedPlacement == placement"
               @activate="activatePlacement" 
               @deactivate="deactivatePlacement"
-              @extend="extendPlacement" 
+              @update="updatePlacement"
+              @extend="extendPlacement"
             />
           </tbody>
         </table>
@@ -45,9 +74,26 @@
 
 <script>
 import PlacementRow from '~/components/PlacementRow'
-import TrackerOverlay from '~/components/TrackerOverlay'
+import PlacementControls from '~/components/PlacementControls'
+import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/LoadingGraphic'
+import trackerColumns from '~/config/tracker-columns'
 import moment from 'moment'
+
+class paramsObj  {
+  constructor() {
+
+    this.startAfter = ((date) => {
+      date.setDate(date.getDate() - 30)
+      return date
+    })(new Date())
+
+    this.endBefore = ((date) => {
+      date.setDate(date.getDate() + 30)
+      return date
+    })(new Date())
+  }
+}
 
 export default {
   head: {
@@ -55,99 +101,49 @@ export default {
   },
   components: {
     PlacementRow,
+    PlacementControls,
     TrackerOverlay,
     Loader
   },
   data () {
     return {
+      trackerColumns,
+      filters: new paramsObj(),
       metadata: false,
-      unfiltererdPlacements: false,
+      unfilteredPlacements: [],
       textSearch: '',
-      activatedPlacementId: false,
+      activatedPlacement: false,
       moment,
       overlayMode: false,
       overlayPlacement: false,
-      columns: [
-        {
-          label: '',
-          width: 35
-        },
-        {
-          label: '',
-          width: 35
-        },
-        {
-          label: 'Candidate Name',
-          width: 150
-        },
-        {
-          label: 'Job Title',
-          width: 150
-        },
-        {
-          label: 'Department',
-          width: 150
-        },
-        {
-          label: 'Crew',
-          width: 40
-        },
-        {
-          label: 'Shift',
-          width: 40
-        },
-        {
-          label: 'Inbound',
-          width: 80
-        },
-        {
-          label: 'Outbound',
-          width: 80
-        },
-        {
-          label: 'Location',
-          width: 100
-        },
-        {
-          label: 'Flight',
-          width: 140
-        },
-        {
-          label: 'Notes',
-          width: 140
-        },
-        {
-          label: 'Coverage',
-          width: 140
-        },
-        {
-          label: 'Airport',
-          width: 80
-        },
-        {
-          label: 'PO #',
-          width: 90
-        },
-        {
-          label: 'Supplier',
-          width: 50
-        },
-        {
-          label: 'Deployment',
-          width: 170
-        },
-        
-      ]
+      loadingPlacements: false,
+      sortedBy: false,
+      ascending: true
     }
   },
   computed: {
     placements () {
 
-      if (!this.unfiltererdPlacements) return false
+      //console.log('...updating computed placements')
+      let filteredPlacements = false
 
-      else if (this.textSearch == '') return this.unfiltererdPlacements
+      if (this.unfilteredPlacements.length) {
 
-      else return this.unfiltererdPlacements.filter(el => el.Candidate.Name.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
+        if (this.textSearch == '') filteredPlacements = this.unfilteredPlacements 
+        else filteredPlacements = this.unfilteredPlacements.filter(el => el.Candidate.Name.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
+
+        if (this.sortedBy) {
+          filteredPlacements.sort((a,b) => {
+            if (a[this.sortedBy] === b[this.sortedBy]) return 0
+            else if (a[this.sortedBy] === null) return this.ascending ? -1 : 1
+            else if (b[this.sortedBy] === null) return this.ascending ? 1 : -1
+            else if (a[this.sortedBy] > b[this.sortedBy]) return this.ascending ? 1 : -1
+            else return this.ascending ? -1 : 1
+          })
+        }
+      }
+
+      return filteredPlacements
     }
   },
   created () {
@@ -160,47 +156,76 @@ export default {
   mounted () {
     //this.resizeStuff()
     if (process.client) {
-      document.querySelector('#placements-table').style.width = `${ this.columns.reduce((acc, el) => acc += el.width, 0) }px`
+      
+      document.querySelector('#placements-table').style.width = `${ this.trackerColumns.reduce((acc, el) => acc += el.width, 0) }px`
     }
   },
-  fetchOnServer: false,
-  async fetch () {
-    //console.log(this.$axios.defaults.baseURL)
-    //console.log(this.$axios.defaults.headers.common['Authorization'])
-    console.log('Fetching placements...')
-    await this.$axios.get(`/tracker/load/2022/08`)
-    .then(({data}) => {
-      //console.log(data)
-      this.unfiltererdPlacements = data.placements
-      this.$bus.metadata = data.metadata
-      this.resizeStuff()
-    })
-    .catch(e => {
-      let {message, stack} = e.response.data
-      this.$bus.$emit('toaster', {status: 'error', message})
-      console.log(stack)
-    })
-    
-  },
   methods: {
-    activatePlacement (id) {
-      if (this.activatedPlacementId == id) return
-      console.log('activating', id)
-      //if (this.activatedPlacementId) this.unfiltererdPlacements.find(el => el.Id == this.activatedPlacementId).active = false
-      //this.unfiltererdPlacements.find(el => el.Id == id).active = true
-      this.activatedPlacementId = id
+    async loadPlacements () {
+      this.loadingPlacements = true
+      //console.log(this.$axios.defaults.baseURL)
+      //console.log(this.$axios.defaults.headers.common['Authorization'])
+      console.log('loading placements...')
+      await this.$axios.post(`/tracker/load`, this.filters)
+      .then(({data}) => {
+        //console.log(data)
+        this.unfilteredPlacements = data.placements
+        this.$bus.metadata = data.metadata
+      })
+      .catch(e => {
+        let {message, stack} = e.response.data
+        this.$bus.$emit('toaster', {status: 'error', message})
+        console.log(stack)
+      })
+      .finally(() => {
+        this.loadingPlacements = false
+        this.$nextTick(() => this.resizeStuff())
+      })
+      
+    },
+    sortBy ($ev) {
+      let sortField = $ev.target.dataset.sort || false
+      if (!sortField) return
+      if (this.sortedBy == sortField) this.ascending = !this.ascending
+      else this.sortedBy = sortField
+    },
+    updateRow (update) {
+      console.log('updating row', update)
+      let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
+
+      console.log(current, '<< current')
+      let currentIdx = this.unfilteredPlacements.indexOf(current)
+
+      console.log(currentIdx, '<< currentIdx')
+      let updated = Object.assign(current, update)
+
+      console.log(updated, '<< updated')
+      this.unfilteredPlacements.splice(currentIdx, 1, updated)
+
+      console.log(this.unfilteredPlacements)
+    },
+    activatePlacement (placement) {
+      if (this.activatedPlacement == placement) return
+      console.log('activating', placement)
+      
+      //this.unfilteredPlacements.find(el => el.Id == id).active = true
+      this.activatedPlacement = placement
+      
+      
 
     },
     deactivatePlacement () {
-      this.activatedPlacementId = false
+      console.log('deactivating')
+      this.activatedPlacement = false
     },
-    updatePlacement (updatedPlacement) {
-      console.log(updatedPlacement)
 
-    },
     extendPlacement (extendingPlacement) {
       this.overlayPlacement = extendingPlacement
       this.overlayMode = 'extend-placement'
+    },
+    updatePlacement (updatingPlacement) {
+      this.overlayPlacement = updatingPlacement
+      this.overlayMode = 'update-placement'
     },
     cancelOverlay () {
       this.overlayMode = false
@@ -231,13 +256,35 @@ export default {
 }
 
 .main-content {
-  max-width: 1600px;
+  //max-width: 1900px;
   margin: auto;
 }
 
+#status-bar-container {
+  height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  width: 100%;
+  #status-bar {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: max-content auto;
+    grid-template-rows: 40px;
+    align-items: center;
+
+    > :last-child {
+      text-align: right;
+    }
+  }
+  
+}
+
 #placements {
-  width: calc(100% + 40px);
-  margin-left: -20px;
+  width: calc(100% + 20px);
+  margin-left: -10px;
   margin-right: 0;
   > ul {
     display: block;
@@ -253,17 +300,26 @@ export default {
     }
   }
 
+  &.disabled {
+    pointer-events: none;
+    opacity: .5;
+  }
+
   #placements-table {
     display: table;
     table-layout: fixed;
     position: relative;
     border: none;
+    border-collapse:separate; 
+    border-spacing: 0 1px;
+
 
 
     thead {
       position: sticky;
       top: 0;
       background: #ccc;
+      z-index: 1;
 
       > tr{
         background: #ccc;
@@ -271,21 +327,21 @@ export default {
           text-align: left;
           font-weight: normal;
           font-size: .7rem;  
+          padding: 5px 5px;
+          &.sortable {
+            cursor: pointer;
+          }
+          &.sorted {
+            font-weight: bold;
+            background: #bbb;
+          }
          }
       }
     }
 
     tbody {
       overflow-y: scroll;
-
       font-size: .8rem;
-
-      td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: .9em;
-        vertical-align: middle;
-      }
     }
   }
 
@@ -298,6 +354,6 @@ export default {
   margin: 20px 0;
 }
 
-
+.inline {display: inline-block}
 
 </style>
