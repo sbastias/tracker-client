@@ -122,8 +122,8 @@ export default {
     rotationCommGroup () {
       let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
       if (/confirmation received/.test(lcRotComm)) return 'confirmed'
-      else if (/cancel|cancelled/.test(lcRotComm)) return 'cancelled'
-      else if (/declined|missed/.test(lcRotComm)) return 'declined'
+      else if (/cancel|cancelled|missed/.test(lcRotComm)) return 'cancelled'
+      else if (/declined/.test(lcRotComm)) return 'declined'
       else if (/sent/.test(lcRotComm)) return 'sent'
       else return 'unknown'
     }
@@ -201,9 +201,14 @@ export default {
     }
   } 
   &.declined {
-    &:before {background-color: darkred;}
-    background-color: darkred;
-    animation: declinedAlert 1s linear infinite
+    &:before {background-color: rgba(255, 68, 68, .5);}
+    background-color: rgba(255, 68, 68, .5);
+    background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
+    animation: declinedAlert 1s linear infinite;
+    &:hover{
+      background-color: pink;
+      background-image: none;
+    }
   }
   &.cancelled {
     &:before {background-color: red;}
@@ -324,9 +329,9 @@ export default {
 
 @keyframes declinedAlert {
   0%, 100% {
-    background-color: red;
-  } 50% {
-    background-color: rgba(red, 0.3);
+    background-position: 0 center;
+  } 100% {
+    background-position: -10px center;
   }
 }
 

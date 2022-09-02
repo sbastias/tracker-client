@@ -16,23 +16,30 @@
       <client-only>
       <section id="date-range">
         <div>
-          Starting on or after <Datepicker class="inline" v-model="filters.startAfter" name="start-after" format="yyyy-MM-dd" :use-utc="true" />
-        </div>
-        <div>
-          Ending on or before <Datepicker class="inline" v-model="filters.endBefore" name="end-before" format="yyyy-MM-dd" :use-utc="true" />
+          Starting on or after <Datepicker class="inline" v-model="params.startAfter" name="start-after" format="yyyy-MM-dd" :use-utc="true" />
+          Ending on or before <Datepicker class="inline" v-model="params.endBefore" name="end-before" format="yyyy-MM-dd" :use-utc="true" />
+          <button @click="loadPlacements">Load Placements</button>
         </div>
       </section>
       </client-only>
 
-      <section id="filters">
-        <div>
-          <label>Rotation Communication</label>
+      <section id="filters" v-if="!!placements">
+        
+        <div v-for="(filter, idx) in params.filters" :key="`filter-${idx}`">
+          <h5>{{filter.label}}</h5>
+
+          <a @click="filter.deselectAll()" v-if="filter.allSelected()">Deselect All</a>
+          <a @click="filter.selectAll()" v-else>Select All</a>
+          
+          <div class="scrollable-filters">
+            <label v-for="(value, key, idx2) in filter.values" :key="`filter-${idx}-val-${idx2}`"><input type="checkbox" :value="true" v-model="filter.values[key]"> {{key || 'None'}}</label>
+          </div>
         </div>
       </section>
 
-      <button @click="loadPlacements">Load Placements</button>
+      <!--div v-if="params.filters.length">{{params.filters.find(el => el.label == 'Supplier')}}</div-->
 
-      <section id="search-bar">
+      <section id="search-bar" v-if="!!placements">
         <input type="text" v-model="textSearch" />
       </section>
 
@@ -78,10 +85,11 @@ import PlacementControls from '~/components/PlacementControls'
 import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/LoadingGraphic'
 import trackerColumns from '~/config/tracker-columns'
+import trackerFilters from '~/config/tracker-filters'
 import moment from 'moment'
 
 class paramsObj  {
-  constructor() {
+  constructor () {
 
     this.startAfter = ((date) => {
       date.setDate(date.getDate() - 30)
@@ -92,6 +100,32 @@ class paramsObj  {
       date.setDate(date.getDate() + 30)
       return date
     })(new Date())
+
+    this.filters = {}
+  }
+}
+
+class filterObj {
+  constructor (label, field) {
+    this.label = label
+    this.field = field
+    this.values = {}
+
+    
+  }
+  set setVals (val) {
+    for (let key in this.values) this.values[key] = val
+  }
+  selectAll () {
+    this.setVals = true
+  }
+  deselectAll () {
+    this.setVals = false
+  }
+  allSelected () {
+    let allSelected = true
+    for (let key in this.values) if (!this.values[key]) allSelected = false
+    return allSelected
   }
 }
 
@@ -108,7 +142,7 @@ export default {
   data () {
     return {
       trackerColumns,
-      filters: new paramsObj(),
+      params: new paramsObj(),
       metadata: false,
       unfilteredPlacements: [],
       textSearch: '',
@@ -118,7 +152,7 @@ export default {
       overlayPlacement: false,
       loadingPlacements: false,
       sortedBy: false,
-      ascending: true
+      ascending: true,
     }
   },
   computed: {
@@ -129,8 +163,28 @@ export default {
 
       if (this.unfilteredPlacements.length) {
 
+        
+
         if (this.textSearch == '') filteredPlacements = this.unfilteredPlacements 
-        else filteredPlacements = this.unfilteredPlacements.filter(el => el.Candidate.Name.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
+
+        else {
+
+          let searchRegex = new RegExp(this.textSearch, 'ig')
+          console.log(searchRegex)
+
+          filteredPlacements = this.unfilteredPlacements.filter(el => searchRegex.test(el.Candidate.Name + el.AVTRRT__Job_Title__c + el.Additional_Notes__c + el.Coverage__c))
+            //|| searchRegex.test(el.AVTRRT__Job_Title__c)
+            //|| searchRegex.test(el.AVTRRT__Job_Title__c)
+            //|| el.AVTRRT__Job_Title__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
+            //|| el.Coverage__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
+            //|| el.Additional_Notes__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
+          //})
+        }
+
+        for (let filter of this.params.filters) {
+          let activeFilters = Object.keys(filter.values).filter(key => !!filter.values[key])
+          filteredPlacements = filteredPlacements.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
+        }
 
         if (this.sortedBy) {
           filteredPlacements.sort((a,b) => {
@@ -143,6 +197,9 @@ export default {
         }
       }
 
+      console.log(filteredPlacements)
+      
+      
       return filteredPlacements
     }
   },
@@ -161,21 +218,51 @@ export default {
     }
   },
   methods: {
+    generateFilters () {
+      
+      this.params.filters = trackerFilters.map(el => new filterObj(el.label, el.field))
+
+      for(let filter of this.params.filters) {
+
+        filter.values = {}
+
+        let uniqueFilterValues = this.unfilteredPlacements.reduce((acc, el) => [...acc, el[filter.field] || 'None'], [])
+        .filter((el, idx, self) => self.indexOf(el) == idx)
+        .sort((a,b) => {
+          if (a === null || a === 'None') return 1
+          else if (a === null || b === 'None') return -1
+          else return a > b ? 1 : -1
+        })
+
+        console.log(uniqueFilterValues)
+
+        for (let val of uniqueFilterValues) this.$set(filter.values, val, true)
+      }
+
+      console.log(this.params.filters, '<< generated filter values')
+      
+
+    },
     async loadPlacements () {
       this.loadingPlacements = true
       //console.log(this.$axios.defaults.baseURL)
       //console.log(this.$axios.defaults.headers.common['Authorization'])
       console.log('loading placements...')
-      await this.$axios.post(`/tracker/load`, this.filters)
+      await this.$axios.post(`/tracker/load`, this.params)
       .then(({data}) => {
         //console.log(data)
         this.unfilteredPlacements = data.placements
         this.$bus.metadata = data.metadata
+        try {
+          this.generateFilters()
+        } catch (e) {
+          console.log(e)
+        }
       })
       .catch(e => {
-        let {message, stack} = e.response.data
+        let {message, stack} = e.response.data || e
         this.$bus.$emit('toaster', {status: 'error', message})
-        console.log(stack)
+        console.log(stack || 'NO STACK')
       })
       .finally(() => {
         this.loadingPlacements = false
@@ -259,6 +346,54 @@ export default {
   //max-width: 1900px;
   margin: auto;
 }
+
+#date-range, #filters, #search-bar {
+  font-size: .8rem;
+  padding: 10px;
+  background: #eee;
+  margin-bottom: 8px;
+}
+#filters {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  
+  background: #eee;
+
+  
+  > div {
+    flex: 1;
+    overflow: hidden;
+    margin-right: 5px;
+    h5 {
+      font-size: .6rem;
+      margin-bottom: 5px;
+    }
+    a{
+      font-size: .6rem;
+      color: blue;
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+    label {
+      font-size: .6rem;
+      display: block;
+      white-space: nowrap;
+    }
+    .scrollable-filters {
+      height: 100px;
+      width: 100%;
+      overflow-y: hidden;
+      overflow-x:hidden;
+      padding-bottom: 10px;
+
+      &:hover {
+        overflow-y: scroll;
+      }
+    }
+  }
+}
+
 
 #status-bar-container {
   height: 40px;
@@ -349,10 +484,7 @@ export default {
 
 }
 
-#search-bar {
-  padding: 0;
-  margin: 20px 0;
-}
+
 
 .inline {display: inline-block}
 
