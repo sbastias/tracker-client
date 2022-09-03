@@ -150,7 +150,7 @@ export default {
       await this.$axios.post(`/tracker/update`, update)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
-        this.$emit('update-row', update)
+        this.$parent.$emit('update-row', update)
         //this.$bus.$emit('refetch')
         this.edited = false
       })

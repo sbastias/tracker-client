@@ -6,12 +6,14 @@
       :mode="overlayMode" 
       :placement="overlayPlacement"  
       @cancel-overlay="cancelOverlay"
-      @update-row="updateRow"
+      @update-row="doRowUpdate"
     />
 
     <div class="main-content">
 
       <h1>Tracker</h1>
+
+      <div v-if="Object.keys(emitErrors).length">{{emitErrors}}</div>
 
       <client-only>
       <section id="date-range">
@@ -153,6 +155,7 @@ export default {
       loadingPlacements: false,
       sortedBy: false,
       ascending: true,
+      emitErrors: {}
     }
   },
   computed: {
@@ -163,11 +166,9 @@ export default {
 
       if (this.unfilteredPlacements.length) {
 
-        
+        filteredPlacements = this.unfilteredPlacements 
 
-        if (this.textSearch == '') filteredPlacements = this.unfilteredPlacements 
-
-        else {
+        if (this.textSearch.length > 2) { 
 
           let searchRegex = new RegExp(this.textSearch, 'ig')
           console.log(searchRegex)
@@ -197,8 +198,7 @@ export default {
         }
       }
 
-      console.log(filteredPlacements)
-      
+      //console.log(filteredPlacements)
       
       return filteredPlacements
     }
@@ -215,9 +215,12 @@ export default {
     if (process.client) {
       
       document.querySelector('#placements-table').style.width = `${ this.trackerColumns.reduce((acc, el) => acc += el.width, 0) }px`
+
+      this.createSocket()
     }
   },
   methods: {
+    
     generateFilters () {
       
       this.params.filters = trackerFilters.map(el => new filterObj(el.label, el.field))
@@ -277,29 +280,38 @@ export default {
       else this.sortedBy = sortField
     },
     updateRow (update) {
-      console.log('updating row', update)
+
       let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
-
-      console.log(current, '<< current')
       let currentIdx = this.unfilteredPlacements.indexOf(current)
-
-      console.log(currentIdx, '<< currentIdx')
-      let updated = Object.assign(current, update)
-
-      console.log(updated, '<< updated')
+      let updated = Object.assign(current, JSON.parse(JSON.stringify(update)))
+      console.log(updated)
       this.unfilteredPlacements.splice(currentIdx, 1, updated)
-
-      console.log(this.unfilteredPlacements)
+      
+    },
+    async doRowUpdate (update) {
+      await this.socket.emitP('updatePlacement', update)
+      .then((resp) => {
+        console.log('Update', resp, 'WTF?!')
+        //this.updateRow(resp)
+        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
+      })
+      .catch(e => {
+        console.log(e.stack)
+      })
+    },
+    createSocket () {
+      this.socket = this.$nuxtSocket({
+        name: 'tracker'       
+      })
+      this.socket.on('updatePlacement', update => {
+        console.log('Received emission!', update)
+        this.updateRow(update)
+      })
     },
     activatePlacement (placement) {
       if (this.activatedPlacement == placement) return
       console.log('activating', placement)
-      
-      //this.unfilteredPlacements.find(el => el.Id == id).active = true
       this.activatedPlacement = placement
-      
-      
-
     },
     deactivatePlacement () {
       console.log('deactivating')

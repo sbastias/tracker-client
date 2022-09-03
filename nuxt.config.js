@@ -1,6 +1,6 @@
 
 export default {
-  mode: 'ssr',
+  ssr: true,
   /*
   ** Headers of the page
   */
@@ -46,7 +46,22 @@ export default {
     '@nuxtjs/axios',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
+    'nuxt-socket-io'
   ],
+  io: {
+    sockets: [
+      {
+        name: 'tracker',
+        url: 'http://localhost:8012',
+        server: {
+          cors: {
+            origin: ['http://localhost:8012']
+          }
+        },
+        
+      }
+    ]
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options

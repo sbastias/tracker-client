@@ -15,3 +15,7 @@ export const mutations = {
     state.email = ''
   }
 }
+
+export const actions = {
+  //UPDATE_PLACEMENTS
+}

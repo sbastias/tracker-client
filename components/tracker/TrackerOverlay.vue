@@ -11,7 +11,6 @@
         <component :is='mode' 
           :original-placement="placement" 
           @edited="flagEdited"
-          @update-row="updateRow"
         />
       </div>
 
@@ -51,9 +50,6 @@ export default {
     flagEdited (bool) {
       console.log('Editing detected... changed from original?', bool)
       this.edited = bool
-    },
-    updateRow (update) {
-      this.$emit('update-row', update)
     }
   }
 }

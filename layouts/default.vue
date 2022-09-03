@@ -28,7 +28,7 @@ export default {
   async created () {
 
     //console.log(this.$store.state.accessToken, '<< accessToken')
-    console.log('DEFAULT CREATED')
+    //console.log('DEFAULT CREATED')
 
     if (!this.$store.state.accessToken) return this.$router.push('/login')
 
