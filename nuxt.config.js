@@ -52,10 +52,10 @@ export default {
     sockets: [
       {
         name: 'tracker',
-        url: process.env.NODE_ENV == 'development' && 'http://localhost:8012' || 'https://manager.thebullittgroup.com/ws',
+        url: process.env.NODE_ENV == 'development' && 'http://localhost:8011' || 'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
-            origin: ['http://localhost:8012','https://manager.thebullittgroup.com']
+            origin: ['http://localhost:8011','https://mgmt-server.thebullittgroup.com']
           }
         },
         
@@ -67,7 +67,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.NODE_ENV == 'development' && 'http://localhost:8011' || 'https://manager.thebullittgroup.com'
+    baseURL: process.env.NODE_ENV == 'development' && 'http://localhost:8011' || 'https://mgmt-server.thebullittgroup.com'
   },
   /*
   ** Build configuration
