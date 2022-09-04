@@ -52,7 +52,7 @@ export default {
     sockets: [
       {
         name: 'tracker',
-        url: process.env.NODE_ENV == 'development' && 'http://localhost:8012' || 'https://manager.thebullittgroup.com',
+        url: process.env.NODE_ENV == 'development' && 'http://localhost:8012' || 'https://manager.thebullittgroup.com/ws/',
         server: {
           cors: {
             origin: ['http://localhost:8012','https://manager.thebullittgroup.com']
