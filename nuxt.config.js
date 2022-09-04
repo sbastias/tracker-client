@@ -57,7 +57,7 @@ export default {
           cors: {
             origin: ['http://localhost:3000','https://management.thebullittgroup.com']
           }
-        },
+        }
         
       }
     ]

@@ -301,7 +301,8 @@ export default {
     },
     createSocket () {
       this.socket = this.$nuxtSocket({
-        name: 'tracker'       
+        name: 'tracker',
+        transports: ['websocket']
       })
       this.socket.on('updatePlacement', update => {
         console.log('Received emission!', update)
