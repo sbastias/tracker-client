@@ -55,7 +55,7 @@ export default {
         url: process.env.NODE_ENV == 'development' && 'http://localhost:8011' || 'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
-            origin: ['http://localhost:8011','https://mgmt-server.thebullittgroup.com']
+            origin: ['http://localhost:3000','https://management.thebullittgroup.com']
           }
         },
         
