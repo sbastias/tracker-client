@@ -302,7 +302,7 @@ export default {
     createSocket () {
       this.socket = this.$nuxtSocket({
         name: 'tracker',
-        transports: ['websocket'],
+        //transports: ['websocket'],
         path: '/ws/'
       })
       this.socket.on('updatePlacement', update => {
