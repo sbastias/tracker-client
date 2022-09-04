@@ -282,10 +282,7 @@ export default {
     updateRow (update) {
 
       let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
-      let currentIdx = this.unfilteredPlacements.indexOf(current)
-      let updated = Object.assign(current, JSON.parse(JSON.stringify(update)))
-      console.log(updated)
-      this.unfilteredPlacements.splice(currentIdx, 1, updated)
+      current = Object.assign(current, JSON.parse(JSON.stringify(update)))
       
     },
     async doRowUpdate (update) {
