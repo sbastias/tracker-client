@@ -16,13 +16,13 @@
       </td>
 
       <td class="email">
-        <a class="icon" :href="`mailto:${placement.Candidate.Email}`" target="_blank" :title="placement.Candidate.Email">
+        <a class="icon" :href="`mailto:${placement.AVTRRT__Contact_Candidate__r.Email}`" target="_blank" :title="placement.AVTRRT__Contact_Candidate__r.Email">
           <Icon name="email" />
         </a>
       </td>
 
       <td class="name ellipses">
-        <a :href="sfLink(placement.Candidate.Id, 'Contact')" target="_blank">{{placement.Candidate.Name}}</a>
+        <a :href="sfLink(placement.AVTRRT__Contact_Candidate__r.Id, 'Contact')" target="_blank">{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</a>
       </td>
       
       <td class="job-title ellipses">
@@ -157,9 +157,9 @@ export default {
 
       if (placement.Compensation__r) {
         payRate = Number(placement.Compensation__r.Default_Pay_Rate__c)
-        if (placement.Candidate.Pay_Rate_Adjustment__c) {
-          payRate += Number(placement.Candidate.Pay_Rate_Adjustment__c)
-          adjustment = ` (+${ placement.Candidate.Pay_Rate_Adjustment__c.toFixed(2) })`
+        if (placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c) {
+          payRate += Number(placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c)
+          adjustment = ` (+${ placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c.toFixed(2) })`
         }
       } else if (placement.Pay_Rate__c) {
         payRate = placement.Pay_Rate__c

@@ -7,8 +7,8 @@
 
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
     <h5>{{placement.AVTRRT__Employer__r.Name}}</h5>
-    <h5>{{placement.Candidate.Name}}</h5>
-    <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.Candidate.Pay_Rate_Adjustment__c">(+{{placement.Candidate.Pay_Rate_Adjustment__c}})</span></h5>
+    <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
+    <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
 
 <!--
 
@@ -85,6 +85,13 @@ WFR Number
           </select>
         </div>
 
+        <div class="form-cell">
+          <label>Flights</label>
+          <select v-model="placement.Flight__c">
+            <option v-for="(flight, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Flight__c').valueSet.valueSetDefinition.value" :key="`flight-option-${idx}`" :value="flight.label">{{flight.fullName}}</option>
+          </select>
+        </div>
+
       </div>
 
       <div class="form-row">
@@ -136,21 +143,22 @@ export default {
 
       let update = Object.assign({}, JSON.parse(JSON.stringify(this.placement)))
       
-      update.AVTRRT__Contact_Candidate__c = update.Candidate.Id
+      update.AVTRRT__Contact_Candidate__c = update.AVTRRT__Contact_Candidate__r.Id
       update.AVTRRT__Employer__c = update.AVTRRT__Employer__r.Id
 
-      delete update.Candidate
+      delete update.AVTRRT__Contact_Candidate__r
       delete update.AVTRRT__Employer__r
       delete update.Compensation__r
       delete update.Name
       delete update.CreatedDate
+      delete update.LastModifiedDate
 
       console.log(JSON.stringify(update, null, '\t'))
 
       await this.$axios.post(`/tracker/update`, update)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
-        this.$parent.$emit('update-row', update)
+        this.$parent.$emit('update-row', data)
         //this.$bus.$emit('refetch')
         this.edited = false
       })
@@ -184,7 +192,7 @@ export default {
 
   .form-row:nth-child(1){grid-template-columns: 1fr 1fr 3fr;}
   .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
-  .form-row:nth-child(3){grid-template-columns: 3fr 1fr;}
+  .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(4){grid-template-columns: 1fr 1fr;}
 }
 </style>

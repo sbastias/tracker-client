@@ -7,8 +7,8 @@
 
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
     <h5>{{placement.AVTRRT__Employer__r.Name}}</h5>
-    <h5>{{placement.Candidate.Name}}</h5>
-    <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.Candidate.Pay_Rate_Adjustment__c">(+{{placement.Candidate.Pay_Rate_Adjustment__c}})</span></h5>
+    <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
+    <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
 
 <!--
 
@@ -29,12 +29,12 @@ WFR Number
 
         <div class="form-cell">
           <label>Inbound Date</label>
-          <Datepicker v-model="placement.AVTRRT__Start_Date__c" format="yyyy-MM-dd" />
+          <Datepicker v-model="placement.AVTRRT__Start_Date__c" format="yyyy-MM-dd" :use-utc="true" />
         </div>
 
         <div class="form-cell">
           <label>Outbound Date</label>
-          <Datepicker v-model="placement.AVTRRT__End_Date__c" format="yyyy-MM-dd" />
+          <Datepicker v-model="placement.AVTRRT__End_Date__c" format="yyyy-MM-dd" :use-utc="true" />
         </div>
 
         <div class="form-cell">
@@ -85,6 +85,13 @@ WFR Number
           </select>
         </div>
 
+        <div class="form-cell">
+          <label>Flights</label>
+          <select v-model="placement.Flight__c">
+            <option v-for="(flight, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Flight__c').valueSet.valueSetDefinition.value" :key="`flight-option-${idx}`" :value="flight.label">{{flight.fullName}}</option>
+          </select>
+        </div>
+
       </div>
 
       <div class="form-row">
@@ -120,6 +127,9 @@ export default {
   },
   created () {
     this.placement = Object.assign({}, this.originalPlacement)
+    this.placement.Rotation_Communication__c = ''
+    this.placement.Deployment_Forms__c = ''
+    this.$nextTick(() => this.edited = false)
   },
   mounted () {
     console.log(this.$bus.metadata)
@@ -130,15 +140,16 @@ export default {
 
       let ext = Object.assign({}, JSON.parse(JSON.stringify(this.placement)))
       
-      ext.AVTRRT__Contact_Candidate__c = ext.Candidate.Id
+      ext.AVTRRT__Contact_Candidate__c = ext.AVTRRT__Contact_Candidate__r.Id
       ext.AVTRRT__Employer__c = ext.AVTRRT__Employer__r.Id
 
-      delete ext.Candidate
+      delete ext.AVTRRT__Contact_Candidate__r
       delete ext.AVTRRT__Employer__r
       delete ext.Compensation__r
-      delete ext.Id
+      //delete ext.Id //deleted server-side
       delete ext.Name
       delete ext.CreatedDate
+      delete ext.LastModifiedDate
 
       ext.AVTRRT__Extension__c = true
 
@@ -147,7 +158,7 @@ export default {
       await this.$axios.post(`/tracker/extend`, ext)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Extension Created!'})
-        this.$bus.$emit('refetch')
+        this.$parent.$emit('insert-row', data)
         this.edited = false
       })
       .catch(e => {
@@ -180,7 +191,7 @@ export default {
 
   .form-row:nth-child(1){grid-template-columns: 1fr 1fr 3fr;}
   .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
-  .form-row:nth-child(3){grid-template-columns: 3fr 1fr;}
+  .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(4){grid-template-columns: 1fr 1fr;}
 }
 </style>

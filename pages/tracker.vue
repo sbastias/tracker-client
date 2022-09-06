@@ -7,6 +7,7 @@
       :placement="overlayPlacement"  
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
+      @insert-row="doRowInsert"
     />
 
     <div class="main-content">
@@ -173,7 +174,21 @@ export default {
           let searchRegex = new RegExp(this.textSearch, 'ig')
           console.log(searchRegex)
 
-          filteredPlacements = this.unfilteredPlacements.filter(el => searchRegex.test(el.Candidate.Name + el.AVTRRT__Job_Title__c + el.Additional_Notes__c + el.Coverage__c))
+          
+
+          filteredPlacements = this.unfilteredPlacements.filter(el => {
+
+            let searchableFields = [
+              el.AVTRRT__Contact_Candidate__r.FirstName, 
+              el.AVTRRT__Contact_Candidate__r.LastName,
+              el.AVTRRT__Job_Title__c, 
+              el.Additional_Notes__c, 
+              el.Coverage__c
+            ]
+
+            return searchRegex.test(searchableFields.join('¡'))
+          })
+        
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
             //|| el.AVTRRT__Job_Title__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
@@ -296,15 +311,42 @@ export default {
         console.log(e.stack)
       })
     },
+    insertRow (insert) {
+
+
+      let originalIdx = this.unfilteredPlacements.indexOf(this.unfilteredPlacements.find(el => el.Id == insert.originalId)) + 1
+
+      console.log(originalIdx, '<< insertion point')
+
+      delete insert.originalId
+
+      this.unfilteredPlacements.splice(originalIdx, 0, insert)
+      
+    },
+    async doRowInsert (insert) {
+      await this.socket.emitP('insertPlacement', insert)
+      .then((resp) => {
+        console.log('Update', resp, 'WTF?!')
+        //this.updateRow(resp)
+        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
+      })
+      .catch(e => {
+        console.log(e.stack)
+      })
+    },
     createSocket () {
       this.socket = this.$nuxtSocket({
         name: 'tracker',
-        //transports: ['websocket'],
+        transports: ['websocket'],
         path: '/ws/'
       })
       this.socket.on('updatePlacement', update => {
         console.log('Received emission!', update)
         this.updateRow(update)
+      })
+      this.socket.on('insertPlacement', insert => {
+        console.log('Received emission!', insert)
+        this.insertRow(insert)
       })
     },
     activatePlacement (placement) {
@@ -356,6 +398,10 @@ export default {
 .main-content {
   //max-width: 1900px;
   margin: auto;
+
+  h1 {
+    margin: 20px 0;
+  }
 }
 
 #date-range, #filters, #search-bar {
