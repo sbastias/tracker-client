@@ -4,6 +4,7 @@ export default {
   /*
   ** Headers of the page
   */
+  target: 'static',
   head: {
     title: 'Placement Manager | The Bullitt Group',
     titleTemplate: '%s | Placement Manager | The Bullitt Group',

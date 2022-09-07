@@ -25,64 +25,11 @@
         <a :href="sfLink(placement.AVTRRT__Contact_Candidate__r.Id, 'Contact')" target="_blank">{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</a>
       </td>
       
-      <td class="job-title ellipses">
-        <span>{{placement.AVTRRT__Job_Title__c}}</span>
+      <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
+        <span>{{placement[field] || '&nbsp;'}}</span>
       </td>
 
-      <td class="dept ellipses">
-        <span>{{placement.Department__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="crew">
-        <span>{{placement.Crew__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="shift">
-        <span>{{placement.Shift__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="start-date">
-        <span>{{moment.utc(placement.AVTRRT__Start_Date__c).format('YYYY/MM/DD')}}</span>
-      </td>
-      <td class="end-date">
-        <span>{{moment.utc(placement.AVTRRT__End_Date__c).format('YYYY/MM/DD')}}</span>
-      </td>
-
-      <td class="location ellipses">
-        <span>{{placement.Client_Location__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="flight ellipses">
-        <span>{{placement.Flight__c || 'N/A'}}</span>
-      </td>
-
-      <td class="notes ellipses">
-        <span>{{placement.Rotation_Communication__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="rot-comm ellipses">
-        <span>{{placement.Additional_Notes__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="coverage ellipses">
-        <span>{{placement.Coverage__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="airport ellipses">
-        <span>{{placement.Client_Airport__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="po">
-        <span>{{placement.PO__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="supplier">
-        <span>{{placement.Supplier__c || '&nbsp;'}}</span>
-      </td>
-
-      <td class="deployment ellipses">
-        <span>{{placement.Deployment_Forms__c || '&nbsp;'}}</span>
-      </td>
+     
 
       
       
@@ -102,7 +49,7 @@ import PlacementControls from '~/components/PlacementControls'
 
 
 export default {
-  props: ['placement','active'],
+  props: ['placement','active','activeColumns'],
   components: {
     Icon,
     PlacementControls
@@ -126,6 +73,9 @@ export default {
       else if (/declined/.test(lcRotComm)) return 'declined'
       else if (/sent/.test(lcRotComm)) return 'sent'
       else return 'unknown'
+    },
+    activeFields () {
+      return this.activeColumns.map(el => el.field).filter(el => !!el)
     }
   },
   methods: {

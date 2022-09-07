@@ -19,8 +19,16 @@
       <client-only>
       <section id="date-range">
         <div>
-          Starting on or after <Datepicker class="inline" v-model="params.startAfter" name="start-after" format="yyyy-MM-dd" :use-utc="true" />
-          Ending on or before <Datepicker class="inline" v-model="params.endBefore" name="end-before" format="yyyy-MM-dd" :use-utc="true" />
+          From
+          <select v-model="params.range.startOrEndFrom">
+            <option value="AVTRRT__Start_Date__c >=">Start Date</option>
+            <option value="AVTRRT__End_Date__c >=">End Date from</option>
+          </select> <Datepicker class="inline" v-model="params.range.fromDate" name="from-date" format="yyyy-MM-dd" :use-utc="true" />
+          to
+          <select v-model="params.range.startOrEndTo">
+            <option value="AVTRRT__Start_Date__c <=">Start Date</option>
+            <option value="AVTRRT__End_Date__c <=">End Date</option>
+          </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
           <button @click="loadPlacements">Load Placements</button>
         </div>
       </section>
@@ -47,9 +55,14 @@
       </section>
 
       <div id="status-bar-container">
+
         <div id="loading-container" v-if="loadingPlacements"><Loader message="Loading Placements..." /></div>
+
         <div id="status-bar" v-else-if="!!placements.length">
           <div>Found {{placements.length}} placements</div>
+          <div>
+            <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
+          </div>
         </div>
       </div>
 
@@ -58,7 +71,10 @@
         <table id="placements-table" v-show="placements.length" cellspacing="0">
           <thead>
             <tr>
-              <th @click="sortBy" :data-sort="col.sort" v-for="(col, idx) in trackerColumns" :class="{sortable: !!col.sort, sorted: sortedBy == col.sort}" :key="`col-${idx}`" :style="{width: col.width + 'px'}">{{col.label}}</th>
+              <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="{sortable: col.sortable, sorted: sortedBy == col.field}" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
+                {{col.label}}
+                <Sort v-if="col.sortable" :direction="sortedBy == col.field && (ascending && 'asc' || 'desc')" />
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -67,6 +83,7 @@
               :key="placement.Id" :id="`placement-${idx}`"
               :placement="placement"
               :active="activatedPlacement == placement"
+              :active-columns="activeColumns"
               @activate="activatePlacement" 
               @deactivate="deactivatePlacement"
               @update="updatePlacement"
@@ -87,24 +104,28 @@ import PlacementRow from '~/components/PlacementRow'
 import PlacementControls from '~/components/PlacementControls'
 import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/LoadingGraphic'
+import Sort from '~/components/ui/Sort'
 import trackerColumns from '~/config/tracker-columns'
 import trackerFilters from '~/config/tracker-filters'
 import moment from 'moment'
 
-class paramsObj  {
+class rangeObj  {
   constructor () {
 
-    this.startAfter = ((date) => {
+    this.fromDate = ((date) => {
       date.setDate(date.getDate() - 30)
       return date
     })(new Date())
 
-    this.endBefore = ((date) => {
+    this.toDate = ((date) => {
       date.setDate(date.getDate() + 30)
       return date
     })(new Date())
 
-    this.filters = {}
+    this.startOrEndFrom = 'AVTRRT__Start_Date__c >='
+    this.startOrEndTo = 'AVTRRT__Start_Date__c <='
+
+    
   }
 }
 
@@ -140,12 +161,16 @@ export default {
     PlacementRow,
     PlacementControls,
     TrackerOverlay,
-    Loader
+    Loader,
+    Sort
   },
   data () {
     return {
       trackerColumns,
-      params: new paramsObj(),
+      params: {
+        range: new rangeObj(),
+        filters: []
+      },
       metadata: false,
       unfilteredPlacements: [],
       textSearch: '',
@@ -160,6 +185,12 @@ export default {
     }
   },
   computed: {
+    activeColumns () {
+      return this.trackerColumns.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
+    },
+    toggleableColumns () {
+      return this.trackerColumns.filter(el => Object.keys(el).indexOf('toggle') > -1)
+    },
     placements () {
 
       //console.log('...updating computed placements')
@@ -298,12 +329,13 @@ export default {
 
       let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
       current = Object.assign(current, JSON.parse(JSON.stringify(update)))
+      this.generateFilters()
       
     },
     async doRowUpdate (update) {
       await this.socket.emitP('updatePlacement', update)
       .then((resp) => {
-        console.log('Update', resp, 'WTF?!')
+        //console.log('Update', resp, 'WTF?!')
         //this.updateRow(resp)
         //this.unfilteredPlacements.splice(currentIdx, 1, resp)
       })
@@ -321,6 +353,7 @@ export default {
       delete insert.originalId
 
       this.unfilteredPlacements.splice(originalIdx, 0, insert)
+      this.generateFilters()
       
     },
     async doRowInsert (insert) {
@@ -520,12 +553,16 @@ export default {
           font-weight: normal;
           font-size: .7rem;  
           padding: 5px 5px;
+          position: relative;
           &.sortable {
             cursor: pointer;
+            &:hover {
+              background: #ddd;  
+            }
           }
           &.sorted {
             font-weight: bold;
-            background: #bbb;
+            background: #eee;
           }
          }
       }
@@ -544,5 +581,17 @@ export default {
 
 
 .inline {display: inline-block}
+
+.column-toggle {
+  display: inline-block;
+  margin: 0 7px;
+  font-size: 9px;
+  color: #aaa;
+  cursor: pointer;
+  &.active,
+  &:hover {
+    color: black;
+  }
+}
 
 </style>

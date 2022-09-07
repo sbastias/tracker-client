@@ -12,75 +12,107 @@ export default [
     width: 45
   },
   {
-    label: 'Candidate Name',
+    label: 'Candidate Name?',
     width: 160
   },
   {
     label: 'Job Title',
+    field: 'AVTRRT__Job_Title__c',
+    toggle: true,
     width: 160
   },
   {
     label: 'Department',
-    sort: 'Department__c',
+    field: 'Department__c',
+    sortable: true,
+    toggle: true,
     width: 160
   },
   {
     label: 'Crew',
-    sort: 'Crew__c',
+    field: 'Crew__c',
+    sortable: true,
+    toggle: true,
     width: 50
   },
   {
     label: 'Shift',
-    sort: 'Shift__c',
+    field: 'Shift__c',
+    sortable: true,
+    toggle: true,
     width: 50
   },
   {
     label: 'Inbound',
-    sort: 'AVTRRT__Start_Date__c',
+    field: 'AVTRRT__Start_Date__c',
+    sortable: true,
+    toggle: true,
     width: 90
   },
   {
     label: 'Outbound',
-    sort: 'AVTRRT__End_Date__c',
+    field: 'AVTRRT__End_Date__c',
+    sortable: true,
+    toggle: true,
     width: 90
   },
   {
     label: 'Location',
-    sort: 'Client_Location__c',
+    field: 'Client_Location__c',
+    sortable: true,
+    toggle: true,
     width: 110
   },
   {
     label: 'Flight',
+    field: 'Flight__c',
+    toggle: true,
     width: 150
   },
   {
     label: 'Rotation Communication',
+    field: 'Rotation_Communication__c',
+    sortable: true,
+    toggle: true,
     width: 160
   },
   {
     label: 'Notes',
+    field: 'Additional_Notes__c',
+    toggle: true,
     width: 150
   },
   {
     label: 'Coverage',
+    field: 'Coverage__c',
+    toggle: true,
     width: 150
   },
   {
     label: 'Airport',
+    field: 'Client_Airport__c',
+    toggle: true,
     width: 90
   },
   {
     label: 'PO #',
-    sort: 'PO__c',
+    field: 'PO__c',
+    sortable: true,
+    toggle: true,
     width: 100
   },
   {
     label: 'Supplier',
-    sort: 'Supplier__c',
-    width: 60
+    field: 'Supplier__c',
+    sortable: true,
+    toggle: true,
+    width: 70
   },
   {
     label: 'Deployment',
+    field: 'Deployment_Forms__c',
+    sortable: true,
+    toggle: true,
     width: 180
   },
   
