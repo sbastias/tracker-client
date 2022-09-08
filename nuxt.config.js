@@ -57,7 +57,7 @@ export default {
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
-            origin: ['http://localhost:3000','https://management.thebullittgroup.com']
+            origin: ['http://localhost:3000','https://starla.thebullittgroup.com']
           }
         },
         path: '/ws/'    
