@@ -4,11 +4,14 @@
     <header>
       <div>
         <Logo />
-        <h1>Placement Management</h1>
+        <h1>Starla</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
       <nav>
         <ul>
+          <!--n-link custom to="/tracker" v-slot="{navigate}">
+            <li @click="navigate">Tracker</li>
+          </n-link-->
           <n-link custom to="/tracker" v-slot="{navigate}">
             <li @click="navigate">Tracker</li>
           </n-link>
