@@ -4,7 +4,7 @@
     <header>
       <div>
         <Logo />
-        <h1>Starla</h1>
+        <h1>STARLA</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
       <nav>
