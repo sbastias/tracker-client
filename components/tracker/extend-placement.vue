@@ -184,7 +184,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~/assets/scss/forms.scss';
 .form {
   margin-top: 20px;
