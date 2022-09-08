@@ -23,7 +23,7 @@
           From
           <select v-model="params.range.startOrEndFrom">
             <option value="AVTRRT__Start_Date__c >=">Start Date</option>
-            <option value="AVTRRT__End_Date__c >=">End Date from</option>
+            <option value="AVTRRT__End_Date__c >=">End Date</option>
           </select> <Datepicker class="inline" v-model="params.range.fromDate" name="from-date" format="yyyy-MM-dd" :use-utc="true" />
           to
           <select v-model="params.range.startOrEndTo">
@@ -55,7 +55,9 @@
       <!--div v-if="params.filters.length">{{params.filters.find(el => el.label == 'Supplier')}}</div-->
 
       <section id="search-bar" v-if="!!placements">
-        <input type="text" v-model="textSearch" />
+        <div class="search-field-container">
+          <input type="text" v-model="textSearch" class="search-field" />
+        </div>
       </section>
 
       <div id="status-bar-container">
@@ -649,6 +651,30 @@ button {
   &:hover {
     color: black;
   }
+}
+
+.search-field-container {
+  width: 300px;
+  .search-field {
+    padding-right: 25px;
+    width: 100%;
+  }
+  position: relative;
+  &:after{
+    display: block;
+    content: '';
+    height: 80%;
+    width: 23px;
+    background-image: url('data:image/svg+xml;utf8,<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.64 198.77"><path class="cls-1" d="M153.88,76.94C153.88,34.45,119.43,0,76.94,0S0,34.45,0,76.94s34.45,76.94,76.94,76.94,76.94-34.45,76.94-76.94Zm-76.94,52.19c-28.83,0-52.19-23.37-52.19-52.19S48.12,24.75,76.94,24.75s52.19,23.37,52.19,52.19-23.37,52.19-52.19,52.19Z"/><rect class="cls-1" x="148.01" y="129.33" width="33.76" height="67.36" transform="translate(-66.97 164.34) rotate(-45)"/></svg>');
+    background-repeat: no-repeat;
+    background-size: auto 80%;
+    background-position: calc(100% - 5px);
+    position: absolute;
+    right: 2px; top: 10%;
+    opacity: 0.5;
+  }
+
+  
 }
 
 </style>
