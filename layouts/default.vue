@@ -108,6 +108,7 @@ header {
     background: #eee;
     width: 100%;
     padding: 0 20px;
+    font-size: .9rem;
     ul {
       display: block;
       list-style: none;
@@ -115,7 +116,7 @@ header {
       padding: 0;
       li{
         display: inline-block;
-        padding: 10px 20px;
+        padding: 8px 20px;
         background: rgba(#900000, 0);
         transition: .2s;
         &:hover {

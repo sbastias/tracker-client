@@ -472,7 +472,8 @@ export default {
   margin: auto;
 
   h1 {
-    margin: 20px 0;
+    margin: 10px 0;
+    font-size: 1.3rem;
   }
 }
 
@@ -508,6 +509,7 @@ button {
   flex-direction: row;
   
   background: #eee;
+  padding-bottom: 5px;
 
   
   > div {
@@ -519,18 +521,23 @@ button {
       margin-bottom: 5px;
     }
     a{
-      font-size: .6rem;
+      font-size: .5rem;
       color: blue;
       display: inline-block;
       margin-bottom: 5px;
     }
     label {
-      font-size: .6rem;
+      font-size: .5rem;
       display: block;
       white-space: nowrap;
+      margin-bottom: 2px;
+    }
+    input[type=checkbox] {
+      height: 8px;
+      width: 8px;
     }
     .scrollable-filters {
-      height: 100px;
+      height: 60px;
       width: 100%;
       overflow-y: hidden;
       overflow-x:hidden;
@@ -545,7 +552,7 @@ button {
 
 
 #status-bar-container {
-  height: 40px;
+  height: 20px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -553,12 +560,11 @@ button {
   width: 100%;
   #status-bar {
     width: 100%;
-    height: 100%;
     display: grid;
     grid-template-columns: max-content auto;
     grid-template-rows: 40px;
     align-items: center;
-
+    font-size: .8rem;
     > :last-child {
       text-align: right;
     }
@@ -674,7 +680,7 @@ button {
     opacity: 0.5;
   }
 
-  
+
 }
 
 </style>

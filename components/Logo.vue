@@ -442,6 +442,11 @@ export default {
 </script>
 <style lang="scss">
 #logo{
+
+  svg {
+    width: 100%;
+    display: block;
+  }
   
   max-height: none;
   max-width: none;
@@ -450,10 +455,17 @@ export default {
     display: inline-grid;
     grid-template-columns: 1.618fr .4fr;
     grid-gap: 3%;
-    height: 40px;
-    width: 327px;
+    height: 30px;
+    width: 250px;
     vertical-align: middle;
     margin-right: 10px;
+    #mini-logos{
+      > div {width: 100%; display: block;}
+      display: flex;
+      flex-flow: row wrap;
+      align-content: space-between;
+      height: 100%;
+    }
   }
 
   &.vertical {
@@ -473,7 +485,7 @@ export default {
       fill: #babcbe;
     }
     width: 100%;
-    margin-bottom: 3%;
+    
   }
   #ysg-logo {
     .cls-1 {
