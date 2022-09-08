@@ -12,7 +12,7 @@ export default [
     width: 45
   },
   {
-    label: 'Candidate Name?',
+    label: 'Candidate Name',
     width: 160
   },
   {

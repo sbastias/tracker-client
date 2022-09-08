@@ -25,6 +25,7 @@
 <script>
 import ExtendPlacement from '~/components/tracker/extend-placement'
 import UpdatePlacement from '~/components/tracker/update-placement'
+import AddPlacement from '~/components/tracker/add-placement'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement'],
@@ -36,19 +37,20 @@ export default {
   components: {
     ExtendPlacement,
     UpdatePlacement,
+    AddPlacement,
     CancelX
   },
   methods: {
     cancelOverlay () {
       if (this.edited && confirm('You have unsaved changes, are you sure you want to cancel?') || !this.edited) {
       
-        console.log('Cancelling overlay')
+        this.$bus.log('Cancelling overlay')
         this.$emit('cancel-overlay')    
         
       }
     },
     flagEdited (bool) {
-      console.log('Editing detected... changed from original?', bool)
+      this.$bus.log('Editing detected... changed from original?', bool)
       this.edited = bool
     }
   }
@@ -74,6 +76,7 @@ export default {
     height: 200%;
     width: 200%;
     background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(3px);
   }
 
   .overlay-content-container {

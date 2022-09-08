@@ -2,28 +2,23 @@
   <div>
 
     <div class="overlay-heading">
-      <h3>Extending Placement</h3>
+      <h3>Adding New Order</h3>
     </div>
 
-    <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
-    <h5>{{placement.AVTRRT__Employer__r.Name}}</h5>
-    <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
-    <h5>${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
-
-<!--
-
-
-
-
-
-
-
-Coverage
-WFR Number
-
--->
-
     <div class="form">
+      <div class="form-row">
+        <div class="form-cell">
+          <label>Job Title</label>
+          <input type="text" v-model="placement.AVTRRT__Job_Title__c">
+        </div>
+        <div class="form-cell">
+          <label>Client</label>
+          <select v-model="placement.AVTRRT__Employer__c">
+            <option v-for="(client, idx) in $bus.accounts" :key="`client-${idx}`" :value="client.Id">{{client.Name}}</option>
+          </select>
+        </div>
+      </div>
+    
 
       <div class="form-row">
 
@@ -40,6 +35,13 @@ WFR Number
         <div class="form-cell">
           <label>PO #</label>
           <input type="text" v-model="placement.PO__c" />
+        </div>
+
+        <div class="form-cell">
+          <label>Recruiter</label>
+          <select v-model="placement.AVTRRT__Recruiter__c">
+            <option v-for="(user, idx) in $bus.users" :key="`user-${idx}`" :value="user.Id">{{user.FirstName}} {{user.LastName}}</option>
+          </select>
         </div>
 
       </div>
@@ -109,7 +111,7 @@ WFR Number
       </div>
 
       <div class="form-controls">
-        <button @click="createExtension" :disabled="!edited">Create Extension</button>
+        <button @click="createPlacement" :disabled="!edited">Create New Order</button>
       </div>
 
     </div>
@@ -117,16 +119,32 @@ WFR Number
 </template>
 
 <script>
+let emptyPlacement = {
+  AVTRRT__Job_Title__c: '',
+  AVTRRT__Recruiter__c: '',
+  AVTRRT__Employer__c: '',
+  AVTRRT__Start_Date__c: '',
+  AVTRRT__End_Date__c: '',
+  PO__c: '',
+  Department__c: '',
+  Crew__c: '',
+  Shift__c: '',
+  Rotation_Communication__c: '',
+  Client_Location__c: '',
+  Flight__c: '',
+  Coverage__c: '',
+  Additional_Notes__c: 'New Order'
+}
+
 export default {
-  props: ['original-placement'],
+  props: [],
   data () {
     return {
-      placement: {},
+      placement: Object.assign({}, emptyPlacement),
       edited: false
     }
   },
   created () {
-    this.placement = Object.assign({}, this.originalPlacement)
     this.placement.Rotation_Communication__c = ''
     this.placement.Deployment_Forms__c = ''
     this.$nextTick(() => this.edited = false)
@@ -135,30 +153,17 @@ export default {
     this.$bus.log(this.$bus.metadata)
   },
   methods: {
-    async createExtension () {
+    async createPlacement () {
       //clean up placement extension
 
-      let ext = Object.assign({}, JSON.parse(JSON.stringify(this.placement)))
-      
-      ext.AVTRRT__Contact_Candidate__c = ext.AVTRRT__Contact_Candidate__r.Id
-      ext.AVTRRT__Employer__c = ext.AVTRRT__Employer__r.Id
+      let add = Object.assign({}, JSON.parse(JSON.stringify(this.placement)))
 
-      delete ext.AVTRRT__Contact_Candidate__r
-      delete ext.AVTRRT__Employer__r
-      delete ext.Compensation__r
-      //delete ext.Id //deleted server-side
-      delete ext.Name
-      delete ext.CreatedDate
-      delete ext.LastModifiedDate
+      this.$bus.log(JSON.stringify(add, null, '\t'))
 
-      ext.AVTRRT__Extension__c = true
-
-      this.$bus.log(JSON.stringify(ext, null, '\t'))
-
-      await this.$axios.post(`/tracker/extend`, ext)
+      await this.$axios.post(`/tracker/create`, add)
       .then(({data}) => {
-        this.$bus.$emit('toaster',{status: 'success', message: 'Placement Extension Created!'})
-        this.$parent.$emit('insert-row', data)
+        this.$bus.$emit('toaster',{status: 'success', message: 'New Placement Created!'})
+        this.$parent.$emit('prepend-row', data)
         this.edited = false
       })
       .catch(e => {
@@ -174,7 +179,7 @@ export default {
       deep: true,
       handler (val) { 
         this.$bus.log('edited')
-        this.edited = JSON.stringify(val) != JSON.stringify(this.originalPlacement)
+        this.edited = JSON.stringify(val) != JSON.stringify(emptyPlacement)
       }
     },
     edited (val) {
@@ -188,11 +193,11 @@ export default {
 @import '~/assets/scss/forms.scss';
 .form {
   margin-top: 20px;
-
-  .form-row:nth-child(1){grid-template-columns: 1fr 1fr 3fr;}
-  .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
+  .form-row:nth-child(1){grid-template-columns: 1fr 1fr;}
+  .form-row:nth-child(2){grid-template-columns: 1fr 1fr 2fr 2fr;}
   .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
-  .form-row:nth-child(4){grid-template-columns: 1fr 1fr;}
+  .form-row:nth-child(4){grid-template-columns: 3fr 1fr 1fr;}
+  .form-row:nth-child(5){grid-template-columns: 1fr 1fr;}
 }
 </style>
 

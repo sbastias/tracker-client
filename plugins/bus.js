@@ -11,7 +11,15 @@ export default ({store}) => {
     },
     data () {
       return {
-        metadata: false
+        metadata: false,
+        accounts: false,
+        users: false
+      }
+    },
+    methods: {
+      log () {
+        //return false
+        console.log(JSON.parse(JSON.stringify(arguments)))
       }
     }
   })

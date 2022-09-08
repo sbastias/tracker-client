@@ -8,6 +8,7 @@
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
+      @prepend-row="doRowPrepend"
     />
 
     <div class="main-content">
@@ -17,7 +18,7 @@
       <div v-if="Object.keys(emitErrors).length">{{emitErrors}}</div>
 
       <client-only>
-      <section id="date-range">
+      <section id="date-range-new-order">
         <div>
           From
           <select v-model="params.range.startOrEndFrom">
@@ -29,7 +30,10 @@
             <option value="AVTRRT__Start_Date__c <=">Start Date</option>
             <option value="AVTRRT__End_Date__c <=">End Date</option>
           </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
-          <button @click="loadPlacements">Load Placements</button>
+          <button @click="loadData">Load Placements</button>
+        </div>
+        <div>
+          <button v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
         </div>
       </section>
       </client-only>
@@ -56,7 +60,7 @@
 
       <div id="status-bar-container">
 
-        <div id="loading-container" v-if="loadingPlacements"><Loader message="Loading Placements..." /></div>
+        <div id="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
 
         <div id="status-bar" v-else-if="!!placements.length">
           <div>Found {{placements.length}} placements</div>
@@ -66,7 +70,7 @@
         </div>
       </div>
 
-      <section id="placements" :class="{disabled: loadingPlacements}">
+      <section id="placements" :class="{disabled: loadingData}">
 
         <table id="placements-table" v-show="placements.length" cellspacing="0">
           <thead>
@@ -113,12 +117,12 @@ class rangeObj  {
   constructor () {
 
     this.fromDate = ((date) => {
-      date.setDate(date.getDate() - 30)
+      date.setDate(date.getDate() - 7)
       return date
     })(new Date())
 
     this.toDate = ((date) => {
-      date.setDate(date.getDate() + 30)
+      date.setDate(date.getDate() + 7)
       return date
     })(new Date())
 
@@ -178,7 +182,7 @@ export default {
       moment,
       overlayMode: false,
       overlayPlacement: false,
-      loadingPlacements: false,
+      loadingData: false,
       sortedBy: false,
       ascending: true,
       emitErrors: {}
@@ -283,38 +287,40 @@ export default {
           else return a > b ? 1 : -1
         })
 
-        console.log(uniqueFilterValues)
+        //console.log(uniqueFilterValues)
 
         for (let val of uniqueFilterValues) this.$set(filter.values, val, true)
       }
 
-      console.log(this.params.filters, '<< generated filter values')
+      this.$bus.log(this.params.filters, '<< generated filter values')
       
 
     },
-    async loadPlacements () {
-      this.loadingPlacements = true
+    async loadData () {
+      this.loadingData = true
       //console.log(this.$axios.defaults.baseURL)
       //console.log(this.$axios.defaults.headers.common['Authorization'])
-      console.log('loading placements...')
+      this.$bus.log('loading data...')
       await this.$axios.post(`/tracker/load`, this.params)
       .then(({data}) => {
         //console.log(data)
         this.unfilteredPlacements = data.placements
+        this.$bus.accounts = data.accounts
+        this.$bus.users = data.users
         this.$bus.metadata = data.metadata
         try {
           this.generateFilters()
         } catch (e) {
-          console.log(e)
+          throw e
         }
       })
       .catch(e => {
-        let {message, stack} = e.response.data || e
+        let {message, stack} = e.response && e.response.data || e
         this.$bus.$emit('toaster', {status: 'error', message})
         console.log(stack || 'NO STACK')
       })
       .finally(() => {
-        this.loadingPlacements = false
+        this.loadingData = false
         this.$nextTick(() => this.resizeStuff())
       })
       
@@ -322,7 +328,13 @@ export default {
     sortBy ($ev) {
       let sortField = $ev.target.dataset.sort || false
       if (!sortField) return
-      if (this.sortedBy == sortField) this.ascending = !this.ascending
+      if (this.sortedBy == sortField) {
+        if (this.ascending) this.ascending = false
+        else {
+          this.sortedBy = false
+          this.ascending = true
+        }
+      }
       else this.sortedBy = sortField
     },
     updateRow (update) {
@@ -335,7 +347,7 @@ export default {
     async doRowUpdate (update) {
       await this.socket.emitP('updatePlacement', update)
       .then((resp) => {
-        //console.log('Update', resp, 'WTF?!')
+        this.$bus.log('Update', resp, 'WTF?!')
         //this.updateRow(resp)
         //this.unfilteredPlacements.splice(currentIdx, 1, resp)
       })
@@ -348,7 +360,7 @@ export default {
 
       let originalIdx = this.unfilteredPlacements.indexOf(this.unfilteredPlacements.find(el => el.Id == insert.originalId)) + 1
 
-      console.log(originalIdx, '<< insertion point')
+      this.$bus.log(originalIdx, '<< insertion point')
 
       delete insert.originalId
 
@@ -359,7 +371,25 @@ export default {
     async doRowInsert (insert) {
       await this.socket.emitP('insertPlacement', insert)
       .then((resp) => {
-        console.log('Update', resp, 'WTF?!')
+        this.$bus.log('Extend', resp, 'WTF?!')
+        //this.updateRow(resp)
+        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
+      })
+      .catch(e => {
+        console.log(e.stack)
+      })
+    },
+    prependRow (prepend) {
+
+
+      this.unfilteredPlacements.unshift(prepend)
+      this.generateFilters()
+      
+    },
+    async doRowPrepend (prepend) {
+      await this.socket.emitP('prependPlacement', prepend)
+      .then((resp) => {
+        this.$bus.log('Create', resp, 'WTF?!')
         //this.updateRow(resp)
         //this.unfilteredPlacements.splice(currentIdx, 1, resp)
       })
@@ -374,24 +404,31 @@ export default {
         path: '/ws/'
       })
       this.socket.on('updatePlacement', update => {
-        console.log('Received emission!', update)
+        this.$bus.log('Received UPDATE emission!', update)
         this.updateRow(update)
       })
       this.socket.on('insertPlacement', insert => {
-        console.log('Received emission!', insert)
+        this.$bus.log('Received EXTEND emission!', insert)
         this.insertRow(insert)
+      })
+      this.socket.on('prependPlacement', prepend => {
+        this.$bus.log('Received ADD emission!', prepend)
+        this.prependRow(prepend)
       })
     },
     activatePlacement (placement) {
       if (this.activatedPlacement == placement) return
-      console.log('activating', placement)
+      this.$bus.log('activating', placement)
       this.activatedPlacement = placement
     },
     deactivatePlacement () {
-      console.log('deactivating')
+      this.$bus.log('deactivating')
       this.activatedPlacement = false
     },
-
+    addPlacement () {
+      this.overlayPlacement = false
+      this.overlayMode = 'add-placement'  
+    },
     extendPlacement (extendingPlacement) {
       this.overlayPlacement = extendingPlacement
       this.overlayMode = 'extend-placement'
@@ -408,7 +445,7 @@ export default {
       if (!process.client) return
 
       if (!this.placements.length) return setTimeout(() => this.resizeStuff(), 500)
-      console.log('Resizing UI')
+      this.$bus.log('Resizing UI')
       let placementsSection = document.querySelector('#placements')
 
       //console.log(placementsSection)
@@ -437,7 +474,27 @@ export default {
   }
 }
 
-#date-range, #filters, #search-bar {
+button {
+  border: none;
+  border-radius: 5px;
+  background: #f99d1c;
+  height: 100%;
+  padding: 3px 10px;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background: #db8000;
+  }
+}
+
+#date-range-new-order {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#date-range-new-order, #filters, #search-bar {
   font-size: .8rem;
   padding: 10px;
   background: #eee;

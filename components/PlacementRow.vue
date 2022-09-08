@@ -16,13 +16,14 @@
       </td>
 
       <td class="email">
-        <a class="icon" :href="`mailto:${placement.AVTRRT__Contact_Candidate__r.Email}`" target="_blank" :title="placement.AVTRRT__Contact_Candidate__r.Email">
+        <a class="icon" :href="`mailto:${placement.AVTRRT__Contact_Candidate__r.Email}`" target="_blank" :title="placement.AVTRRT__Contact_Candidate__r.Email" v-if="placement.AVTRRT__Contact_Candidate__r.Email">
           <Icon name="email" />
         </a>
       </td>
 
       <td class="name ellipses">
-        <a :href="sfLink(placement.AVTRRT__Contact_Candidate__r.Id, 'Contact')" target="_blank">{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</a>
+        <a :href="sfLink(placement.AVTRRT__Contact_Candidate__r.Id, 'Contact')" target="_blank" v-if="placement.AVTRRT__Contact_Candidate__r.FirstName != 'Open'">{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</a>
+        <span style="font-style: italic" v-else>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</span>
       </td>
       
       <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">

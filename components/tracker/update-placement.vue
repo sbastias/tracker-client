@@ -129,7 +129,7 @@ export default {
     this.placement = Object.assign({}, this.originalPlacement)
   },
   mounted () {
-    console.log(this.$bus.metadata)
+    this.$bus.log(this.$bus.metadata)
   },
   methods: {
     updateStartDate (val) {
@@ -153,7 +153,7 @@ export default {
       delete update.CreatedDate
       delete update.LastModifiedDate
 
-      console.log(JSON.stringify(update, null, '\t'))
+      this.$bus.log(JSON.stringify(update, null, '\t'))
 
       await this.$axios.post(`/tracker/update`, update)
       .then(({data}) => {
@@ -174,7 +174,7 @@ export default {
     placement: {
       deep: true,
       handler (val) { 
-        console.log('edited')
+        this.$bus.log('edited')
         this.edited = JSON.stringify(val) != JSON.stringify(this.originalPlacement)
       }
     },
