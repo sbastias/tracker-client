@@ -152,7 +152,7 @@ a {
   padding: 0 20px;
 
   
-  > h1 {
+  > div > h1 {
     margin: 10px 0;
     font-size: 1.3rem;
   }

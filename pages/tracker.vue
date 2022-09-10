@@ -11,7 +11,12 @@
       @prepend-row="doRowPrepend"
     />
 
-    <h1>Tracker</h1>
+    <div id="tracker-header">
+      <h1>Tracker</h1>
+      <div>
+          <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
+        </div>
+    </div>
 
     <div class="main-content">
 
@@ -32,9 +37,8 @@
           </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
           <button @click="loadData">Load Placements</button>
         </div>
-        <div>
-          <button v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
-        </div>
+        
+        <div v-show="!!placements">Found {{placements.length}} placements</div>
       </section>
       </client-only>
 
@@ -46,19 +50,15 @@
         <div class="search-field-container">
           <input type="text" v-model="textSearch" class="search-field" />
         </div>
+        <div id="toggleable-columns" style="padding-left: 20px;">
+          <b style="font-size: .6rem;">Show</b>
+          <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
+        </div>
       </section>
 
-      <div id="status-bar-container">
-
-        <div id="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
-
-        <div id="status-bar" v-else-if="!!placements.length">
-          <div>Found {{placements.length}} placements</div>
-          <div>
-            <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
-          </div>
-        </div>
-      </div>
+      
+      <div id="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
+      
 
       <section id="placements" ref="placements" :class="{disabled: loadingData}">
 
@@ -478,8 +478,8 @@ button {
   border: none;
   border-radius: 5px;
   background: #f99d1c;
-  height: 100%;
-  padding: 3px 10px;
+  height: auto;
+  padding: 4px 10px;
   color: white;
   cursor: pointer;
   &:hover {
@@ -492,6 +492,39 @@ button {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  input[type=text] {
+    width: 100px;
+  }
+}
+
+#search-bar {
+  display: grid;
+  grid-template-columns: auto max-content;
+
+  .search-field-container {
+    width: 100%;
+    max-width: 300px;
+    .search-field {
+      padding-right: 25px;
+      width: 100%;
+    }
+    position: relative;
+    &:after{
+      display: block;
+      content: '';
+      height: 80%;
+      width: 23px;
+      background-image: url('data:image/svg+xml;utf8,<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.64 198.77"><path class="cls-1" d="M153.88,76.94C153.88,34.45,119.43,0,76.94,0S0,34.45,0,76.94s34.45,76.94,76.94,76.94,76.94-34.45,76.94-76.94Zm-76.94,52.19c-28.83,0-52.19-23.37-52.19-52.19S48.12,24.75,76.94,24.75s52.19,23.37,52.19,52.19-23.37,52.19-52.19,52.19Z"/><rect class="cls-1" x="148.01" y="129.33" width="33.76" height="67.36" transform="translate(-66.97 164.34) rotate(-45)"/></svg>');
+      background-repeat: no-repeat;
+      background-size: auto 80%;
+      background-position: calc(100% - 5px);
+      position: absolute;
+      right: 2px; top: 10%;
+      opacity: 0.5;
+    }
+
+
+  }
 }
 
 #date-range-new-order, #filters, #search-bar {
@@ -611,28 +644,12 @@ button {
   }
 }
 
-.search-field-container {
-  width: 300px;
-  .search-field {
-    padding-right: 25px;
-    width: 100%;
-  }
-  position: relative;
-  &:after{
-    display: block;
-    content: '';
-    height: 80%;
-    width: 23px;
-    background-image: url('data:image/svg+xml;utf8,<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200.64 198.77"><path class="cls-1" d="M153.88,76.94C153.88,34.45,119.43,0,76.94,0S0,34.45,0,76.94s34.45,76.94,76.94,76.94,76.94-34.45,76.94-76.94Zm-76.94,52.19c-28.83,0-52.19-23.37-52.19-52.19S48.12,24.75,76.94,24.75s52.19,23.37,52.19,52.19-23.37,52.19-52.19,52.19Z"/><rect class="cls-1" x="148.01" y="129.33" width="33.76" height="67.36" transform="translate(-66.97 164.34) rotate(-45)"/></svg>');
-    background-repeat: no-repeat;
-    background-size: auto 80%;
-    background-position: calc(100% - 5px);
-    position: absolute;
-    right: 2px; top: 10%;
-    opacity: 0.5;
-  }
 
 
+#tracker-header{
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto max-content;
+  align-items: center;
 }
-
 </style>
