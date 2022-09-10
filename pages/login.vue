@@ -16,8 +16,12 @@
     </div>
     <div class="form-row">
       <div class="form-cell">
-        <input type="password" v-model="loginData.password" :class="{filled: !!loginData.password}">
+        <input type="password" v-model="loginData.password" :class="{filled: !!loginData.password}" v-if="masked">
+        <input type="text" v-model="loginData.password" :class="{filled: !!loginData.password}" v-else>
         <label for="email">Salesforce Password</label>
+        <div style="text-align: right; font-size: .8rem;">
+          <a @click="masked = !masked">{{ masked && 'Show' || 'Hide'}} Password</a>
+        </div>
       </div>
     </div>
     <div class="form-row">
@@ -44,7 +48,8 @@ export default {
         password: ''
       },
       loggingIn: false,
-      expired: false
+      expired: false,
+      masked: true
     }
   },
   created () {

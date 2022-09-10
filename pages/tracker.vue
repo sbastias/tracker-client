@@ -241,7 +241,11 @@ export default {
 
         if (this.sortedBy) {
           filteredPlacements.sort((a,b) => {
-            if (a[this.sortedBy] === b[this.sortedBy]) return 0
+
+            let a1 = a.AVTRRT__Contact_Candidate__r.FirstName[0]
+            let b1 = b.AVTRRT__Contact_Candidate__r.FirstName[0]
+
+            if (a[this.sortedBy] === b[this.sortedBy]) return  a1 - b1
             else if (a[this.sortedBy] === null) return this.ascending ? -1 : 1
             else if (b[this.sortedBy] === null) return this.ascending ? 1 : -1
             else if (a[this.sortedBy] > b[this.sortedBy]) return this.ascending ? 1 : -1
