@@ -25,5 +25,6 @@ export default {
 .max-min {
   display: inline-block;
   margin-left: 5px;
+  cursor: pointer;
 }
 </style>
