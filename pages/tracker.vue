@@ -11,9 +11,9 @@
       @prepend-row="doRowPrepend"
     />
 
-    <div class="main-content">
+    <h1>Tracker</h1>
 
-      <h1>Tracker</h1>
+    <div class="main-content">
 
       <div v-if="Object.keys(emitErrors).length">{{emitErrors}}</div>
 
@@ -468,17 +468,15 @@ export default {
 
 <style lang="scss">
 .container {
-  
+  > h1 {
+    margin: 10px 0;
+    font-size: 1.3rem;
+  }
 }
 
 .main-content {
   //max-width: 1900px;
   margin: auto;
-
-  h1 {
-    margin: 10px 0;
-    font-size: 1.3rem;
-  }
 }
 
 button {

@@ -69,10 +69,12 @@ export default {
   computed: {
     rotationCommGroup () {
       let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
+      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
       if (/confirmation received/.test(lcRotComm)) return 'confirmed'
       else if (/cancel|cancelled|missed/.test(lcRotComm)) return 'cancelled'
       else if (/declined/.test(lcRotComm)) return 'declined'
       else if (/sent/.test(lcRotComm)) return 'sent'
+      else if (openOrder) return 'open'
       else return 'unknown'
     },
     activeFields () {
@@ -149,6 +151,13 @@ export default {
     background-color: rgba(orange, 0.2);
     &:hover {
       background-color: rgba(orange, 0.4);
+    }
+  } 
+  &.open {
+    &:before {background-color: lightyellow;}
+    background-color: rgba(yellow, 0.2);
+    &:hover {
+      background-color: rgba(yellow, 0.4);
     }
   } 
   &.declined {

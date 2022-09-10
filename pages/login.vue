@@ -6,7 +6,7 @@
   <div id="login-container">
     <div v-if="expired" expired>Session expired. Please login again.</div>
   <Logo orientation="vertical" />
-  <h1 id="title">Placement Management</h1>
+  <h1 id="title">Starla</h1>
   <form>
     <div class="form-row">
       <div class="form-cell">
@@ -14,14 +14,12 @@
         <label for="email">Salesforce User</label>
       </div>
     </div>
-    <div class="form-row">
+    <div class="form-row" style="margin-bottom: 15px;">
       <div class="form-cell">
         <input type="password" v-model="loginData.password" :class="{filled: !!loginData.password}" v-if="masked">
         <input type="text" v-model="loginData.password" :class="{filled: !!loginData.password}" v-else>
         <label for="email">Salesforce Password</label>
-        <div style="text-align: right; font-size: .8rem;">
-          <a @click="masked = !masked">{{ masked && 'Show' || 'Hide'}} Password</a>
-        </div>
+        <a id="show-hide" @click="masked = !masked">{{ masked && 'Show' || 'Hide'}} Password</a>
       </div>
     </div>
     <div class="form-row">
@@ -174,5 +172,12 @@ export default {
   text-align: center;
   color: #cc0000;
   margin-bottom: 15px;
+}
+
+#show-hide {
+  position: absolute;
+  bottom: -15px;
+  right: 0;
+  font-size: .8rem;
 }
 </style>

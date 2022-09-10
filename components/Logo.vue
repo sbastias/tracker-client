@@ -470,11 +470,13 @@ export default {
 
   &.vertical {
     #mini-logos{
+      
       display: grid;
       grid-gap: 10%;
       grid-template-columns: 1.1fr 1fr;
       width: 90%;
-      margin: auto;
+      margin: 10px auto 0;
+      
     }
   }
   #tbg-logo {

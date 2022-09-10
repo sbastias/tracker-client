@@ -12,6 +12,9 @@
           <!--n-link custom to="/tracker" v-slot="{navigate}">
             <li @click="navigate">Tracker</li>
           </n-link-->
+          <n-link custom to="/" v-slot="{navigate}">
+            <li @click="navigate">Home</li>
+          </n-link>
           <n-link custom to="/tracker" v-slot="{navigate}">
             <li @click="navigate">Tracker</li>
           </n-link>
@@ -106,7 +109,6 @@ header {
   }
 
   nav {
-    
     grid-column: 1/3;
     background: #eee;
     width: 100%;
@@ -117,7 +119,9 @@ header {
       list-style: none;
       margin: 0;
       padding: 0;
+      font-size: 0;
       li{
+        font-size: .9rem;
         display: inline-block;
         padding: 8px 20px;
         background: rgba(#900000, 0);
