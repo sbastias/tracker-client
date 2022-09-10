@@ -6,8 +6,8 @@ export default {
   */
   target: 'static',
   head: {
-    title: 'STARLA | The Bullitt Group',
-    titleTemplate: '%s | STARLA | The Bullitt Group',
+    title: 'Starla | The Bullitt Group',
+    titleTemplate: '%s | Starla | The Bullitt Group',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

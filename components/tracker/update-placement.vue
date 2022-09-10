@@ -159,7 +159,7 @@ export default {
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
         this.$parent.$emit('update-row', data)
-        //this.$bus.$emit('refetch')
+        this.$parent.$emit('cancel-overlay')
         this.edited = false
       })
       .catch(e => {

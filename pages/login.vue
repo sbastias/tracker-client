@@ -98,7 +98,7 @@ export default {
   #title{
     text-align: center;
     font-size: 1.5rem;
-    font-weight: bold;
+    font-weight: 600;
     color: #811818;
     margin-top: 20px;
   }

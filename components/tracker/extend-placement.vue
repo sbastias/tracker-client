@@ -159,6 +159,7 @@ export default {
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Extension Created!'})
         this.$parent.$emit('insert-row', data)
+        this.$parent.$emit('cancel-overlay')
         this.edited = false
       })
       .catch(e => {

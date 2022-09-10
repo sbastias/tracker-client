@@ -17,6 +17,13 @@
             <option v-for="(client, idx) in $bus.accounts" :key="`client-${idx}`" :value="client.Id">{{client.Name}}</option>
           </select>
         </div>
+        <div class="form-cell">
+          <label>Supplier</label>
+          <select v-model="placement.Supplier__c">
+            <option value="YORK">YORK</option>
+            <option value="QAJAQ">QAJAQ</option>
+          </select>
+        </div>
       </div>
     
 
@@ -32,10 +39,6 @@
           <Datepicker v-model="placement.AVTRRT__End_Date__c" format="yyyy-MM-dd" :use-utc="true" />
         </div>
 
-        <div class="form-cell">
-          <label>PO #</label>
-          <input type="text" v-model="placement.PO__c" />
-        </div>
 
         <div class="form-cell">
           <label>Recruiter</label>
@@ -44,9 +47,21 @@
           </select>
         </div>
 
+        <div class="form-cell">
+          <label>Type</label>
+          <select v-model="placement.AVTRRT__Contract__c">
+            <option v-for="(contract, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'AVTRRT__Contract__c').valueSet.valueSetDefinition.value" :key="`contract-option-${idx}`" :value="contract.label">{{contract.fullName}}</option>
+          </select>
+        </div>
+
       </div>
 
       <div class="form-row">
+
+        <div class="form-cell">
+          <label>PO #</label>
+          <input type="text" v-model="placement.PO__c" />
+        </div>
 
         <div class="form-cell">
           <label>Department</label>
@@ -164,6 +179,7 @@ export default {
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'New Placement Created!'})
         this.$parent.$emit('prepend-row', data)
+        this.$parent.$emit('cancel-overlay')
         this.edited = false
       })
       .catch(e => {
@@ -193,9 +209,9 @@ export default {
 @import '~/assets/scss/forms.scss';
 .form {
   margin-top: 20px;
-  .form-row:nth-child(1){grid-template-columns: 1fr 1fr;}
+  .form-row:nth-child(1){grid-template-columns: 1fr 1fr .5fr;}
   .form-row:nth-child(2){grid-template-columns: 1fr 1fr 2fr 2fr;}
-  .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
+  .form-row:nth-child(3){grid-template-columns: 2fr 2fr 1fr 1fr;}
   .form-row:nth-child(4){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(5){grid-template-columns: 1fr 1fr;}
 }

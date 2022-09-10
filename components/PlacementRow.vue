@@ -2,11 +2,18 @@
   <tr class="placement-row" @click="activate" :class="rotationCommGroup" :active="active">
 
       <td class="controls">
-        <PlacementControls 
-          ref="placement-controls"
-          v-if="active"
-          :placement="placement"
-        />
+        <div id="active-controls" v-if="active" :style="{width, transform}">
+          <PlacementControls 
+            ref="placement-controls"
+            v-if="type == 'placement'"
+            :placement="placement"
+          />
+          <OpenOrderControls 
+            ref="open-order-controls"
+            v-if="type == 'open-order'"
+            :placement="placement"
+          />
+        </div>
       </td>
 
       <td class="id">
@@ -46,14 +53,16 @@
 import moment from 'moment'
 import Icon from '~/components/ui/Icons'
 import PlacementControls from '~/components/PlacementControls'
+import OpenOrderControls from '~/components/OpenOrderControls'
 //import SalesforceIcon from '~/components/ui/SalesforceIcon'
 
 
 export default {
-  props: ['placement','active','activeColumns'],
+  props: ['placement','active','activeColumns','width','transform'],
   components: {
     Icon,
-    PlacementControls
+    PlacementControls,
+    OpenOrderControls
   },
   data () {
     return {
@@ -64,7 +73,13 @@ export default {
     }
   },
   created () {
-    
+    this.$bus.$on('resize', this.resizeStuff)
+  },
+  beforeDestroy () {
+    this.$bus.$off('resize')
+  },
+  mounted () {
+    this.resizeStuff()
   },
   computed: {
     rotationCommGroup () {
@@ -77,13 +92,19 @@ export default {
       else if (openOrder) return 'open'
       else return 'unknown'
     },
+    type () {
+      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
+
+      return openOrder ? 'open-order' : 'placement'
+    },
     activeFields () {
       return this.activeColumns.map(el => el.field).filter(el => !!el)
     }
   },
   methods: {
-    
-    
+    resizeStuff () {
+      
+    },
     toggle () {
       this.$emit(this.active ? 'deactivate' : 'activate', this.placement)
     },
@@ -295,4 +316,13 @@ export default {
   }
 }
 
+#active-controls {
+  
+  position: absolute;
+  left: 0;
+  height: 70px;
+  bottom: 0;
+  width: 100%;
+
+}
 </style>

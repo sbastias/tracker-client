@@ -38,19 +38,7 @@
       </section>
       </client-only>
 
-      <section id="filters" v-if="!!placements">
-        
-        <div v-for="(filter, idx) in params.filters" :key="`filter-${idx}`">
-          <h5>{{filter.label}}</h5>
-
-          <a @click="filter.deselectAll()" v-if="filter.allSelected()">Deselect All</a>
-          <a @click="filter.selectAll()" v-else>Select All</a>
-          
-          <div class="scrollable-filters">
-            <label v-for="(value, key, idx2) in filter.values" :key="`filter-${idx}-val-${idx2}`"><input type="checkbox" :value="true" v-model="filter.values[key]"> {{key || 'None'}}</label>
-          </div>
-        </div>
-      </section>
+      <TrackerFilters v-if="!!placements" :filters="params.filters" />
 
       <!--div v-if="params.filters.length">{{params.filters.find(el => el.label == 'Supplier')}}</div-->
 
@@ -72,7 +60,7 @@
         </div>
       </div>
 
-      <section id="placements" :class="{disabled: loadingData}">
+      <section id="placements" ref="placements" :class="{disabled: loadingData}">
 
         <table id="placements-table" v-show="placements.length" cellspacing="0">
           <thead>
@@ -90,6 +78,8 @@
               :placement="placement"
               :active="activatedPlacement == placement"
               :active-columns="activeColumns"
+              :width="tableWidth"
+              :transform="offsetLeft"
               @activate="activatePlacement" 
               @deactivate="deactivatePlacement"
               @update="updatePlacement"
@@ -111,8 +101,9 @@ import PlacementControls from '~/components/PlacementControls'
 import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/LoadingGraphic'
 import Sort from '~/components/ui/Sort'
-import trackerColumns from '~/config/tracker-columns'
-import trackerFilters from '~/config/tracker-filters'
+import trackerColumnsConfig from '~/config/tracker/columns'
+import trackerFiltersConfig from '~/config/tracker/filters'
+import TrackerFilters from '~/components/tracker/TrackerFilters'
 import moment from 'moment'
 
 class rangeObj  {
@@ -167,12 +158,13 @@ export default {
     PlacementRow,
     PlacementControls,
     TrackerOverlay,
+    TrackerFilters,
     Loader,
     Sort
   },
   data () {
     return {
-      trackerColumns,
+      trackerColumnsConfig,
       params: {
         range: new rangeObj(),
         filters: []
@@ -187,15 +179,17 @@ export default {
       loadingData: false,
       sortedBy: false,
       ascending: true,
+      tableWidth: '100%',
+      offsetLeft: 0,
       emitErrors: {}
     }
   },
   computed: {
     activeColumns () {
-      return this.trackerColumns.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
+      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
     },
     toggleableColumns () {
-      return this.trackerColumns.filter(el => Object.keys(el).indexOf('toggle') > -1)
+      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
     },
     placements () {
 
@@ -270,16 +264,21 @@ export default {
     //this.resizeStuff()
     if (process.client) {
       
-      document.querySelector('#placements-table').style.width = `${ this.trackerColumns.reduce((acc, el) => acc += el.width, 0) }px`
+      document.querySelector('#placements-table').style.width = `${ this.trackerColumnsConfig.reduce((acc, el) => acc += el.width, 0) }px`
 
       this.createSocket()
+
+      this.$refs.placements.addEventListener('scroll', e => {
+        console.log('scrolling...', this.$refs.placements.scrollLeft)
+        this.offsetLeft = `translateX(${ this.$refs.placements.scrollLeft }px)`
+      })
     }
   },
   methods: {
     
     generateFilters () {
       
-      this.params.filters = trackerFilters.map(el => new filterObj(el.label, el.field))
+      this.params.filters = trackerFiltersConfig.map(el => new filterObj(el.label, el.field))
 
       for(let filter of this.params.filters) {
 
@@ -452,11 +451,12 @@ export default {
 
       if (!this.placements.length) return setTimeout(() => this.resizeStuff(), 500)
       this.$bus.log('Resizing UI')
-      let placementsSection = document.querySelector('#placements')
+      let placementsSection = document.getElementById('placements')
 
       //console.log(placementsSection)
 
       let scrollingHeight = window.innerHeight - placementsSection.getBoundingClientRect().top
+      this.tableWidth = `${placementsSection.getBoundingClientRect().width}px`
       placementsSection.style.height = `${scrollingHeight}px`
     }
   },
@@ -467,12 +467,7 @@ export default {
 </script>
 
 <style lang="scss">
-.container {
-  > h1 {
-    margin: 10px 0;
-    font-size: 1.3rem;
-  }
-}
+
 
 .main-content {
   //max-width: 1900px;
@@ -505,52 +500,7 @@ button {
   background: #eee;
   margin-bottom: 8px;
 }
-#filters {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  
-  background: #eee;
-  padding-bottom: 5px;
 
-  
-  > div {
-    flex: 1;
-    overflow: hidden;
-    margin-right: 5px;
-    h5 {
-      font-size: .6rem;
-      margin-bottom: 5px;
-    }
-    a{
-      font-size: .5rem;
-      color: blue;
-      display: inline-block;
-      margin-bottom: 5px;
-    }
-    label {
-      font-size: .5rem;
-      display: block;
-      white-space: nowrap;
-      margin-bottom: 2px;
-    }
-    input[type=checkbox] {
-      height: 8px;
-      width: 8px;
-    }
-    .scrollable-filters {
-      height: 60px;
-      width: 100%;
-      overflow-y: hidden;
-      overflow-x:hidden;
-      padding-bottom: 10px;
-
-      &:hover {
-        overflow-y: scroll;
-      }
-    }
-  }
-}
 
 
 #status-bar-container {

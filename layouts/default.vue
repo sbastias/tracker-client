@@ -4,7 +4,7 @@
     <header>
       <div>
         <Logo />
-        <h1>STARLA</h1>
+        <h1>Starla</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
       <nav>
@@ -21,7 +21,7 @@
         </ul>
       </nav>
     </header>
-    <nuxt />
+    <nuxt v-cloak />
   </div>
 </template>
 
@@ -63,6 +63,9 @@ export default {
 </script>
 
 <style lang="scss">
+[v-cloak] {
+  display: none;
+}
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -102,9 +105,10 @@ header {
       
       font-weight: 600;
       margin-left: 10px;
-      font-size: 1.3rem;
+      font-size: 1.8rem;
       line-height: 1.3rem;
       vertical-align: middle;
+      color: #811818;
     }
   }
 
@@ -146,5 +150,12 @@ a {
 
 .container {
   padding: 0 20px;
+
+  
+  > h1 {
+    margin: 10px 0;
+    font-size: 1.3rem;
+  }
+
 }
 </style>
