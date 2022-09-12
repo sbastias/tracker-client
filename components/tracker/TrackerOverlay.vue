@@ -23,9 +23,9 @@
 </template>
 
 <script>
-import ExtendPlacement from '~/components/tracker/extend-placement'
-import UpdatePlacement from '~/components/tracker/update-placement'
-import AddPlacement from '~/components/tracker/add-placement'
+import ExtendPlacement from '~/components/tracker/overlays/extend-placement'
+import UpdatePlacement from '~/components/tracker/overlays/update-placement'
+import AddPlacement from '~/components/tracker/overlays/add-placement'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement'],

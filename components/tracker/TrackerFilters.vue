@@ -1,8 +1,6 @@
 <template>
 
-  <section id="filters">
-
-    <h3 id="filters-title"><span>Filters</span> <MaxMin @click="maximized = !maximized" :maximized="maximized" :width="'15px'" /></h3>
+  <section id="filters" v-if="maximized">
 
     <div id="filters-flex" v-if="maximized">
         
@@ -24,7 +22,6 @@
 </template>
 
 <script>
-import MaxMin from '~/components/ui/MaxMin'
 export default {
   props: ['filters'],
   data () {
@@ -33,7 +30,7 @@ export default {
     }
   },
   components: {
-    MaxMin
+    
   },
   methods: {
     
@@ -49,12 +46,6 @@ export default {
 <style lang="scss">
 #filters {
   width: 100%;
-
-  #filters-title{
-    height: 20px;
-    display: flex;
-    align-items: center;
-  }
 
   #filters-flex {
     width: 100%;

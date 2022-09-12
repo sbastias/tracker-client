@@ -2,7 +2,6 @@
   <div id="open-order-controls">
     <button @click.stop="$parent.$emit('assign', placement)">Assign Existing Staffer</button>
     <button @click.stop="$parent.$emit('hire', placement)">Assign NEW Hire</button>
-    <button @click.stop="$parent.$emit('deactivate', placement)">Close</button>
   </div>
 </template>
 

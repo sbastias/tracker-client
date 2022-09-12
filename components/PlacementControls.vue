@@ -2,7 +2,6 @@
   <div id="placement-controls">
     <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
     <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
-    <button @click.stop="$parent.$emit('deactivate', placement)">Close</button>
   </div>
 </template>
 
@@ -41,10 +40,8 @@ export default {
 
 <style lang="scss">
 #placement-controls {
-  position: absolute;
-  left: 0;
-  height: 70px;
-  bottom: 0;
+  position: relative;
+  height: 100%;
   width: 100%;
   text-align: center;
   z-index: 3;

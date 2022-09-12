@@ -1,14 +1,10 @@
 export default [
   {
-    label: '',
-    width: 10
-  },
-  {
-    label: '',
+    label: '',//placement link
     width: 45
   },
   {
-    label: '',
+    label: '',//email
     width: 45
   },
   {

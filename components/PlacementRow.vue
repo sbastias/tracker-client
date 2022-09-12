@@ -1,8 +1,9 @@
 <template>
-  <tr class="placement-row" @click="activate" :class="rotationCommGroup" :active="active">
+<tbody class="placement-container" :class="rotationCommGroup" :active="active" @click="toggleRow">
+  <tr class="placement-row">
 
-      <td class="controls">
-        <div id="active-controls" v-if="active" :style="{width, transform}">
+      <!--td class="controls">
+        <div id="active-controls" v-if="active" :style="{width, left}">
           <PlacementControls 
             ref="placement-controls"
             v-if="type == 'placement'"
@@ -14,7 +15,7 @@
             :placement="placement"
           />
         </div>
-      </td>
+      </td-->
 
       <td class="id">
         <a class="icon" :href="sfLink(placement.Id, 'AVTRRT__Placement__c')" target="_blank" :title="placement.Name">
@@ -42,8 +43,24 @@
       
       
     </tr>
+    <tr class="placement-controls" :style="{width}" v-if="active">
+      <td :colspan="activeFields.length + 3">
+        
+          <PlacementControls 
+            ref="placement-controls"
+            v-if="type == 'placement'"
+            :placement="placement"
+          />
+          <OpenOrderControls 
+            ref="open-order-controls"
+            v-if="type == 'open-order'"
+            :placement="placement"
+          />
+        
+      </td>
+    </tr>
     
-    
+</tbody>
 
 </template>
 
@@ -58,7 +75,7 @@ import OpenOrderControls from '~/components/OpenOrderControls'
 
 
 export default {
-  props: ['placement','active','activeColumns','width','transform'],
+  props: ['placement','active','activeColumns','width','left'],
   components: {
     Icon,
     PlacementControls,
@@ -108,12 +125,8 @@ export default {
     toggle () {
       this.$emit(this.active ? 'deactivate' : 'activate', this.placement)
     },
-    activate () {
-      if (!this.active) this.$emit('activate', this.placement)
-    },
-    deactivate () {
-      console.log('deactivating')
-      this.$emit('deactivate', this.placement)
+    toggleRow () {
+      this.$emit('toggle-row', this.placement)
     },
     update () {
       this.$emit('update', this.placement)
@@ -149,17 +162,12 @@ export default {
 </script>
 
 <style lang="scss">
-.placement-row{
+.placement-container{
 
-  
   margin-left: 15px;
+  font-size: .8rem;
+  cursor:pointer;
   
-
-  display: table-row;
-  table-layout: fixed;
-  position: relative;
-  
-
   &.confirmed {
     &:before {background-color: green;}
     background-color: rgba(rgb(74, 193, 5),0.2);
@@ -201,13 +209,90 @@ export default {
     span {opacity: .5;}
   }
 
+
+
+
+  .placement-row{
+
+    background: transparent;
+    display: table-row;
+    table-layout: fixed;
+    position: relative;
+
+
+  
+
+
+    > td {
+
+      margin-bottom: 1px;
+      line-height: 1rem;
+      vertical-align: middle;
+      height: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: .9em;
+      padding: 0 5px;
+
+      label {display: none;}
+      span {display: block;}
+
+
+      &:last-child {
+        padding-right: 20px;
+      }
+      &:first-child {
+        padding-left: 20px;
+      }
+      
+
+      .icon {
+        display: inline-flex;
+        height: 100%;
+        width: 20px;
+        align-items: center;
+      }
+
+      &.ellipses :where(a, span){
+        display: block;
+        width: auto;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 10px;
+      }
+
+      
+    }
+  
+  }
+  
+
+  .placement-controls {
+    
+    display: table;
+    margin-top: -1px;
+    position: sticky;
+    left: 0;
+    background: inherit;
+    padding: 5px 0 15px;
+
+    #active-controls {
+      position: relative;
+      right: 0;
+      height: 70px;
+    }
+  
+
+  
+  }
+  
   
 
 
 
-  font-size: .8rem;
-
-  cursor:pointer;
+  
   
 
   //align-items: center;
@@ -216,19 +301,23 @@ export default {
   &:hover{
     background-color: #eee;
   }
+
+  a {
+    color: rgb(0,0,238);
+    pointer-events: none;
+  }
   
   &[active] {
+
+    .placement-row td {padding-top: 10px;}
+
+    a{pointer-events: all;}
     color: white;
     &:hover {
       background-color: #666;
     }
     background-color: #666;
     animation: none;
-
-    td {
-      padding: 10px 5px 70px;
-    }
-
     a {color: lightblue}
     
   }
@@ -239,72 +328,7 @@ export default {
     
   
 
-
-  > td {
-
-    margin-bottom: 1px;
-    line-height: 1rem;
-    vertical-align: middle;
-    height: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: .9em;
-    padding: 0 5px;
-
-    label {display: none;}
-    span {display: block;}
-
-
-    &:last-child {
-      padding-right: 20px;
-    }
-    &:first-child {
-      padding-left: 20px;
-    }
-    
-
-
-
-    .vdp-datepicker__calendar {
-      right: 0;
-    }
-
-    .icon {
-      display: inline-flex;
-      height: 100%;
-      width: 20px;
-      align-items: center;
-    }
-
-    &.ellipses :where(a, span){
-      display: block;
-      width: auto;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      padding-right: 10px;
-    }
-
-    
-  }
   
-  /*
-  .controls-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-
-    button {
-      margin: 0 10px;
-    }
-  }
-  */
-
-  a {
-    color: rgb(0,0,238);
-  }
 
 }
 
@@ -316,13 +340,5 @@ export default {
   }
 }
 
-#active-controls {
-  
-  position: absolute;
-  left: 0;
-  height: 70px;
-  bottom: 0;
-  width: 100%;
 
-}
 </style>

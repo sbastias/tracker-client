@@ -11,12 +11,10 @@
       @prepend-row="doRowPrepend"
     />
 
-    <div id="tracker-header">
-      <h1>Tracker</h1>
-      <div>
-          <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
-        </div>
+    <div>
+      <h1>Tracker</h1>      
     </div>
+    
 
     <div class="main-content">
 
@@ -38,24 +36,33 @@
           <button @click="loadData">Load Placements</button>
         </div>
         
-        <div v-show="!!placements">Found {{placements.length}} placements</div>
+        <div v-show="!!placements">Displaying {{placements.length}} placements</div>
+
+        <div>
+          <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
+        </div>
+        
       </section>
       </client-only>
 
-      <TrackerFilters v-if="!!placements" :filters="params.filters" />
+      <div v-if="!!placements">
 
-      <!--div v-if="params.filters.length">{{params.filters.find(el => el.label == 'Supplier')}}</div-->
+        <section id="search-bar">
+          <div class="search-field-container">
+            <input type="text" v-model="textSearch" class="search-field" />
+          </div>
+          <h3 id="filters-title"><span>Filters</span> <MaxMin @click="showFilters = !showFilters" :maximized="showFilters" :width="'15px'" /></h3>
+          <h3 id="columns-title"><span>Columns</span> <MaxMin @click="showColumns = !showColumns" :maximized="showColumns" :width="'15px'" /></h3>
+        </section>
 
-      <section id="search-bar" v-if="!!placements">
-        <div class="search-field-container">
-          <input type="text" v-model="textSearch" class="search-field" />
-        </div>
-        <div id="toggleable-columns" style="padding-left: 20px;">
-          <b style="font-size: .6rem;">Show</b>
+        <section id="toggleable-columns" v-if="!!placements && showColumns">
+          <b style="font-size: .6rem;">Customize Columns</b>&nbsp;&nbsp;
           <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
-        </div>
-      </section>
+        </section>
 
+        <TrackerFilters v-if="!!placements && showFilters" :filters="params.filters" :maximized="showFilters" />
+
+      </div>
       
       <div id="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
       
@@ -71,21 +78,20 @@
               </th>
             </tr>
           </thead>
-          <tbody>
-            <PlacementRow 
-              v-for="(placement, idx) in placements" 
-              :key="placement.Id" :id="`placement-${idx}`"
-              :placement="placement"
-              :active="activatedPlacement == placement"
-              :active-columns="activeColumns"
-              :width="tableWidth"
-              :transform="offsetLeft"
-              @activate="activatePlacement" 
-              @deactivate="deactivatePlacement"
-              @update="updatePlacement"
-              @extend="extendPlacement"
-            />
-          </tbody>
+          
+          <PlacementRow 
+            v-for="(placement, idx) in placements" 
+            :key="placement.Id" :id="`placement-${idx}`"
+            :placement="placement"
+            :active="activatedPlacement == placement"
+            :active-columns="activeColumns"
+            :width="tableWidth"
+            :left="offsetLeft"
+            @toggle-row="toggleRow" 
+            @update="updatePlacement"
+            @extend="extendPlacement"
+          />
+          
         </table>
 
       </section>
@@ -105,6 +111,7 @@ import trackerColumnsConfig from '~/config/tracker/columns'
 import trackerFiltersConfig from '~/config/tracker/filters'
 import TrackerFilters from '~/components/tracker/TrackerFilters'
 import moment from 'moment'
+import MaxMin from '~/components/ui/MaxMin'
 
 class rangeObj  {
   constructor () {
@@ -160,7 +167,8 @@ export default {
     TrackerOverlay,
     TrackerFilters,
     Loader,
-    Sort
+    Sort,
+    MaxMin
   },
   data () {
     return {
@@ -181,7 +189,9 @@ export default {
       ascending: true,
       tableWidth: '100%',
       offsetLeft: 0,
-      emitErrors: {}
+      emitErrors: {},
+      showFilters: true,
+      showColumns: true
     }
   },
   computed: {
@@ -270,7 +280,8 @@ export default {
 
       this.$refs.placements.addEventListener('scroll', e => {
         console.log('scrolling...', this.$refs.placements.scrollLeft)
-        this.offsetLeft = `translateX(${ this.$refs.placements.scrollLeft }px)`
+        //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.placements.scrollLeft }px)`
+        this.offsetLeft = `${ this.$refs.placements.scrollLeft }px`
       })
     }
   },
@@ -421,14 +432,9 @@ export default {
         this.prependRow(prepend)
       })
     },
-    activatePlacement (placement) {
-      if (this.activatedPlacement == placement) return
-      this.$bus.log('activating', placement)
-      this.activatedPlacement = placement
-    },
-    deactivatePlacement () {
-      this.$bus.log('deactivating')
-      this.activatedPlacement = false
+    toggleRow (placement) {
+      if (this.activatedPlacement == placement) this.activatedPlacement = false
+      else this.activatedPlacement = placement
     },
     addPlacement () {
       this.overlayPlacement = false
@@ -461,7 +467,8 @@ export default {
     }
   },
   watch: {
-    
+    showFilters () {this.$nextTick(() => this.resizeStuff())},
+    showColumns () {this.$nextTick(() => this.resizeStuff())}
   }
 }
 </script>
@@ -488,18 +495,24 @@ button {
 }
 
 #date-range-new-order {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto max-content max-content;
+  grid-gap: 20px;
   align-items: center;
   input[type=text] {
     width: 100px;
   }
 }
 
+#loading-container {
+  padding: 25px 0;
+  text-align: center;
+}
+
 #search-bar {
   display: grid;
-  grid-template-columns: auto max-content;
+  grid-template-columns: auto max-content max-content;
+  grid-gap: 20px;
 
   .search-field-container {
     width: 100%;
@@ -527,7 +540,14 @@ button {
   }
 }
 
-#date-range-new-order, #filters, #search-bar {
+#filters-title,
+#columns-title{
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#date-range-new-order, #filters, #search-bar, #toggleable-columns {
   font-size: .8rem;
   padding: 10px;
   background: #eee;
