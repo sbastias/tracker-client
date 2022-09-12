@@ -458,11 +458,12 @@ export default {
       if (!this.placements.length) return setTimeout(() => this.resizeStuff(), 500)
       this.$bus.log('Resizing UI')
       let placementsSection = document.getElementById('placements')
+      let placementsTable = document.getElementById('placements-table')
 
       //console.log(placementsSection)
 
       let scrollingHeight = window.innerHeight - placementsSection.getBoundingClientRect().top
-      this.tableWidth = `${placementsSection.getBoundingClientRect().width}px`
+      this.tableWidth = `${ Math.min(placementsSection.getBoundingClientRect().width, placementsTable.getBoundingClientRect().width)}px`
       placementsSection.style.height = `${scrollingHeight}px`
     }
   },
