@@ -2,7 +2,7 @@
   <div>
 
     <div class="overlay-heading">
-      <h3>Editing Placement</h3>
+      <h3>Editing {{openOrder && 'Order' || 'Placement'}}</h3>
     </div>
 
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
@@ -40,6 +40,11 @@ WFR Number
         <div class="form-cell">
           <label>PO #</label>
           <input type="text" v-model="placement.PO__c" />
+        </div>
+
+        <div class="form-cell">
+          <label>Supplier</label>
+          <input type="text" v-model="placement.Supplier__c" />
         </div>
 
       </div>
@@ -125,6 +130,11 @@ export default {
       edited: false
     }
   },
+  computed: {
+    openOrder () {
+      return this.originalPlacement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
+    }
+  },
   created () {
     this.placement = Object.assign({}, this.originalPlacement)
   },
@@ -190,7 +200,7 @@ export default {
 .form {
   margin-top: 20px;
 
-  .form-row:nth-child(1){grid-template-columns: 1fr 1fr 3fr;}
+  .form-row:nth-child(1){grid-template-columns: 1fr 1fr 1fr 1fr;}
   .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(4){grid-template-columns: 1fr 1fr;}
