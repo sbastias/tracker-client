@@ -6,7 +6,7 @@
     </div>
 
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
-    <h5>{{placement.AVTRRT__Employer__r.Name}} ({{placement.Supplier__c}})</h5>
+    <h5>{{placement.AVTRRT__Employer__r.Name}} <span v-if="placement.Supplier__c">({{placement.Supplier__c}})</span></h5>
     <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
     <h5 v-if="placement.AVTRRT__Pay_Rate__c">${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
 
@@ -44,7 +44,10 @@ WFR Number
 
         <div class="form-cell">
           <label>Supplier</label>
-          <input type="text" v-model="placement.Supplier__c" />
+          <select v-model="placement.Supplier__c">
+            <option value="YORK">YORK</option>
+            <option value="QAJAQ">QAJAQ</option>
+          </select>
         </div>
 
       </div>
