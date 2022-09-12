@@ -107,7 +107,7 @@ WFR Number
         <div class="form-cell">
           <label>Deployment Forms</label>
           <select v-model="placement.Flight__c">
-            <option v-for="(deployment, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Deployment_Forms__s').valueSet.valueSetDefinition.value" :key="`deployment-option-${idx}`" :value="deployment.label">{{deployment.fullName}}</option>
+            <option v-for="(deployment, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Deployment_Forms__c').valueSet.valueSetDefinition.value" :key="`deployment-option-${idx}`" :value="deployment.label">{{deployment.fullName}}</option>
           </select>
         </div>
 
