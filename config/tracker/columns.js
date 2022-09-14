@@ -25,6 +25,12 @@ export default [
     width: 160
   },
   {
+    label: 'Pay Rate',
+    field: 'candidateCompensation',
+    toggle: true,
+    width: 80
+  },
+  {
     label: 'Crew',
     field: 'Crew__c',
     sortable: true,

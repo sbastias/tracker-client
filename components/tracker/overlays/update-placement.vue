@@ -8,7 +8,8 @@
     <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
     <h5>{{placement.AVTRRT__Employer__r.Name}} <span v-if="placement.Supplier__c">({{placement.Supplier__c}})</span></h5>
     <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
-    <h5 v-if="placement.AVTRRT__Pay_Rate__c">${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
+    <h5 v-if="placement.AVTRRT__Pay_Rate__c">Placement Rate: ${{placement.AVTRRT__Pay_Rate__c}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+{{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c}})</span></h5>
+    <h5 v-if="placement.AVTRRT__Job_Applicant__r && placement.AVTRRT__Job_Applicant__r.Pay_Rate__c">Offer Rate: ${{placement.AVTRRT__Job_Applicant__r.Pay_Rate__c}}</h5>
 
 <!--
 

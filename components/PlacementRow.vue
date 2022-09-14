@@ -1,6 +1,6 @@
 <template>
-<tbody class="placement-container" :class="rotationCommGroup" :active="active" @click="toggleRow">
-  
+<tbody class="placement-container" :class="[{mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate},rotationCommGroup]" :active="active" @click="toggleRow">
+
   <tr class="placement-row">
       <td class="id">
         <a class="icon" :href="sfLink(placement.Id, 'AVTRRT__Placement__c')" target="_blank" :title="placement.Name">
@@ -149,6 +149,10 @@ export default {
   font-size: .8rem;
   cursor:pointer;
   
+  &.mismatchedRates {
+    //font-weight: bold;
+  }
+
   &.confirmed {
     &:before {background-color: green;}
     background-color: rgba(rgb(74, 193, 5),0.2);
