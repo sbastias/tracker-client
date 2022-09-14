@@ -86,10 +86,10 @@
             :active="activatedPlacement == placement"
             :active-columns="activeColumns"
             :width="tableWidth"
-            :left="offsetLeft"
             @toggle-row="toggleRow" 
             @update="updatePlacement"
             @extend="extendPlacement"
+            @assign="assignStaffer"
           />
           
         </table>
@@ -188,7 +188,7 @@ export default {
       sortedBy: false,
       ascending: true,
       tableWidth: '100%',
-      offsetLeft: 0,
+      //offsetLeft: 0,
       emitErrors: {},
       showFilters: true,
       showColumns: true
@@ -278,11 +278,13 @@ export default {
 
       this.createSocket()
 
+      /*
       this.$refs.placements.addEventListener('scroll', e => {
         console.log('scrolling...', this.$refs.placements.scrollLeft)
         //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.placements.scrollLeft }px)`
         this.offsetLeft = `${ this.$refs.placements.scrollLeft }px`
       })
+      */
     }
   },
   methods: {
@@ -317,7 +319,7 @@ export default {
       //console.log(this.$axios.defaults.baseURL)
       //console.log(this.$axios.defaults.headers.common['Authorization'])
       this.$bus.log('loading data...')
-      await this.$axios.post(`/tracker/load`, this.params)
+      await this.$axios.post(`/tracker/placements/load`, this.params)
       .then(({data}) => {
         //console.log(data)
         this.unfilteredPlacements = data.placements
@@ -435,6 +437,10 @@ export default {
     toggleRow (placement) {
       if (this.activatedPlacement == placement) this.activatedPlacement = false
       else this.activatedPlacement = placement
+    },
+    assignStaffer (openOrder) {
+      this.overlayPlacement = openOrder
+      this.overlayMode = 'assign-staffer'  
     },
     addPlacement () {
       this.overlayPlacement = false

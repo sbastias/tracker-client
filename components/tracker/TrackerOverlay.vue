@@ -26,6 +26,7 @@
 import ExtendPlacement from '~/components/tracker/overlays/extend-placement'
 import UpdatePlacement from '~/components/tracker/overlays/update-placement'
 import AddPlacement from '~/components/tracker/overlays/add-placement'
+import AssignStaffer from '~/components/tracker/overlays/assign-staffer'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement'],
@@ -38,6 +39,7 @@ export default {
     ExtendPlacement,
     UpdatePlacement,
     AddPlacement,
+    AssignStaffer,
     CancelX
   },
   methods: {

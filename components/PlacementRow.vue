@@ -1,22 +1,7 @@
 <template>
 <tbody class="placement-container" :class="rotationCommGroup" :active="active" @click="toggleRow">
+  
   <tr class="placement-row">
-
-      <!--td class="controls">
-        <div id="active-controls" v-if="active" :style="{width, left}">
-          <PlacementControls 
-            ref="placement-controls"
-            v-if="type == 'placement'"
-            :placement="placement"
-          />
-          <OpenOrderControls 
-            ref="open-order-controls"
-            v-if="type == 'open-order'"
-            :placement="placement"
-          />
-        </div>
-      </td-->
-
       <td class="id">
         <a class="icon" :href="sfLink(placement.Id, 'AVTRRT__Placement__c')" target="_blank" :title="placement.Name">
           <Icon name="salesforce" />
@@ -36,13 +21,9 @@
       
       <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
         <span>{{placement[field] || '&nbsp;'}}</span>
-      </td>
-
-     
-
-      
-      
+      </td>      
     </tr>
+
     <tr class="placement-controls" :style="{width}" v-if="active">
       <td :colspan="activeFields.length + 3">
         
@@ -75,7 +56,7 @@ import OpenOrderControls from '~/components/OpenOrderControls'
 
 
 export default {
-  props: ['placement','active','activeColumns','width','left'],
+  props: ['placement','active','activeColumns','width'],
   components: {
     Icon,
     PlacementControls,
