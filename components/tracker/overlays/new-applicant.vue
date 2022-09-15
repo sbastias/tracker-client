@@ -40,13 +40,6 @@
           </select>
         </div>
 
-        <div class="form-cell">
-         
-          <label>Pay Type</label>
-          <select v-model="payType">
-            <option v-for="(payType, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Job_Applicant__c').fields.find(el => el.fullName == 'AVTRRT__Pay_Type__c').valueSet.valueSetDefinition.value" :key="`pay-type-option-${idx}`" :value="payType.label">{{payType.fullName}}</option>
-          </select>
-        </div>
 
       </div>
       
@@ -113,7 +106,6 @@ export default {
       let applicantData = {
         AVTRRT__Job__c: this.jobId,
         Compensation__c: this.compId,
-        AVTRRT__Pay_Type__c: this.payType,
         AVTRRT__Contact_Candidate__c: this.targetId
       }
 
@@ -141,7 +133,7 @@ export default {
 .form {
   margin-top: 20px;
   
-  .form-row:nth-child(1){grid-template-columns: 2fr 1fr .7fr;}
+  .form-row:nth-child(1){grid-template-columns: 2fr 1fr;}
   
 }
 </style>

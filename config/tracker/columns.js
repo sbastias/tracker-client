@@ -12,6 +12,12 @@ export default [
     width: 160
   },
   {
+    label: 'Placement #',
+    field: 'Name',
+    width: 100,
+    toggle: true
+  },
+  {
     label: 'Job Title',
     field: 'AVTRRT__Job_Title__c',
     toggle: true,
