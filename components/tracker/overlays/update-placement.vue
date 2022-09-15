@@ -188,6 +188,7 @@ export default {
       delete update.LastModifiedDate
       delete update.candidateCompensation
       delete update.jobApplicantPayRate
+      delete update.AVTRRT__Job_Applicant__r
 
       this.$bus.log(JSON.stringify(update, null, '\t'))
 
