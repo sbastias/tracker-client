@@ -23,6 +23,9 @@
           </select>
         </div>
 
+      </div>
+      <div class="form-row" v-if="stafferId">
+
         <div class="form-cell">
          
           <label>Select Job Applicant No.</label>
@@ -31,6 +34,12 @@
               {{applicant.Name}} {{applicant.AVTRRT__Account_Job__r.Shortcode__c}} {{applicant.AVTRRT__Job_Title__c}}
             </option>
           </select>
+        </div>
+
+        <div>OR</div>
+
+        <div class="form-cell">
+          <button @click="newApplicant">Create Applicant Record</button>
         </div>
 
       </div>
@@ -64,7 +73,10 @@ export default {
     }
   },
   created () {
-
+    this.$bus.$on('assign-applicant-to-staffer', this.assignApplicantId)
+  },
+  beforeDestroy () {
+    this.$bus.$off('assign-applicant-to-staffer')
   },
   async fetch () {
     return await this.$axios.get(`/tracker/staffers/load`)
@@ -85,7 +97,7 @@ export default {
   methods: {
     async getJobApplicantRecords () {
       this.$bus.log('Getting Job Applicant records...')
-      if (!this.stafferId) return
+      if (!this.stafferId) return console.log('NO STAFFER')
       return await this.$axios.post(`/tracker/applicants/load`, {candidateId: this.stafferId})
       .then(({data}) => this.jobApplicants = data)
       .catch(e => {
@@ -105,6 +117,7 @@ export default {
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Existing Staffer assigned to Order!'})
         this.$parent.$emit('update-row', data)
+        this.$parent.$emit('re-sort')
         this.$parent.$emit('cancel-overlay')
         
       })
@@ -114,6 +127,17 @@ export default {
         console.log(stack)
       })
       
+    },
+    async assignApplicantId (id) {
+      await this.getJobApplicantRecords()
+      .then(() => {
+        this.jobApplicantId = id
+      })
+      .catch(e => console.log(e))
+      
+    },
+    async newApplicant () {
+      this.$emit('subsection', 'new-applicant', this.stafferId)
     }
   },
   watch: {
@@ -126,7 +150,9 @@ export default {
 @import '~/assets/scss/forms.scss';
 .form {
   margin-top: 20px;
+  
   .form-row:nth-child(1){grid-template-columns: 100%;}
+  .form-row:nth-child(2){grid-template-columns: auto max-content max-content;align-items: center;}
 }
 </style>
 

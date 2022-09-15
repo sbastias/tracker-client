@@ -11,7 +11,16 @@
         <component :is='mode' 
           :original-placement="placement" 
           @edited="flagEdited"
+          v-show="!subsection"
+          @subsection="activateSubsection"
         />
+        <component :is='subsection' 
+          v-show="subsection"
+          :placement="placement"
+          :target-id="targetId"
+          @deactivate="deactivateSubsection"
+         />
+
       </div>
 
     </div>
@@ -27,12 +36,15 @@ import ExtendPlacement from '~/components/tracker/overlays/extend-placement'
 import UpdatePlacement from '~/components/tracker/overlays/update-placement'
 import AddPlacement from '~/components/tracker/overlays/add-placement'
 import AssignStaffer from '~/components/tracker/overlays/assign-staffer'
+import NewApplicant from '~/components/tracker/overlays/new-applicant'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement'],
   data () {
     return {
-      edited: false
+      edited: false,
+      subsection: false,
+      targetId: false
     }
   },
   components: {
@@ -40,20 +52,34 @@ export default {
     UpdatePlacement,
     AddPlacement,
     AssignStaffer,
+    NewApplicant,
     CancelX
   },
   methods: {
     cancelOverlay () {
       if (this.edited && confirm('You have unsaved changes, are you sure you want to cancel?') || !this.edited) {
       
-        this.$bus.log('Cancelling overlay')
-        this.$emit('cancel-overlay')    
+        if (this.subsection) {
+          this.$bus.log('Cancelling overlay SUBSECTION')
+          this.deactivateSubsection()
+        }else {
+          this.$bus.log('Cancelling overlay')
+          this.$emit('cancel-overlay')    
+        }
         
       }
     },
     flagEdited (bool) {
       this.$bus.log('Editing detected... changed from original?', bool)
       this.edited = bool
+    },
+    activateSubsection (subsection, targetId) {
+      this.targetId = targetId
+      this.subsection = subsection
+    },
+    deactivateSubsection () {
+      this.targetId = false
+      this.subsection = false
     }
   }
 }

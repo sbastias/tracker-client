@@ -90,6 +90,7 @@
             @update="updatePlacement"
             @extend="extendPlacement"
             @assign="assignStaffer"
+            
           />
           
         </table>
@@ -210,7 +211,7 @@ export default {
 
         filteredPlacements = this.unfilteredPlacements.map(el => {
           el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
-          el.jobApplicantPayRate = el.AVTRRT__Job_Applicant__r && el.AVTRRT__Job_Applicant__r.Pay_Rate__c || 0
+          el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
 
           return el
         }) 
