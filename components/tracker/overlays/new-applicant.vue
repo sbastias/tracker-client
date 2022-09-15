@@ -58,7 +58,7 @@ import LoadingGraphic from '~/components/ui/LoadingGraphic'
 
 
 export default {
-  props: ['placement','target-id'],
+  props: ['placement','parent-id'],
   components: {
     LoadingGraphic
   },
@@ -106,12 +106,15 @@ export default {
       let applicantData = {
         AVTRRT__Job__c: this.jobId,
         Compensation__c: this.compId,
-        AVTRRT__Contact_Candidate__c: this.targetId
+        AVTRRT__Contact_Candidate__c: this.parentId
       }
 
       return await this.$axios.post(`/tracker/applicant/create`, applicantData)
       .then(({data}) => {
-        this.$bus.$emit('assign-applicant-to-staffer', data.id)
+
+        applicantData.Id = data.id
+
+        this.$bus.$emit('assign-applicant-to-staffer', applicantData)
         this.$emit('deactivate')
       })
       .catch(e => {

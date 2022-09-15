@@ -152,6 +152,13 @@ export default {
   &.mismatchedRates {
     //font-weight: bold;
   }
+  
+  //DEFAULT YELLOW
+  &:before {background-color: lightyellow;}
+  background-color: rgba(yellow, 0.2);
+  &:hover {
+    background-color: rgba(yellow, 0.4);
+  }
 
   &.confirmed {
     &:before {background-color: green;}

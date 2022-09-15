@@ -17,7 +17,7 @@
         <component :is='subsection' 
           v-show="subsection"
           :placement="placement"
-          :target-id="targetId"
+          :parent-id="parentId"
           @deactivate="deactivateSubsection"
          />
 
@@ -36,6 +36,7 @@ import ExtendPlacement from '~/components/tracker/overlays/extend-placement'
 import UpdatePlacement from '~/components/tracker/overlays/update-placement'
 import AddPlacement from '~/components/tracker/overlays/add-placement'
 import AssignStaffer from '~/components/tracker/overlays/assign-staffer'
+import HireStaffer from '~/components/tracker/overlays/hire-staffer'
 import NewApplicant from '~/components/tracker/overlays/new-applicant'
 import CancelX from '~/components/ui/CancelX'
 export default {
@@ -44,7 +45,7 @@ export default {
     return {
       edited: false,
       subsection: false,
-      targetId: false
+      parentId: false
     }
   },
   components: {
@@ -52,6 +53,7 @@ export default {
     UpdatePlacement,
     AddPlacement,
     AssignStaffer,
+    HireStaffer,
     NewApplicant,
     CancelX
   },
@@ -73,12 +75,12 @@ export default {
       this.$bus.log('Editing detected... changed from original?', bool)
       this.edited = bool
     },
-    activateSubsection (subsection, targetId) {
-      this.targetId = targetId
+    activateSubsection (subsection, parentId) {
+      this.parentId = parentId
       this.subsection = subsection
     },
     deactivateSubsection () {
-      this.targetId = false
+      this.parentId = false
       this.subsection = false
     }
   }
@@ -122,6 +124,7 @@ export default {
       height: auto;
       width: 95%;
       max-height: 750px;
+      overflow: auto;
       max-width: 900px;
       min-height: 200px;
       min-width: 600px;

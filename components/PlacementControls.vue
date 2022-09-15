@@ -2,6 +2,7 @@
   <div id="placement-controls">
     <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
     <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
+    <button @click.stop="$parent.$emit('reopen', placement)">Remove Staffer</button>
   </div>
 </template>
 

@@ -103,6 +103,13 @@
         </div>
 
         <div class="form-cell">
+          <label>Airport</label>
+          <select v-model="placement.Client_Airport__c">
+            <option v-for="(airport, idx) of $bus.metadata.find(el => el.fullName == 'Airport').customValue" :key="`airport-option-${idx}`" :value="airport.fullName">{{airport.fullName}}</option>
+          </select>
+        </div>
+
+        <div class="form-cell">
           <label>Flights</label>
           <select v-model="placement.Flight__c">
             <option v-for="(flight, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Flight__c').valueSet.valueSetDefinition.value" :key="`flight-option-${idx}`" :value="flight.label">{{flight.fullName}}</option>
@@ -212,7 +219,7 @@ export default {
   .form-row:nth-child(1){grid-template-columns: 1fr 1fr .5fr;}
   .form-row:nth-child(2){grid-template-columns: 1fr 1fr 2fr 2fr;}
   .form-row:nth-child(3){grid-template-columns: 2fr 2fr 1fr 1fr;}
-  .form-row:nth-child(4){grid-template-columns: 3fr 1fr 1fr;}
+  .form-row:nth-child(4){grid-template-columns: 3fr 1fr 1fr 1fr;}
   .form-row:nth-child(5){grid-template-columns: 1fr 1fr;}
 }
 </style>

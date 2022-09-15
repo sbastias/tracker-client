@@ -31,12 +31,11 @@
           <label>Select Job Applicant No.</label>
           <select v-model="jobApplicantId">
             <option v-for="(applicant, idx) in jobApplicants" :key="`applicant-${idx}`" :value="applicant.Id">
-              {{applicant.Name}} {{applicant.AVTRRT__Account_Job__r.Shortcode__c}} {{applicant.AVTRRT__Job_Title__c}}
+              {{applicant.Name}} {{applicant.AVTRRT__Account_Job__r.Shortcode__c}} {{applicant.AVTRRT__Job_Title__c}} - {{applicant.AVTRRT__Stage__c}}
             </option>
           </select>
         </div>
 
-        <div>OR</div>
 
         <div class="form-cell">
           <button @click="newApplicant">Create Applicant Record</button>
@@ -58,7 +57,7 @@ import LoadingGraphic from '~/components/ui/LoadingGraphic'
 
 
 export default {
-  props: ['original-placement'],
+  props: ['original-placement','is-new'],
   components: {
     LoadingGraphic
   },
@@ -72,8 +71,13 @@ export default {
       jobApplicants: []
     }
   },
+  computed: {
+    jobApplicant () {
+      return this.jobApplicants.find(el => el.Id = this.jobApplicantId)
+    }
+  },
   created () {
-    this.$bus.$on('assign-applicant-to-staffer', this.assignApplicantId)
+    this.$bus.$on('assign-applicant-to-staffer', this.assignApplicantData)
   },
   beforeDestroy () {
     this.$bus.$off('assign-applicant-to-staffer')
@@ -109,15 +113,23 @@ export default {
     async assignStaffer () {
       //clean up placement extension
 
-      let assign = {Id: this.placement.Id, AVTRRT__Contact_Candidate__c: this.stafferId}
+      let assign = {
+        Id: this.placement.Id, 
+        AVTRRT__Contact_Candidate__c: this.stafferId,
+        AVTRRT__Job_Applicant__c: this.jobApplicantId,
+        AVTRRT__Job__c: this.jobApplicant.AVTRRT__Job__c,
+        AVTRRT__Hiring_Manager__c: this.jobApplicant.AVTRRT__Hiring_Manager__c,
+        Compensation__c: this.jobApplicant.AVTRRT__Hiring_Manager__c
+      }
 
       this.$bus.log(JSON.stringify(assign, null, '\t'))
+
 
       await this.$axios.post(`/tracker/order/assign`, assign)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Existing Staffer assigned to Order!'})
         this.$parent.$emit('update-row', data)
-        this.$parent.$emit('re-sort')
+        //this.$parent.$emit('re-sort')
         this.$parent.$emit('cancel-overlay')
         
       })
@@ -128,10 +140,10 @@ export default {
       })
       
     },
-    async assignApplicantId (id) {
+    async assignApplicantData (data) {
       await this.getJobApplicantRecords()
       .then(() => {
-        this.jobApplicantId = id
+        this.jobApplicantId = data.Id
       })
       .catch(e => console.log(e))
       
@@ -152,7 +164,7 @@ export default {
   margin-top: 20px;
   
   .form-row:nth-child(1){grid-template-columns: 100%;}
-  .form-row:nth-child(2){grid-template-columns: auto max-content max-content;align-items: center;}
+  .form-row:nth-child(2){grid-template-columns: auto max-content;align-items: center;}
 }
 </style>
 

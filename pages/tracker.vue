@@ -90,6 +90,8 @@
             @update="updatePlacement"
             @extend="extendPlacement"
             @assign="assignStaffer"
+            @hire="hireStaffer"
+            @reopen="removeStaffer"
             
           />
           
@@ -449,6 +451,24 @@ export default {
     assignStaffer (openOrder) {
       this.overlayPlacement = openOrder
       this.overlayMode = 'assign-staffer'  
+    },
+    hireStaffer (openOrder) {
+      this.overlayPlacement = openOrder
+      this.overlayMode = 'hire-staffer'  
+    },
+    async removeStaffer (placement) {
+      if (confirm('Are you sure you want to remove staffer and re-open this order?')) {
+
+        await this.$axios.post('/tracker/order/reopen', placement)
+        .then(({data}) => {
+          this.doRowUpdate(data)
+        })
+        .catch(e => {
+          let {message, stack} = e.response.data
+          this.$bus.$emit('toaster',{status: 'error', message})
+          console.log(stack)
+        })
+      }
     },
     addPlacement () {
       this.overlayPlacement = false
