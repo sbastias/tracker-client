@@ -125,7 +125,7 @@ class rangeObj  {
     })(new Date())
 
     this.toDate = ((date) => {
-      date.setDate(date.getDate() + 7)
+      date.setDate(date.getDate() + 30)
       return date
     })(new Date())
 

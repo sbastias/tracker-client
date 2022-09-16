@@ -139,7 +139,7 @@ export default {
   },
   computed: {
     jobApplicant () {
-      return this.jobApplicantId && this.jobApplicants.find(el => el.Id = this.jobApplicantId)
+      return this.jobApplicantId && this.jobApplicants.find(el => el.Id == this.jobApplicantId)
     }
   },
   created () {
