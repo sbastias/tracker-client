@@ -18,7 +18,7 @@
           <label>Select Staffer</label>
           <select v-model="stafferId" @change="getJobApplicantRecords">
             <option v-for="(staffer, idx) in staffers" :key="`staffer-${idx}`" :value="staffer.Id">
-              {{staffer.FirstName}} {{staffer.LastName}} ({{staffer.Shortcode__c}})
+              {{staffer.FirstName}} {{staffer.LastName}} :: {{staffer.AVTRRT__Job_Title__c}}
             </option>
           </select>
         </div>
@@ -149,7 +149,7 @@ export default {
     this.$bus.$off('assign-applicant-to-staffer')
   },
   async fetch () {
-    return await this.$axios.get(`/tracker/hires/load`)
+    return await this.$axios.get(`/tracker/hires/load/${this.placement.AVTRRT__Employer__r.Shortcode__c}`)
     .then(({data}) => {
       console.log(data)
       this.staffers = data
