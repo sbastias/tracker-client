@@ -17,7 +17,12 @@
 
 <script>
 export default {
-  props: ['maximized', 'width']
+  props: ['maximized', 'width-px'],
+  computed: {
+    width () {
+      return `${ this.widthPx }px`
+    }
+  }
 }
 </script>
 

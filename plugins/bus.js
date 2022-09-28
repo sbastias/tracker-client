@@ -9,11 +9,30 @@ export default ({store}) => {
         window.addEventListener('resize',() => this.$emit('resize'))
       }
     },
+    beforeDestroy () {
+      if (process.client) {
+        window.removeEventListener('resize')
+      }
+    },
     data () {
       return {
         metadata: false,
         accounts: false,
-        users: false
+        users: false,
+        servers: {
+          development: {
+            payroll: 'http://localhost:8009',
+            tracker: 'http://localhost:8011'
+          },
+          testing: {
+            payroll: 'https://qbwc.thebullittgroup.com/test/ysg/',
+            tracker: 'https://mgmt-server.thebullittgroup.com'
+          },
+          production: {
+            payroll: 'https://qbwc.thebullittgroup.com/ysg/',
+            tracker: 'https://mgmt-server.thebullittgroup.com'
+          }
+        }
       }
     },
     methods: {

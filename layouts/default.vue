@@ -7,19 +7,10 @@
         <h1>Starla</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
-      <nav>
-        <ul>
-          <!--n-link custom to="/tracker" v-slot="{navigate}">
-            <li @click="navigate">Tracker</li>
-          </n-link-->
-          <n-link custom to="/" v-slot="{navigate}">
-            <li @click="navigate">Home</li>
-          </n-link>
-          <n-link custom to="/tracker" v-slot="{navigate}">
-            <li @click="navigate">Tracker</li>
-          </n-link>
-        </ul>
-      </nav>
+      <div id="nav-container">
+        <MainNavigation />
+      </div>
+
     </header>
     <nuxt v-cloak />
   </div>
@@ -28,9 +19,14 @@
 <script>
 import Logo from '~/components/Logo'
 import Toaster from '~/components/Toaster'
+import MainNavigation from '~/components/MainNavigation'
 
 export default {
-  components: {Logo, Toaster},
+  components: {
+    Logo, 
+    Toaster,
+    MainNavigation
+  },
   async created () {
 
     //console.log(this.$store.state.accessToken, '<< accessToken')
@@ -90,7 +86,7 @@ html {
 header {
   display: grid;
   width: 100%;
-  
+  background: white;
   grid-template-columns: auto min-content;
   
 
@@ -110,34 +106,13 @@ header {
       vertical-align: middle;
       color: #811818;
     }
-  }
 
-  nav {
-    grid-column: 1/3;
-    background: #eee;
-    width: 100%;
-    padding: 0 20px;
-    font-size: .9rem;
-    ul {
-      display: block;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: 0;
-      li{
-        font-size: .9rem;
-        display: inline-block;
-        padding: 8px 20px;
-        background: rgba(#900000, 0);
-        transition: .2s;
-        &:hover {
-          background: #990000;
-          color: white;
-          cursor: pointer;
-        }
-      }
+    &#nav-container {
+      grid-column: 1/3;
     }
   }
+
+  
 }
 
 a {

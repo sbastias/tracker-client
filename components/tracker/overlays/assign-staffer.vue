@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="loadingStaffers">
-      <LoadingGraphic message="Loading Staffers..." />
+      <Loader message="Loading Staffers..." />
     </div>
 
     <div class="form" v-else>
@@ -52,14 +52,14 @@
 </template>
 
 <script>
-import LoadingGraphic from '~/components/ui/LoadingGraphic'
+import Loader from '~/components/ui/Loader'
 
 
 
 export default {
   props: ['original-placement','is-new'],
   components: {
-    LoadingGraphic
+    Loader
   },
   data () {
     return {

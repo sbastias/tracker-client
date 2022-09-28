@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Loader from '~/components/ui/LoadingGraphic'
+import Loader from '~/components/ui/Loader'
 
 export default {
   components: {

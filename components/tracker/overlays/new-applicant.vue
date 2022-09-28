@@ -12,7 +12,7 @@
     <br><br>
 
     <div v-if="loadingJobs">
-      <LoadingGraphic message="Loading Jobs..." />
+      <Loader message="Loading Jobs..." />
       <br><br>
     </div>
 
@@ -53,14 +53,14 @@
 </template>
 
 <script>
-import LoadingGraphic from '~/components/ui/LoadingGraphic'
+import Loader from '~/components/ui/Loader'
 
 
 
 export default {
   props: ['placement','parent-id'],
   components: {
-    LoadingGraphic
+    Loader
   },
   data () {
     return {

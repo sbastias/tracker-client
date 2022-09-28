@@ -5,7 +5,9 @@
   "author": "Sergio Bastias",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "NODE_ENV=development nuxt",
+    "test": "NODE_ENV=testing nuxt",
+    "prod": "NODE_ENV=production nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"

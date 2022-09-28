@@ -1,5 +1,16 @@
+let baseURL = (env => {
+  switch (env) {
+    case 'development': return 'http://localhost:8009/'
+    case 'testing': return 'https://qbwc.thebullittgroup.com/test/ysg/'
+    case 'production': return 'https://qbwc.thebullittgroup.com/ysg/'
+  }
+})(process.env.NODE_ENV)
+
+console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} mode.`)
+console.log(`Default Server URL: ${baseURL}\n`)
 
 export default {
+  mode: 'universal',
   ssr: true,
   /*
   ** Headers of the page

@@ -1,0 +1,388 @@
+<template>
+  <li class="time-tracking-item" :id="row.Id">
+
+<div class="row">
+  <div class="candidate-name">
+    <a :href="`https://thebullittgroup.my.salesforce.com/${row.AVTRRT__Contact_Candidate__c}`" target="_blank">{{row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.LastName}}, {{row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.FirstName}}</a>
+  </div>
+  <div class="candidate-email">
+    {{row.AVTRRT__Contact_Candidate__r.Email}}
+  </div>
+  <div class="placement-account">
+    {{row.AVTRRT__Employer__r && row.AVTRRT__Employer__r.Name}}
+  </div>
+</div>
+
+<div class="row">
+  <div class="placement-link">
+    <a :href="`https://thebullittgroup.my.salesforce.com/${row.Id}`" target="_blank">{{row.Name}}</a>
+  </div>
+  <div class="placement-dept">
+    {{row.Department__c || 'No Department'}}
+  </div>
+  <div class="placement-title">
+    {{row.AVTRRT__Job_Title__c || 'No Job Title'}}
+  </div>
+  <div class="placement-shift">
+    {{row.Shift__c || 'N/A'}}
+  </div>
+
+  <div class="placement-dates">
+    <div class="placement-starts">
+      {{moment(row.AVTRRT__Start_Date__c).format('YYYY-MM-DD')}}
+    </div>
+    <div class="placement-ends" v-if="row.AVTRRT__End_Date__c">
+      {{moment(row.AVTRRT__End_Date__c).format('YYYY-MM-DD')}}
+    </div>
+    <div class="placement-ends" v-else>
+      Permanent
+    </div>
+    <div class="pay-type">
+      {{row.AVTRRT__Contact_Candidate__r.Pay_Type__c || 'NO PAY TYPE'}}
+    </div>
+  </div>
+</div>
+
+
+
+<div class="row">
+  <div class="placement-supervisor">
+    Supervisor: <a v-if="row.supervisor" :href="`https://thebullittgroup.my.salesforce.com/${row.supervisor.Id}`" target="_blank">{{row.supervisor.FirstName}} {{row.supervisor.LastName}}</a><span v-else>n/a</span> <span v-if="row.Crew__c">({{row.Crew__c}})</span>
+  </div>
+  <div class="placement-po">
+    {{row.PO__c}}
+  </div>
+  
+</div>
+
+<div class="row">
+
+  <div class="hours-container">
+
+    <ul class="type-tabs">
+      <li v-for="_type in types" :key="`type-${_type}`" @click="activeType = _type" :class="{active: activeType == _type}">
+        <span>
+          {{ _type }}
+        </span>
+      </li>
+    </ul>
+
+    <div class="week" :style="{display: billingType == 'NonBillable' && !row.shownonbillable && 'none' || 'block'}" v-for="billingType of ['Billable','NonBillable']" :key="billingType" :class="{'non-billable': billingType == 'NonBillable'}">
+
+      <div class="weekly-container">
+
+        <div class="daily-container" v-for="(dow, idx) of row.timeTracks[billingType].filter((el, idx, self) => self.map(el2 => el2.date).indexOf(el.date) == idx).map(el => el.date)" :key="`row-${row.Id}-${idx}`">
+
+          <div 
+            v-for="(dailyTrack, idx2) of row.timeTracks[billingType].filter(el => el.date == dow).sort((a,b) => types.indexOf(a.type) > types.indexOf(b.type) ? 1 : -1)" 
+            :key="`track-${idx}-${idx2}`" 
+            :class="[dailyTrack.type.toLowerCase(), billingType.toLowerCase()]" 
+            class="hours" 
+            v-show="activeType == dailyTrack.type"
+          >
+
+            <label>{{moment.utc(dow).format('MM/DD ddd')}}</label>
+
+            <div>
+              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="$emit('row-change', row)" :class="{imported: !!dailyTrack.qb}">
+              <div v-if="dailyTrack.id" class="notes-cta" @click="toggleNote" :title="dailyTrack.defaultNotes">
+                <NotesIcon :custom="dailyTrack.customNotes" />
+              </div>
+              <div class="notes" v-show="!!activeNoteId && activeNoteId == dailyTrack.id">
+                <input type="text" class="notes-input" v-model="dailyTrack.notes" @input="$emit('row-change', row)">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <div v-if="billingType == 'Billable'"><a @click="row.shownonbillable = !row.shownonbillable">{{row.shownonbillable && 'Hide' || 'Show'}} Non-Billable</a></div>
+
+    </div>
+  </div>
+  <div class="placement-notes">
+    <div class="heading">Additional Notes</div>
+    <textarea v-model="row.Additional_Notes__c" @input="$emit('row-change', row)"></textarea>
+    <div>
+      Pay Rate: ${{row.payRate.toFixed(2)}}
+      OT Rate: ${{row.OTRate.toFixed(2)}}
+      Calculated Total: $0
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  {{row.lambdaStart}} {{row.lambdaEnd}} {{row.daysToTrack}}
+</div>
+
+<div v-if="!!row.corrections && row.corrections.length">
+  Placement has {{row.corrections.length}} corrections.
+</div>
+
+
+
+</li>
+</template>
+
+<script>
+import moment from 'moment'
+import NotesIcon from '~/components/NotesIcon'
+
+export default {
+  props: ['row'],
+  components: {
+    NotesIcon
+  },
+  data () {
+    return {
+      moment,
+      activeNoteId: false,
+      activeType: 'Regular',
+      types: ['Regular','OT','Stand By'] 
+    }
+  },
+  methods: {
+    toggleNote ($ev) {
+      if (this.activeNoteId == $ev.target.closest('.hours').id) this.activeNoteId = false
+      else this.activeNoteId = $ev.target.closest('.hours').id
+    },
+  }
+
+}
+</script>
+
+
+<style lang="scss">
+.time-tracking-item{
+
+transition: .3s ease-out;
+
+&.unsaved {
+  background: rgb(255, 234, 171);
+}
+&.saved {
+  background: rgb(185, 255, 193);
+}
+&.saving {
+  background-color: rgb(255, 234, 171);
+  background-image: url(/img/loading-bg.png);
+  animation: saving .5s linear infinite;
+  cursor: wait;
+}
+&.undefined {
+  border-color: red;
+  background: rgb(254, 232, 232);
+}
+
+
+padding: 20px;
+border: 1px solid #fff;
+border-radius: 5px;
+margin-bottom: 10px;
+background: #fff;
+
+.row {
+  display: grid;
+  margin-bottom: 10px;
+  grid-gap: 10px;
+
+  &:nth-child(1) {//name, email
+    width: 100%;
+    grid-template-columns: max-content max-content auto;
+    .candidate-name {
+      font-weight: bold;
+    }
+    .placement-account {
+      text-align: right;
+    }
+  }
+
+  &:nth-child(2) {// placement ID, dept, title, dates
+    width: 100%;
+    grid-template-columns: max-content max-content max-content auto auto;
+    font-size: .9rem;
+    .placement-dates {
+      display: flex;
+      justify-content: flex-end;
+      > div {
+        margin-left: 20px;
+      }
+    }
+  }
+
+  &:nth-child(3) {// PO, supervisor
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    .placement-po {
+      text-align: right;
+    }
+  }
+
+  &:nth-child(4) {// hours
+    width: 100%;
+    grid-template-columns: 2fr 1fr;
+
+    .type-tabs {
+      display: block;
+      margin: 0 0 5px;
+      padding: 0;
+      list-style: none;
+      height: 25px;
+      
+      position: relative;
+
+      li {
+        span {
+          display: block;
+          position: relative;
+          height: 100%;
+          width: 100%;
+          clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 100%, 0 100%);
+          background-image: linear-gradient(to right, #ccc, #aaa);
+          padding: 5px 15px 5px 15px;
+          white-space: nowrap;
+          text-align: center;
+          
+        }
+        display: inline-block;
+        clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 100%, 0 100%);
+        background: #ccc;
+        border: 1px solid #ccc;
+        border-bottom: 0;
+        position: absolute;
+        width: 95px;
+        cursor: pointer;
+        
+
+        &:nth-child(1){left: 0;}
+        &:nth-child(2){left: 85px;}
+        &:nth-child(3){left: 170px;}
+        
+        &:not(:first-child) {
+          z-index: 1;
+        }
+        &.active {
+          z-index: 2;
+          span {
+            background: white;
+          }
+          font-weight: bold;
+        }
+      }
+    }
+
+    .heading {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .hours-container {
+
+      .heading {
+        font-weight: bold;
+      } 
+
+      
+      .week{
+        margin-top: 10px;
+      }
+      
+
+      display: grid;
+      grid-template-columns: 100%;
+
+      
+
+      .weekly-container {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-gap: 5px;
+      }
+
+      .daily-container {
+
+        margin-bottom: 10px;
+        &:last-child{ margin-bottom: 10px; }
+
+        display: block;
+        
+
+        .hours {
+          position: relative;
+
+          
+
+          label {position: absolute;line-height: 25px; top: 0; left: 11px; color: #999; font-size: 1rem; pointer-events: none;
+            >span {
+              font-size: .8rem;
+              font-style: italic;
+            }
+          }
+          input {
+            padding: 25px 10px 10px;
+            font-size: 20px;
+            background: #eeeeee;
+            border: 1px solid #888;
+            text-align: right;
+
+            &.notes-input {
+              padding: 5px;
+              font-size: 12px;
+              
+              text-align: left;
+            }
+
+            &.imported {
+              background: white;
+            }
+          }
+
+          &.unbillable {
+            input {
+              background: #ddd;
+              &.imported {background: #eee;}
+            }
+          }
+
+          .notes {
+            position: absolute;
+            bottom: -15px;
+            left: 22px;
+            z-index: 4;
+            box-shadow: 2px 2px 5px -1px black;
+            width: 300%;
+          }
+
+          .notes-cta {
+            z-index: 3;
+            height: 25px;
+            width: 25px;
+            position: absolute;
+            bottom: -5px;
+            left: -3px;
+          }
+        }
+      }
+    
+    }
+
+    input, textarea {
+      width: 100%;
+    }
+    
+    
+  }
+
+}
+
+.placement-notes{
+  .heading {
+    font-weight: bold;
+  }
+  grid-column: 2/3;
+  
+}
+
+}
+</style>

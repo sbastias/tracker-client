@@ -51,8 +51,8 @@
           <div class="search-field-container">
             <input type="text" v-model="textSearch" class="search-field" />
           </div>
-          <h3 id="filters-title"><span>Filters</span> <MaxMin @click="showFilters = !showFilters" :maximized="showFilters" :width="'15px'" /></h3>
-          <h3 id="columns-title"><span>Columns</span> <MaxMin @click="showColumns = !showColumns" :maximized="showColumns" :width="'15px'" /></h3>
+          <h3 class="max-min-label"><span>Filters</span> <MaxMin @click="showFilters = !showFilters" :maximized="showFilters" :width-px="15" /></h3>
+          <h3 id="max-min-label"><span>Columns</span> <MaxMin @click="showColumns = !showColumns" :maximized="showColumns" :width-px="15" /></h3>
         </section>
 
         <section id="toggleable-columns" v-if="!!placements && showColumns">
@@ -60,11 +60,11 @@
           <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
         </section>
 
-        <TrackerFilters v-if="!!placements && showFilters" :filters="params.filters" :maximized="showFilters" />
+        <TrackerFilters v-show="!!placements && showFilters" :filters="params.filters" :maximized="showFilters" />
 
       </div>
       
-      <div id="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
+      <div class="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
       
 
       <section id="placements" ref="placements" :class="{disabled: loadingData}">
@@ -97,6 +97,7 @@
           
         </table>
 
+
       </section>
 
     </div>
@@ -108,7 +109,7 @@
 import PlacementRow from '~/components/PlacementRow'
 import PlacementControls from '~/components/PlacementControls'
 import TrackerOverlay from '~/components/tracker/TrackerOverlay'
-import Loader from '~/components/ui/LoadingGraphic'
+import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
 import trackerColumnsConfig from '~/config/tracker/columns'
 import trackerFiltersConfig from '~/config/tracker/filters'
@@ -276,6 +277,8 @@ export default {
   created () {
     this.$bus.$on('refetch', this.$fetch)
     this.$bus.$on('resize', this.resizeStuff)
+
+    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
   },
   beforeDestroy () {
     this.$bus.$off('refetch')
@@ -443,6 +446,11 @@ export default {
         this.$bus.log('Received ADD emission!', prepend)
         this.prependRow(prepend)
       })
+      /*
+      this.socket.on('disconnect', () => {
+        
+      })
+      */
     },
     toggleRow (placement) {
       if (this.activatedPlacement == placement) this.activatedPlacement = false
@@ -539,8 +547,12 @@ button {
   }
 }
 
-#loading-container {
-  padding: 25px 0;
+.loading-container {
+  
+  display: flex;
+  height: 60px;
+  display: flex;
+  align-items: center;
   text-align: center;
 }
 
@@ -575,8 +587,7 @@ button {
   }
 }
 
-#filters-title,
-#columns-title{
+.max-min-label{
   height: 20px;
   display: flex;
   align-items: center;
@@ -616,6 +627,7 @@ button {
   width: calc(100% + 20px);
   margin-left: -10px;
   margin-right: 0;
+  
   > ul {
     display: block;
     list-style: none;
@@ -642,6 +654,7 @@ button {
     border: none;
     border-collapse:separate; 
     border-spacing: 0 1px;
+    margin-bottom: 50px;
 
 
 
@@ -679,7 +692,11 @@ button {
     }
   }
 
-  overflow: scroll scroll;
+  overflow: hidden;
+
+  &:hover {
+    overflow: scroll scroll;
+  }
 
 }
 
