@@ -1,8 +1,6 @@
 <template>
+  
   <div class="container subpage">
-
-    
-
       
     <div class="header-controls" ref="header-controls">
 

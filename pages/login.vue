@@ -68,6 +68,7 @@ export default {
       .then(({data}) => {
         console.log(data)
         this.$store.commit('STORE_TOKEN', data.accessToken)
+        this.$store.commit('STORE_PERMISSIONS', data.starlaPermissions)
         this.$store.commit('STORE_EMAIL', this.loginData.username)
         this.$router.push('/')
         console.log(this.$store.state.accessToken, '<< accessToken')
