@@ -57,7 +57,8 @@ export default {
     padding: 0;
     
     margin-right: 50px;
-    width: calc(max-content + 30px);
+    width: max-content;
+    padding-right: 30px;
     
 
     &:before {

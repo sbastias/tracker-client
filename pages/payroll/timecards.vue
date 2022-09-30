@@ -127,7 +127,7 @@ export default {
   },
   mounted() {
     //alert(this.$axios.defaults.baseURL)
-    console.log(this.$route)
+    
   },
   computed: {
     /*
@@ -276,10 +276,7 @@ export default {
     period() {
       this.weekendingOrDay = ''
     },
-    '$route.params' (val) {
-      console.log(val)
-      console.log(this.$route)
-    }
+    
   }
 }
 </script>

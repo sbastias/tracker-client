@@ -6,10 +6,10 @@
       <button @click="queueQBQueries">Import to QB</button>
     </div>
 
-    <div v-if="$route.name == 'payroll-timecards-qb-import'">
+    
 
     <TimecardConsole  />
-  </div>
+  
 
   </section>
 </template>

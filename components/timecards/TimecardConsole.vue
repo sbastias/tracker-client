@@ -46,16 +46,17 @@ export default {
       }, 1000)
     },
     createSocket () {
+      
       this.socket = this.$nuxtSocket({
         name: 'timecards',
         transports: ['websocket'],
-        path: '/ws/',
-        reconnection: true
+        path: '/ws/'
       })
       this.socket.on('statusUpdate', update => {
         this.$bus.log('Received UPDATE emission!', update)
         this.statusStack.push(update)
       })
+      this.socket.on('reconnection', () => alert('Reconnected!'))
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
