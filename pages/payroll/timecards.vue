@@ -127,6 +127,7 @@ export default {
   },
   mounted() {
     //alert(this.$axios.defaults.baseURL)
+    console.log(process.env.NODE_ENV)
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
     
   },
