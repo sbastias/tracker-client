@@ -1,30 +1,26 @@
 <template>
 <nav>
   <ul>
-    <!--n-link custom to="/tracker" v-slot="{navigate}">
-      <li @click="navigate">Tracker</li>
-    </n-link-->
+    
     <li>
       <n-link custom to="/" v-slot="{navigate, href}">
         <a :href="href" @click="navigate">Home</a>
       </n-link>
     </li>
-    
-    <li v-if="hasPermissions('Tracker')">
+    <li v-show="hasPermissions('Tracker')">
       <n-link custom to="/tracker" v-slot="{navigate, href}">
         <a :href="href" @click="navigate">Tracker</a>
       </n-link>
     </li>
-    
-    <li v-if="hasPermissions('Payroll - Import') || hasPermissions('Payroll - Timecards')">
+    <li v-show="hasPermissions('Payroll - Import') || hasPermissions('Payroll - Timecards')">
       <span>Payroll</span>
       <ul>
-        <li v-if="hasPermissions('Payroll - Timecards')">
+        <li v-show="hasPermissions('Payroll - Timecards')">
           <n-link custom to="/payroll/timecards" v-slot="{navigate, href}">
-            <a :href="href" @click="navigate">Timecard Entry</a>
+            <a :href="href" @click="navigate">Timecards Management</a>
           </n-link>
         </li>
-        <li v-if="hasPermissions('Payroll - Import')">
+        <li v-show="hasPermissions('Payroll - Import')">
           <n-link custom to="/payroll/import" v-slot="{navigate, href}">
             <a :href="href" @click="navigate">Newbie Import</a>
           </n-link>
@@ -41,7 +37,7 @@
   import {mapGetters} from 'vuex'
 export default {
   computed: {
-    ...mapGetters(['hasPermissions'])
+    ...mapGetters(['hasPermissions', 'accessToken'])
   }
 }
 </script>

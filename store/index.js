@@ -26,5 +26,6 @@ export const actions = {
 }
 
 export const getters = {
-  hasPermissions: (state) => (permission) => state.permissions.indexOf(permission) > -1
+  hasPermissions: (state) => (permission) => state.permissions.indexOf(permission) > -1,
+  accessToken: (state) => state.accessToken
 }

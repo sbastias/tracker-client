@@ -72,6 +72,17 @@ export default {
           }
         },
         path: '/ws/'    
+      },
+      {
+        name: 'timecards',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://payroll-server.thebullittgroup.com',
+        //url:'https://mgmt-server.thebullittgroup.com',
+        server: {
+          cors: {
+            origin: ['http://localhost:3000','https://starla.thebullittgroup.com']
+          }
+        },
+        path: '/ws/'    
       }
     ]
   },

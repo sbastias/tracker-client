@@ -53,6 +53,8 @@ export default {
   created () {
     if (process.client) {
 
+      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
+
       if (location.hostname.indexOf('localhost') > -1) {
         this.loginData.username = 'serge@yorksearchgroup.com'
         this.loginData.password = 'YORK1232020@@@'

@@ -7,7 +7,7 @@
         <h1>Starla</h1>
       </div>
       <div><a @click="logout">Logout</a></div>
-      <div id="nav-container">
+      <div id="nav-container" v-show="accessToken">
         <MainNavigation />
       </div>
 
@@ -20,12 +20,16 @@
 import Logo from '~/components/Logo'
 import Toaster from '~/components/Toaster'
 import MainNavigation from '~/components/MainNavigation'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
     Logo, 
     Toaster,
     MainNavigation
+  },
+  computed: {
+    ...mapGetters(['accessToken'])
   },
   async created () {
 
