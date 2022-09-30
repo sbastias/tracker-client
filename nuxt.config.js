@@ -10,7 +10,9 @@ console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} mode.`)
 console.log(`Default Server URL: ${baseURL}\n`)
 
 export default {
-  mode: 'universal',
+  env: {
+    NODE_ENV: process.env.NODE_ENV
+  },
   ssr: true,
   /*
   ** Headers of the page
