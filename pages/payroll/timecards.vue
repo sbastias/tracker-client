@@ -118,7 +118,7 @@ export default {
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
     }
-    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+    
   },
   beforeDestroy() {
     if (process.client) {
@@ -127,6 +127,7 @@ export default {
   },
   mounted() {
     //alert(this.$axios.defaults.baseURL)
+    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
     
   },
   computed: {
