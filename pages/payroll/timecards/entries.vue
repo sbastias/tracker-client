@@ -108,8 +108,8 @@ export default {
     async autoFill() {
       return await this.$axios
         .post(`/payroll/salesforce/autofill`, {
-          Weekending: this.formattedWeekendingOrDay,
-          supplier: this.supplier
+          Weekending: this.weekending,
+          supplier: this.$parent.supplier
         })
         .then(({ data }) => {
           alert(`Autofill completed for ${data.autofilledPayrollFolders} timecards!${(data.skippedPlacements && ` (Skipped ${data.skippedPlacements})`) || ''}`)
