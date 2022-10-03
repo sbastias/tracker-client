@@ -1,7 +1,7 @@
 <template>
   <div id="timecard-filters-container">
     <h3 class="max-min-label"><span>Filters</span> <MaxMin @click="showFilters = !showFilters" :maximized="showFilters" :width-px="15" /></h3>
-    <div class="filters" v-show="showFilters">
+    <div class="filters" v-show="showFilters" style="padding-top: 10px;">
 
       <ul v-for="_type in types" :key="`filters-${_type}`" :id="`${ _type }-filters`">
         <li v-for="(filter, idx) in filters[_type]" :key="`${_type}-filter-${idx}`">

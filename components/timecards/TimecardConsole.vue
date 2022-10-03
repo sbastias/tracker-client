@@ -1,19 +1,22 @@
 <template>
   <div id="console-timecard">
-    <div>Payroll Console</div>
-    <ul>
+    <div id="console-timecard__header"><h3>Payroll Console</h3> <a @click="clearConsole">Clear Console</a></div>
+    <ul id="console-timecard__scrolling" ref="scrolling-area">
       <li v-for="(line, idx) in statusStack" :key="idx+'line'">
-        {{line}}
+        <div class="timestamp">{{moment(line.timestamp).format('YYYY-MM-DD hh:mm:ssA')}}</div>
+        <div :class="line.content.status">{{line.content.message}}</div>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 export default {
   props: ['tally'],
   data () {
     return {
+      moment,
       reconnectInterval: false,
       statusStack: []
     }
@@ -21,20 +24,36 @@ export default {
   mounted () {
     this.createSocket()
 
-    /*
+    
     this.postInterval = setInterval(() => {
       this.$axios.post('/test/io')
       .then(({data}) => console.log(data))
     },2000)
-    */
+    
+   this.resizeMain()
 
   },
   beforeDestroy () {
     this.socket = false
     this.statusStack = []
-    //clearInterval(this.postInterval)
+    clearInterval(this.postInterval)
   },
   methods: {
+    resizeMain () {
+
+      this.$nextTick(() => {
+        let containerHeight = document.getElementById('console-timecard').getBoundingClientRect().height
+        let headerHeight = document.getElementById('console-timecard__header').getBoundingClientRect().height
+
+        let scrollingArea = this.$refs['scrolling-area']
+
+        scrollingArea.style.height = `${containerHeight - headerHeight - 20}px`
+      })
+      
+    },
+    clearConsole () {
+      this.statusStack = []
+    },
     tryToReconnect () {
       this.reconnectInterval = setInterval(() => {
         try {
@@ -64,6 +83,14 @@ export default {
         
       })
     },
+  },
+  watch: {
+    statusStack(val) {
+      console.log('should be scrolling...', this.$refs['scrolling-area'].lastElementChild)
+      this.$nextTick(() => {
+        this.$refs['scrolling-area'].lastChild.scrollIntoView(false)
+      })
+    }
   }
 }
 </script>
@@ -78,11 +105,32 @@ color: white;
   > ul {
     list-style: none;
     display: block;
-    padding: 15px;
+    padding: 15px 15px 0;
     margin: 0;
     background: #333;
     color: #aaa;
-    
+    overflow: scroll;
+
+    > li{
+      display: grid;
+      grid-gap: 5px;
+      grid-template-columns: max-content auto;
+
+      &:last-child {
+        padding-bottom: 10px;
+      }
+
+      > div {
+        &.timestamp {
+          font-family: 'Courier New', Courier, monospace;
+          font-size: .8em;
+          width: max-content;
+        }
+        &.success {
+          color: rgb(33, 168, 33);
+        }
+      }
+    }
   }
   
   height: 100%;

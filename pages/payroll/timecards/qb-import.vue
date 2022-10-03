@@ -1,14 +1,15 @@
 <template>
   <section id="qbwv-import">
 
-    <div v-if="tally">
+    <div id="tally-summary" v-if="tally">
       Records to create: {{ tally.toCreate.length }} ... Records to update: {{ tally.toUpdate.length }} ... Records to delete: {{ tally.toDelete.length }} ...
       <button @click="queueQBQueries">Import to QB</button>
     </div>
 
     
-
-    <TimecardConsole  />
+    <div id="timecard-console-container">
+      <TimecardConsole />
+    </div>
   
 
   </section>
@@ -33,8 +34,18 @@ export default {
       this.$bus.$off('resize')
     }
   },
+  mounted () {
+    this.resizeMain()
+  
+  },
   methods: {
-    resizeMain () {},
+    resizeMain () {
+      let tallyContainerBottom = document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height
+      let consoleContainer = document.getElementById('timecard-console-container')
+      let consoleHeight = window.innerHeight - tallyContainerBottom - 10
+
+      consoleContainer.style.height = `${ consoleHeight }px`
+    },
     async queueQBQueries () {
       await this.$axios.post(`/payroll/quickbooks/update`, {weekendingOrDay: this.$parent.formattedWeekendingOrDay, period: this.$parent.period, supplier: this.$parent.supplier})
       .then(async ({data}) => console.log(data))

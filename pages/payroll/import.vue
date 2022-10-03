@@ -46,7 +46,7 @@
             <h3>Step 3: Retrieve Current Salesforce Contractors for Analysis and Reconciliation</h3>
             <p>Gets all current Placements from Salesforce for the given weekending to determine current Contractors. Compares SF data against QuickBooks data (from Step 1) to identify QB/SF data inconsistencies. Prepares new Contractors to import and reports any missing data in SF.</p>
             <div><label><input type="checkbox" v-model="qbImportOptions.vendors">Include New Vendor Requests</label></div>
-            <p><date-picker v-model="weekending" :disabled-dates="{days: [0,1,2,3,4,5]}" format="yyyy-MM-dd" /></p>
+            <p><Datepicker v-model="weekending" :disabled-dates="{days: [0,1,2,3,4,5]}" format="yyyy-MM-dd" /></p>
             <div><button @click="startActivity" data-activity="retrieve-sf-data" :disabled="working || !weekending || !(qbImportOptions.employees || qbImportOptions.vendors)">Get Salesforce Placement Data &amp; Build QBXML Requests</button></div>
           </li>
           <li v-if="company">
@@ -239,10 +239,12 @@ export default {
     //this.getActivity()//also initiates polling...
     console.log(this.environment, '<< environment')
 
+    /*
     await this.$axios.post(`/confirm/modification`).then(({data}) => this.updateMods(data)).catch(e => {
       this.networkDown = true
       console.log(e)
     })
+    */
 
   },
   beforeDestroy () {
@@ -400,6 +402,9 @@ export default {
     },
 
     async startActivity ($ev) {
+
+
+      console.log('startActivity....')
 
       this.getActivity()
       this.activityCancelled = false
@@ -731,12 +736,13 @@ export default {
           
       }
 
-      .errors li,
-      .details li,
-      .modified li {
+      ol.errors li,
+      ol.details li,
+      ol.modified li {
             color: #ccc;
             font-size: .8rem;
             line-height: 1.5;
+            display: block;
 
             &.queued {
               a {

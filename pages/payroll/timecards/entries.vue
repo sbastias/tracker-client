@@ -1,7 +1,7 @@
 <template>
   <section id="timecard-entry-ui">
 
-    Timecard Entries
+    
 
     <div id="bottom-container" ref="bottom-container">
       <div id="main-container">
@@ -12,14 +12,14 @@
           </div>
           <div>
             
-          <a @click="autoFill">Auto-fill</a>
+          <a @click="autoFill">Auto-fill</a> {{weekending}}
           
           </div>
         </div>
 
         <section class="time-tracker-scrolling-container" ref="timecard-container">
           <ul id="time-tracking-list">
-            <PayrollItem
+            <Timecard
               v-for="(row, idx) in dataRows"
 
               v-show="activeFilters.payType.indexOf(row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.Pay_Type__c) > -1
@@ -35,7 +35,6 @@
                   unsaved: row.unsaved,
                   saved: row.saved,
                   saving: row.saving,
-                  imported: row.folder && row.folder.Imported_to_QB__c,
                   shownonbillable: row.shownonbillable
                 },
                 row.AVTRRT__Contact_Candidate__r.Pay_Type__c || 'undefined'
@@ -50,13 +49,13 @@
 </template>
 
 <script>
-import PayrollItem from '~/components/timecards/PayrollItem'
+import Timecard from '~/components/timecards/Timecard'
 import TimecardFilters from '~/components/timecards/TimecardFilters'
 import moment from 'moment'
 
 export default {
-  props: ['data-rows'],
-  components: {PayrollItem, TimecardFilters},
+  props: ['data-rows','weekending'],
+  components: {Timecard, TimecardFilters},
   data () {
     return {
       searchTerm: '',
@@ -129,7 +128,7 @@ export default {
       for (let x in this.dataRows) {
         if (!this.dataRows[x]) continue
 
-        this.$set(this.dataRows[x], 'Weekending', (this.period == 'day' && this.dataRows[x].folder.Weekending__c) || this.formattedWeekendingOrDay)
+        this.$set(this.dataRows[x], 'Weekending', this.weekending)
         this.$set(this.dataRows[x], 'unsaved', null)
         this.$set(this.dataRows[x], 'saved', null)
         this.$set(this.dataRows[x], 'saving', null)

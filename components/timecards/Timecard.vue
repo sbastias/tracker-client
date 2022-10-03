@@ -76,7 +76,7 @@
           <div 
             v-for="(dailyTrack, idx2) of row.timeTracks[billingType].filter(el => el.date == dow).sort((a,b) => types.indexOf(a.type) > types.indexOf(b.type) ? 1 : -1)" 
             :key="`track-${idx}-${idx2}`" 
-            :class="[dailyTrack.type.toLowerCase(), billingType.toLowerCase()]" 
+            :class="[dailyTrack.type.toLowerCase(), billingType.toLowerCase(), {synced: dailyTrack.synced}]" 
             class="hours" 
             v-show="activeType == dailyTrack.type"
           >
@@ -105,8 +105,8 @@
     <div class="heading">Additional Notes</div>
     <textarea v-model="row.Additional_Notes__c" @input="$emit('row-change', row)"></textarea>
     <div>
-      Pay Rate: ${{row.payRate.toFixed(2)}}
-      OT Rate: ${{row.OTRate.toFixed(2)}}
+      Pay Rate: ${{row.payRate && row.payRate.toFixed(2) || 0}}
+      OT Rate: ${{row.OTRate && row.OTRate.toFixed(2) || 0}}
       Calculated Total: $0
     </div>
   </div>
@@ -335,6 +335,12 @@ background: #fff;
 
             &.imported {
               background: white;
+            }
+          }
+
+          &.synced {
+            input {
+              background: rgb(209, 250, 173);
             }
           }
 

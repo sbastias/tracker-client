@@ -64,17 +64,17 @@
 
         <nav id="section-tabs">
           <ul>
-            <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate}" custom>
-              <li @click="navigate">Timecard Entries</li>
+            <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
+              <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
             </n-link>
-            <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate}" custom>
-              <li @click="navigate">Quickbooks Import</li>
+            <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom>
+              <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
             </n-link>
             
           </ul>
         </nav>
 
-        <n-child keep-alive :data-rows="dataRows" :tally="tally" />
+        <n-child keep-alive :data-rows="dataRows" :weekending="formattedWeekendingOrDay" :tally="tally" />
 
         
       </div>
@@ -83,20 +83,13 @@
 </template>
 
 <script>
-import TimecardFilters from '~/components/timecards/TimecardFilters'
-import TimecardConsole from '~/components/timecards/TimecardConsole'
-import PayrollItem from '~/components/timecards/PayrollItem'
-import MaxMin from '~/components/ui/MaxMin'
+
 import Loader from '~/components/ui/Loader'
 import moment from 'moment'
 
 export default {
   components: {
-    TimecardConsole,
-    PayrollItem,
-    MaxMin,
-    Loader,
-    TimecardFilters
+    Loader
   },
   data() {
     return {
@@ -307,7 +300,7 @@ export default {
 #timecards-ui {
   padding: 0 20px;
 }
-.details {
+div.details {
   height: 60px;
   display: flex;
   align-items: center;
@@ -417,11 +410,21 @@ a {
   margin: 0;
   padding: 0;
   display: flex;
+  border-bottom: 1px solid #ccc;
   li {
     display: block;
     padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-bottom-color: white;
+    transform: translateY(1px);
+    background: #eee;
+    &.isExactActive {
+      font-weight: bold;
+      background: white;
+    }
   }
 }
+margin-bottom: 20px;
 }
 
 .pay-type {
