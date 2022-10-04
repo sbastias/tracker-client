@@ -73,7 +73,7 @@ export default {
   },
   computed: {
     jobApplicant () {
-      return this.jobApplicants.find(el => el.Id = this.jobApplicantId)
+      return this.jobApplicants.find(el => el.Id == this.jobApplicantId)
     }
   },
   created () {
@@ -103,7 +103,9 @@ export default {
       this.$bus.log('Getting Job Applicant records...')
       if (!this.stafferId) return console.log('NO STAFFER')
       return await this.$axios.post(`/tracker/applicants/load`, {candidateId: this.stafferId})
-      .then(({data}) => this.jobApplicants = data)
+      .then(({data}) => {
+        this.jobApplicants = data
+      })
       .catch(e => {
         let {message, stack} = e.response.data
         this.$bus.$emit('toaster',{status: 'error', message})
@@ -113,16 +115,21 @@ export default {
     async assignStaffer () {
       //clean up placement extension
 
+      console.log(this.jobApplicant)
+
       let assign = {
         Id: this.placement.Id, 
         AVTRRT__Contact_Candidate__c: this.stafferId,
         AVTRRT__Job_Applicant__c: this.jobApplicantId,
+        //AVTRRT__Job_Applicant__c: this.jobApplicant,
         AVTRRT__Job__c: this.jobApplicant.AVTRRT__Job__c,
         AVTRRT__Hiring_Manager__c: this.jobApplicant.AVTRRT__Hiring_Manager__c,
         Compensation__c: this.jobApplicant.Compensation__c
       }
 
       this.$bus.log(JSON.stringify(assign, null, '\t'))
+
+      return
 
 
       await this.$axios.post(`/tracker/order/assign`, assign)
