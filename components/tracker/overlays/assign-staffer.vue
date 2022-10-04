@@ -115,7 +115,7 @@ export default {
     async assignStaffer () {
       //clean up placement extension
 
-      console.log(this.jobApplicant)
+      //console.log(this.jobApplicant)
 
       let assign = {
         Id: this.placement.Id, 
@@ -129,7 +129,7 @@ export default {
 
       this.$bus.log(JSON.stringify(assign, null, '\t'))
 
-      return
+      //return
 
 
       await this.$axios.post(`/tracker/order/assign`, assign)
