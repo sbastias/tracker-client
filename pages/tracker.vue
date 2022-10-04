@@ -378,6 +378,8 @@ export default {
     },
     updateRow (update) {
 
+      if(!this.unfilteredPlacements.length) return
+
       let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
       current = Object.assign(current, JSON.parse(JSON.stringify(update)))
       this.generateFilters()
@@ -396,6 +398,7 @@ export default {
     },
     insertRow (insert) {
 
+      if(!this.unfilteredPlacements.length) return
 
       let originalIdx = this.unfilteredPlacements.indexOf(this.unfilteredPlacements.find(el => el.Id == insert.originalId)) + 1
 
@@ -419,6 +422,8 @@ export default {
       })
     },
     prependRow (prepend) {
+
+      if(!this.unfilteredPlacements.length) return
 
       try {
         this.unfilteredPlacements.unshift(prepend)
@@ -449,6 +454,7 @@ export default {
       this.socket.on('placementDeclined', ({declinedPlacement, replacementOrder}) => {
 
         this.$bus.log('Received PLACEMENT DECLINED emission!', declinedPlacement)
+
         this.updateRow(declinedPlacement)
         this.prependRow(replacementOrder)
       })
