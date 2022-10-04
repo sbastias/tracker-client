@@ -212,32 +212,15 @@ export default {
 
       if (this.unfilteredPlacements.length) {
 
-        filteredPlacements = this.unfilteredPlacements.map(el => {
-          el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
-          el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
-
-          return el
-        }) 
-
         if (this.textSearch.length > 2) { 
 
-          let searchRegex = new RegExp(this.textSearch, 'ig')
+          let searchRegex = new RegExp(this.textSearch.replace(/\(/g, '\\(').replace(/\)/g, '\\)'))
+          
           console.log(searchRegex)
-
           
 
-          filteredPlacements = this.unfilteredPlacements.filter(el => {
-
-            let searchableFields = [
-              el.AVTRRT__Contact_Candidate__r.FirstName, 
-              el.AVTRRT__Contact_Candidate__r.LastName,
-              el.AVTRRT__Job_Title__c, 
-              el.Additional_Notes__c, 
-              el.Coverage__c
-            ]
-
-            return searchRegex.test(searchableFields.join('¡'))
-          })
+          filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.match(searchRegex))
+          //filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
         
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
@@ -245,8 +228,9 @@ export default {
             //|| el.Coverage__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
             //|| el.Additional_Notes__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
           //})
-        }
+        } else filteredPlacements = this.unfilteredPlacements
 
+        /*
         for (let filter of this.params.filters) {
           let activeFilters = Object.keys(filter.values).filter(key => !!filter.values[key])
           filteredPlacements = filteredPlacements.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
@@ -265,6 +249,7 @@ export default {
             else return this.ascending ? -1 : 1
           })
         }
+        */
 
 
       }
@@ -335,7 +320,28 @@ export default {
       await this.$axios.post(`/tracker/placements/load`, this.params)
       .then(({data}) => {
         //console.log(data)
-        this.unfilteredPlacements = data.placements
+        this.unfilteredPlacements = data.placements.map(el => {
+
+          try {
+            el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
+            el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
+            el.searchableText = [
+              el.AVTRRT__Contact_Candidate__r.FirstName || '', 
+              el.AVTRRT__Contact_Candidate__r.LastName || '',
+              el.AVTRRT__Job_Title__c || '', 
+              el.Additional_Notes__c || '', 
+              el.Coverage__c || '',
+              el.Name || ''
+            ].join('||')
+          } catch (e) {
+            console.log(e)
+          }
+
+          return el
+        })
+
+        console.log(this.unfilteredPlacements, '<< unfiltered')
+
         this.$bus.accounts = data.accounts
         this.$bus.users = data.users
         this.$bus.metadata = data.metadata
@@ -446,11 +452,22 @@ export default {
         this.$bus.log('Received ADD emission!', prepend)
         this.prependRow(prepend)
       })
-      /*
-      this.socket.on('disconnect', () => {
+      this.socket.on('disconnect', reason => {
+        this.$bus.log('Disconnected?', reason)
+
+        this.tryToReconnect()
         
       })
-      */
+    },
+    tryToReconnect () {
+      this.reconnectInterval = setInterval(() => {
+        try {
+          this.createSocket()
+          clearInterval(this.reconnectInterval)
+        } catch (e) {
+          console.log(e)
+        }
+      }, 1000)
     },
     toggleRow (placement) {
       if (this.activatedPlacement == placement) this.activatedPlacement = false

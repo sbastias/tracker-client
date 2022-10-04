@@ -24,11 +24,16 @@ export default {
   mounted () {
     this.createSocket()
 
+    this.$axios.post('/test/io')
+    .then(({data}) => console.log(data))
     
+    /*
     this.postInterval = setInterval(() => {
       this.$axios.post('/test/io')
       .then(({data}) => console.log(data))
     },2000)
+    */
+    
     
    this.resizeMain()
 
@@ -36,7 +41,7 @@ export default {
   beforeDestroy () {
     this.socket = false
     this.statusStack = []
-    clearInterval(this.postInterval)
+    //clearInterval(this.postInterval)
   },
   methods: {
     resizeMain () {

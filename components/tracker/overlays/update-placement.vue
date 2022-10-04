@@ -106,6 +106,13 @@ WFR Number
       <div class="form-row">
 
         <div class="form-cell">
+          <label>Airport</label>
+          <select v-model="placement.Client_Airport__c">
+            <option v-for="(airport, idx) of $bus.metadata.find(el => el.fullName == 'Airport').customValue" :key="`airport-option-${idx}`" :value="airport.fullName">{{airport.fullName}}</option>
+          </select>
+        </div>
+
+        <div class="form-cell">
           <label>Deployment Forms</label>
           <select v-model="placement.Deployment_Forms__c">
             <option v-for="(deployment, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Deployment_Forms__c').valueSet.valueSetDefinition.value" :key="`deployment-option-${idx}`" :value="deployment.label">{{deployment.fullName}}</option>
@@ -113,12 +120,12 @@ WFR Number
         </div>
 
         <div class="form-cell">
-          <label>Airport</label>
-          <select v-model="placement.Client_Airport__c">
-            <option v-for="(airport, idx) of $bus.metadata.find(el => el.fullName == 'Airport').customValue" :key="`airport-option-${idx}`" :value="airport.fullName">{{airport.fullName}}</option>
+          <label>Internal Status</label>
+          <select v-model="placement.Internal_Status__c">
+            <option value="">None</option>
+            <option v-for="(status, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Internal_Status__c').valueSet.valueSetDefinition.value" :key="`status-option-${idx}`" :value="status.label">{{status.fullName}}</option>
           </select>
         </div>
-
        
 
       </div>
@@ -188,6 +195,7 @@ export default {
       delete update.LastModifiedDate
       delete update.candidateCompensation
       delete update.jobApplicantPayRate
+      delete update.searchableText
       delete update.AVTRRT__Job_Applicant__r
 
       this.$bus.log(JSON.stringify(update, null, '\t'))
@@ -230,7 +238,7 @@ export default {
   .form-row:nth-child(1){grid-template-columns: 1fr 1fr 1fr 1fr;}
   .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
-  .form-row:nth-child(4){grid-template-columns: 1fr 1fr;}
+  .form-row:nth-child(4){grid-template-columns: 1fr 1fr 1fr;}
   .form-row:nth-child(5){grid-template-columns: 1fr 1fr;}
 }
 </style>

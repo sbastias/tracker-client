@@ -56,9 +56,7 @@ export default {
 
           if (this.options.status == 'error') return// do not automatically close an error
 
-          setTimeout(() => {
-            this.deactivateToaster()
-          }, this.hideDelay)
+          setTimeout(this.deactivateToaster, this.hideDelay)
         }
       }
     }
