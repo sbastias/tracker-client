@@ -30,5 +30,10 @@ export default [
     field: 'Deployment_Forms__c',
     values: []
   },
+  {
+    label: 'Internal Status',
+    field: 'Internal_Status__c',
+    values: []
+  },
   
 ]

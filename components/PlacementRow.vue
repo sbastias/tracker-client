@@ -1,5 +1,5 @@
 <template>
-<tbody class="placement-container" :class="[{mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate},rotationCommGroup]" :active="active" @click="toggleRow">
+<tbody class="placement-container" :class="[{internalStatus, mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate},rotationCommGroup]" :active="active" @click="toggleRow">
 
   <tr class="placement-row">
       <td class="id">
@@ -80,6 +80,9 @@ export default {
     this.resizeStuff()
   },
   computed: {
+    internalStatus () {
+      return !!this.placement.Internal_Status__c
+    },
     rotationCommGroup () {
       let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
       let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
@@ -160,45 +163,54 @@ export default {
     background-color: rgba(yellow, 0.4);
   }
 
-  &.confirmed {
-    &:before {background-color: green;}
-    background-color: rgba(rgb(74, 193, 5),0.2);
+  &.internalStatus {
+    &:before {background-color: rgb(255, 122, 74);}
+    background-color: rgb(255, 122, 74);
     &:hover {
-      background-color: rgba(rgb(74, 193, 5),0.4);
+      background-color: rgb(255, 122, 74);
     }
   }
-  &.sent {
-    &:before {background-color: orange;}
-    background-color: rgba(orange, 0.2);
-    &:hover {
-      background-color: rgba(orange, 0.4);
+  &:not(.internalStatus) {
+    &.confirmed {
+      &:before {background-color: green;}
+      background-color: rgba(rgb(74, 193, 5),0.2);
+      &:hover {
+        background-color: rgba(rgb(74, 193, 5),0.4);
+      }
     }
-  } 
-  &.open {
-    &:before {background-color: lightyellow;}
-    background-color: rgba(yellow, 0.2);
-    &:hover {
-      background-color: rgba(yellow, 0.4);
+    &.sent {
+      &:before {background-color: orange;}
+      background-color: rgba(orange, 0.2);
+      &:hover {
+        background-color: rgba(orange, 0.4);
+      }
+    } 
+    &.open {
+      &:before {background-color: lightyellow;}
+      background-color: rgba(yellow, 0.2);
+      &:hover {
+        background-color: rgba(yellow, 0.4);
+      }
+    } 
+    &.declined {
+      &:before {background-color: rgba(255, 68, 68, .5);}
+      background-color: rgba(255, 68, 68, .5);
+      background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
+      animation: declinedAlert 1s linear infinite;
+      &:hover{
+        background-color: pink;
+        background-image: none;
+      }
     }
-  } 
-  &.declined {
-    &:before {background-color: rgba(255, 68, 68, .5);}
-    background-color: rgba(255, 68, 68, .5);
-    background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
-    animation: declinedAlert 1s linear infinite;
-    &:hover{
-      background-color: pink;
-      background-image: none;
+    &.cancelled {
+      &:before {background-color: red;}
+      background-color: rgba(red, .2);
+      &:hover {
+        background-color: rgba(red, .4);
+      }
+      text-decoration: line-through;
+      span {opacity: .5;}
     }
-  }
-  &.cancelled {
-    &:before {background-color: red;}
-    background-color: rgba(red, .2);
-    &:hover {
-      background-color: rgba(red, .4);
-    }
-    text-decoration: line-through;
-    span {opacity: .5;}
   }
 
 

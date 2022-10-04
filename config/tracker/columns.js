@@ -123,5 +123,12 @@ export default [
     toggle: true,
     width: 180
   },
+  {
+    label: 'Internal Status',
+    field: 'Internal_Status__c',
+    sortable: true,
+    toggle: true,
+    width: 150
+  },
   
 ]
