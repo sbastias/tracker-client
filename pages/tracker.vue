@@ -214,7 +214,7 @@ export default {
 
         if (this.textSearch.length > 2) { 
 
-          let searchRegex = new RegExp(this.textSearch.replace(/\(/g, '\\(').replace(/\)/g, '\\)'))
+          let searchRegex = new RegExp(this.textSearch.replace(/\(/g, '\\(').replace(/\)/g, '\\)'), 'ig')
           
           console.log(searchRegex)
           
