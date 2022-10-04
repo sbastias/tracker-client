@@ -119,7 +119,7 @@ export default {
         AVTRRT__Job_Applicant__c: this.jobApplicantId,
         AVTRRT__Job__c: this.jobApplicant.AVTRRT__Job__c,
         AVTRRT__Hiring_Manager__c: this.jobApplicant.AVTRRT__Hiring_Manager__c,
-        Compensation__c: this.jobApplicant.AVTRRT__Hiring_Manager__c
+        Compensation__c: this.jobApplicant.Compensation__c
       }
 
       this.$bus.log(JSON.stringify(assign, null, '\t'))
