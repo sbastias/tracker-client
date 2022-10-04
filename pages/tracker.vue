@@ -219,7 +219,7 @@ export default {
           console.log(searchRegex)
           
 
-          filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.match(searchRegex))
+          filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText && el.searchableText.match(searchRegex))
           //filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
         
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
@@ -320,7 +320,7 @@ export default {
       await this.$axios.post(`/tracker/placements/load`, this.params)
       .then(({data}) => {
         //console.log(data)
-        this.unfilteredPlacements = data.placements.map(el => {
+        let unfilteredPlacements = data.placements.map(el => {
 
           try {
             el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
@@ -339,6 +339,8 @@ export default {
 
           return el
         })
+
+        this.unfilteredPlacements = unfilteredPlacements
 
         console.log(this.unfilteredPlacements, '<< unfiltered')
 
@@ -418,9 +420,12 @@ export default {
     },
     prependRow (prepend) {
 
-
-      this.unfilteredPlacements.unshift(prepend)
-      this.generateFilters()
+      try {
+        this.unfilteredPlacements.unshift(prepend)
+      } catch (e) {
+        console.log(e)
+      }
+      //this.generateFilters()
       
     },
     async doRowPrepend (prepend) {
@@ -440,6 +445,14 @@ export default {
         transports: ['websocket'],
         path: '/ws/'
       })
+      
+      this.socket.on('placementDeclined', ({declinedPlacement, replacementOrder}) => {
+
+        this.$bus.log('Received PLACEMENT DECLINED emission!', declinedPlacement)
+        this.updateRow(declinedPlacement)
+        this.prependRow(replacementOrder)
+      })
+      
       this.socket.on('updatePlacement', update => {
         this.$bus.log('Received UPDATE emission!', update)
         this.updateRow(update)

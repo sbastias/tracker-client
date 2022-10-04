@@ -170,7 +170,8 @@ export default {
     this.placement = Object.assign({}, this.originalPlacement)
   },
   mounted () {
-    this.$bus.log(this.$bus.metadata)
+    //this.$bus.log(this.$bus.metadata)
+    console.log(JSON.stringify(this.placement))
   },
   methods: {
     updateStartDate (val) {
