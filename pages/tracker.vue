@@ -230,7 +230,7 @@ export default {
           //})
         } else filteredPlacements = this.unfilteredPlacements
 
-        /*
+        
         for (let filter of this.params.filters) {
           let activeFilters = Object.keys(filter.values).filter(key => !!filter.values[key])
           filteredPlacements = filteredPlacements.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
@@ -249,7 +249,7 @@ export default {
             else return this.ascending ? -1 : 1
           })
         }
-        */
+        
 
 
       }
