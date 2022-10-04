@@ -154,6 +154,7 @@ export default {
       delete ext.candidateCompensation
       delete ext.jobApplicantPayRate
       delete ext.AVTRRT__Job_Applicant__r
+      delete ext.searchableText
 
       ext.AVTRRT__Extension__c = true
 
