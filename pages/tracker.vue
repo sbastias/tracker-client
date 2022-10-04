@@ -121,12 +121,12 @@ class rangeObj  {
   constructor () {
 
     this.fromDate = ((date) => {
-      date.setDate(date.getDate() - 7)
+      date.setDate(date.getDate() - 21)
       return date
     })(new Date())
 
     this.toDate = ((date) => {
-      date.setDate(date.getDate() + 30)
+      date.setMonth(date.getMonth() + 3)
       return date
     })(new Date())
 
