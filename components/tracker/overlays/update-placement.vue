@@ -202,11 +202,15 @@ export default {
       this.$bus.log(JSON.stringify(update, null, '\t'))
 
       await this.$axios.post(`/tracker/update`, update)
-      .then(({data}) => {
+      .then(async ({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
         this.$parent.$emit('update-row', data)
         this.$parent.$emit('cancel-overlay')
         this.edited = false
+
+        if (this.originalPlacement.Internal_Status__c != data.Internal_Status__c && data.Internal_Status__c == 'Cancel Rotation') {
+          await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Internal_Status__c: 'Cancel Rotation' })
+        }
       })
       .catch(e => {
         let {message, stack} = e.response.data
