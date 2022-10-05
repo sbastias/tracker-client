@@ -318,9 +318,9 @@ export default {
     a{pointer-events: all;}
     color: white;
     &:hover {
-      background-color: #666;
+      background-color: #666!important;
     }
-    background-color: #666;
+    background-color: #666!important;
     animation: none;
     a {color: lightblue}
     

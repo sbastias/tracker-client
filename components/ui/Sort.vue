@@ -30,7 +30,7 @@ polygon,
 polyline {
   fill: #888;
   &.active {
-    fill: #ffd000;
+    fill: #ff00d0;
   }
 }
 }
