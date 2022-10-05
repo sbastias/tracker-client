@@ -26,11 +26,11 @@ export default ({store}) => {
           },
           testing: {
             payroll: 'https://qbwc.thebullittgroup.com/test/ysg/',
-            tracker: 'https://mgmt-server.thebullittgroup.com'
+            tracker: 'https://starla-server.thebullittgroup.com'
           },
           production: {
             payroll: 'https://qbwc.thebullittgroup.com/ysg/',
-            tracker: 'https://mgmt-server.thebullittgroup.com'
+            tracker: 'https://starla-server.thebullittgroup.com'
           }
         }
       }
