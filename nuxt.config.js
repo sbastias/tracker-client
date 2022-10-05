@@ -66,7 +66,7 @@ export default {
     sockets: [
       {
         name: 'tracker',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8013' || 'https://starla-server.thebullittgroup.com/tracker',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8013' || 'https://starla-server.thebullittgroup.com/tracker-io',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
@@ -77,7 +77,7 @@ export default {
       },
       {
         name: 'timecards',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://starla-server.thebullittgroup.com/timecards',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://starla-server.thebullittgroup.com/timecards-io',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
