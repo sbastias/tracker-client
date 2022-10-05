@@ -157,6 +157,7 @@ export default {
       delete ext.searchableText
 
       ext.AVTRRT__Extension__c = true
+      ext.Checkbox1__c = true
 
       this.$bus.log(JSON.stringify(ext, null, '\t'))
 

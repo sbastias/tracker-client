@@ -217,9 +217,18 @@ export default {
           let searchRegex = new RegExp(this.textSearch.replace(/\(/g, '\\(').replace(/\)/g, '\\)'), 'ig')
           
           console.log(searchRegex)
+
+          
           
 
-          filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText && el.searchableText.match(searchRegex))
+          filteredPlacements = this.unfilteredPlacements.filter(el => [
+              el.AVTRRT__Contact_Candidate__r.FirstName || '', 
+              el.AVTRRT__Contact_Candidate__r.LastName || '',
+              el.AVTRRT__Job_Title__c || '', 
+              el.Additional_Notes__c || '', 
+              el.Coverage__c || '',
+              el.Name || ''
+            ].join('||').match(searchRegex))
           //filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
         
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
@@ -325,14 +334,7 @@ export default {
           try {
             el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
             el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
-            el.searchableText = [
-              el.AVTRRT__Contact_Candidate__r.FirstName || '', 
-              el.AVTRRT__Contact_Candidate__r.LastName || '',
-              el.AVTRRT__Job_Title__c || '', 
-              el.Additional_Notes__c || '', 
-              el.Coverage__c || '',
-              el.Name || ''
-            ].join('||')
+            
           } catch (e) {
             console.log(e)
           }
