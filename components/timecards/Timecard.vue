@@ -89,7 +89,7 @@
             <label>{{moment.utc(dow).format('MM/DD ddd')}}</label>
 
             <div>
-              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="$emit('row-change', row)" :class="{imported: !!dailyTrack.qb}">
+              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}">
               <div v-if="dailyTrack.id" class="notes-cta" @click="toggleNote" :title="dailyTrack.defaultNotes">
                 <NotesIcon :custom="dailyTrack.customNotes" />
               </div>
@@ -181,7 +181,7 @@ export default {
           }
         })(type)
 
-        console.log(pay, '<< pay')
+        //console.log(pay, '<< pay')
 
         totals[type] = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0) * pay
         total += totals[type]
@@ -198,6 +198,10 @@ export default {
     
   },
   methods: {
+    hourChange ($ev, track) {
+      track.synced = false
+      this.$emit('row-change', this.row)
+    },
     toggleNote ($ev) {
       if (this.activeNoteId == $ev.target.closest('.hours').id) this.activeNoteId = false
       else this.activeNoteId = $ev.target.closest('.hours').id

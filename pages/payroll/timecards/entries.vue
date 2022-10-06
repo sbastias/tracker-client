@@ -131,7 +131,7 @@ export default {
       for (let x in this.dataRows) {
         if (!this.dataRows[x]) continue
 
-        this.$set(this.dataRows[x], 'Weekending', this.weekending)
+        
         this.$set(this.dataRows[x], 'unsaved', null)
         this.$set(this.dataRows[x], 'saved', null)
         this.$set(this.dataRows[x], 'saving', null)
@@ -187,6 +187,7 @@ export default {
       //return
 
       row.saving = true
+      row.Weekending = this.weekending
 
       await this.$axios
         .post(`/payroll/salesforce/update`, row, {
