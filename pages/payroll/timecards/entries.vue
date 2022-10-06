@@ -54,7 +54,7 @@ import TimecardFilters from '~/components/timecards/TimecardFilters'
 import moment from 'moment'
 
 export default {
-  props: ['data-rows','weekending'],
+  props: ['data-rows','weekending','starting-tally'],
   components: {Timecard, TimecardFilters},
   data () {
     return {
@@ -68,6 +68,7 @@ export default {
       activeNoteId: false,
       saveTimers: {},
       unsaved: {},
+      tally: {}
     }
   },
   computed: {
@@ -84,6 +85,8 @@ export default {
       this.$bus.$on('resize', this.resizeMain)
     }
     this.prepareAndAssignDataRows()
+
+    this.tally = Object.assign({}, this.startingTally)
   },
   beforeDestroy() {
     if (process.client) {
@@ -275,6 +278,13 @@ export default {
     margin: auto;
     padding: 15px;
   }
+}
+
+#time-tracking-list {
+  list-style: none;
+  margin: 30px auto 50px;
+  padding: 0;
+  max-width: 1200px;
 }
 
 </style>

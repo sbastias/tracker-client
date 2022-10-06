@@ -3,7 +3,7 @@
     <div class="header-controls" ref="header-controls">
       <h2>Timecards Management</h2>
 
-      <div v-if="!startDate && !importingData" class="details">
+      <div v-if="!startDate && !importingData" class="timecard-params">
         <div>
           <select v-model="supplier">
             <option value="">Select Company</option>
@@ -57,9 +57,9 @@
       <div v-else>
 
         <div class="details">          
-          <a @click="resetDates">Change Weekending/Company</a>
+          <button @click="resetDates">Change Weekending/Company</button>
           &nbsp;
-          <a @click="refreshResult">Refresh</a>
+          <button @click="refreshResult">Refresh Results</button>
         </div>
 
         <nav id="section-tabs">
@@ -74,7 +74,7 @@
           </ul>
         </nav>
 
-        <n-child keep-alive :data-rows="dataRows" :weekending="formattedWeekendingOrDay" :tally="tally" />
+        <n-child keep-alive :data-rows="dataRows" :weekending="formattedWeekendingOrDay" :starting-tally="tally" />
 
         
       </div>
@@ -100,7 +100,6 @@ export default {
       weekendingOrDay: '',
       weekday: '',
       supplier: 'YORK',
-      tally: [],
       moment,
       period: '',
       folders: false,
@@ -291,7 +290,7 @@ export default {
 
 .header-controls {
   h2 {
-    margin-bottom: 15px;
+    //margin-bottom: 15px;
   }
 
   padding: 15px 20px;
@@ -300,8 +299,14 @@ export default {
 #timecards-ui {
   padding: 0 20px;
 }
-div.details {
-  height: 60px;
+
+.timecard-params {
+  margin-top: 30px;
+}
+
+div.details {//must be div! ul.details used in Tracker.
+  height: 40px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
 }
@@ -386,12 +391,7 @@ input::-webkit-inner-spin-button {
   }
 }
 
-#time-tracking-list {
-  list-style: none;
-  margin: 0 auto 50px;
-  padding: 0;
-  max-width: 1200px;
-}
+
 
 a {
   color: rgb(36, 146, 242);

@@ -1,5 +1,5 @@
 <template>
-  <li class="time-tracking-item" :id="row.Id">
+  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !syncToQB}">
 
 <div class="row">
   <div class="candidate-name">
@@ -59,13 +59,17 @@
 
   <div class="hours-container">
 
-    <ul class="type-tabs">
-      <li v-for="_type in types" :key="`type-${_type}`" @click="activeType = _type" :class="{active: activeType == _type}">
-        <span>
-          {{ _type }}
-        </span>
-      </li>
-    </ul>
+    <div id="tabs-and-sync">
+      <ul class="type-tabs">
+        <li v-for="_type in types" :key="`type-${_type}`" @click="activeType = _type" :class="{active: activeType == _type}">
+          <span>
+            {{ _type }}
+          </span>
+        </li>
+      </ul>
+
+      <label class="sync-to-qb">Sync to QB <input type="checkbox" v-model="syncToQB" @change="toggleTimeTrackingsSyncFlag" /></label>
+    </div>
 
     <div class="week" :style="{display: billingType == 'NonBillable' && !row.shownonbillable && 'none' || 'block'}" v-for="billingType of ['Billable','NonBillable']" :key="billingType" :class="{'non-billable': billingType == 'NonBillable'}">
 
@@ -104,10 +108,13 @@
   <div class="placement-notes">
     <div class="heading">Additional Notes</div>
     <textarea v-model="row.Additional_Notes__c" @input="$emit('row-change', row)"></textarea>
-    <div>
-      Pay Rate: ${{row.payRate && row.payRate.toFixed(2) || 0}}
-      OT Rate: ${{row.OTRate && row.OTRate.toFixed(2) || 0}}
-      Calculated Total: $0
+    <div class="totals-rows">
+      <div>
+        Pay Rate: ${{row.payRate && row.payRate.toFixed(2) || 0}} OT Rate: ${{row.OTRate && row.OTRate.toFixed(2) || 0}}
+      </div>
+      <div>
+        Regular: ${{totals.Regular}} OT: ${{totals.OT}}  Stand By: ${{totals['Stand By']}} <b>TOTAL: ${{totals.total}}</b>
+      </div>
     </div>
   </div>
 </div>
@@ -139,14 +146,56 @@ export default {
       moment,
       activeNoteId: false,
       activeType: 'Regular',
+      syncToQB: true,
       types: ['Regular','OT','Stand By'] 
     }
+  },
+  computed: {
+    allTimeTracks () {
+      let billingTypes = Object.keys(this.row.timeTracks)
+
+      let allTimeTracks = []
+      for (let billingType of billingTypes) {
+        allTimeTracks.push(...this.row.timeTracks[billingType])
+      }
+
+      return allTimeTracks
+    },
+    totals () {
+
+      let totals = {}
+      let total = 0
+
+      for (let type of this.types) {
+        totals[type] = this.row.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0) * this.row.payRate
+        total += totals[type]
+      }
+
+      totals.total = total
+      
+      return totals
+    }
+  },
+  mounted () {
+    
+    this.checkSync()
+    
   },
   methods: {
     toggleNote ($ev) {
       if (this.activeNoteId == $ev.target.closest('.hours').id) this.activeNoteId = false
       else this.activeNoteId = $ev.target.closest('.hours').id
     },
+    checkSync () {
+      if (this.allTimeTracks.find(el => !!el.doNotSync)) this.syncToQB = false
+    },
+    toggleTimeTrackingsSyncFlag () {
+      
+     this.allTimeTracks.map(el => el.doNotSync = !this.syncToQB)
+     console.log(this.row.timeTracks)
+
+     this.$emit('row-change', this.row)
+    }
   }
 
 }
@@ -158,6 +207,9 @@ export default {
 
 transition: .3s ease-out;
 
+&.do-not-sync{
+  background: #eee;
+}
 &.unsaved {
   background: rgb(255, 234, 171);
 }
@@ -177,7 +229,8 @@ transition: .3s ease-out;
 
 
 padding: 20px;
-border: 1px solid #fff;
+border: 1px solid #ccc;
+box-shadow: 3px 3px 5px -4px black;
 border-radius: 5px;
 margin-bottom: 10px;
 background: #fff;
@@ -223,9 +276,19 @@ background: #fff;
     width: 100%;
     grid-template-columns: 2fr 1fr;
 
+    #tabs-and-sync {
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+
+      .sync-to-qb,
+      .sync-to-qb input {
+        width: max-content;
+      }
+    }
     .type-tabs {
       display: block;
-      margin: 0 0 5px;
+      margin: 0;
       padding: 0;
       list-style: none;
       height: 25px;
@@ -285,7 +348,7 @@ background: #fff;
 
       
       .week{
-        margin-top: 10px;
+        margin-top: 5px;
       }
       
 
@@ -390,5 +453,9 @@ background: #fff;
   
 }
 
+}
+
+.totals-rows > div {
+  margin: 5px 0;
 }
 </style>
