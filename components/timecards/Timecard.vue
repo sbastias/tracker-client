@@ -82,6 +82,7 @@
             :key="`track-${idx}-${idx2}`" 
             :class="[dailyTrack.type.toLowerCase(), billingType.toLowerCase(), {synced: dailyTrack.synced}]" 
             class="hours" 
+            :id="dailyTrack.id"
             v-show="activeType == dailyTrack.type"
           >
 
@@ -165,9 +166,24 @@ export default {
 
       let totals = {}
       let total = 0
+      let _vm = this
 
       for (let type of this.types) {
-        totals[type] = this.row.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0) * this.row.payRate
+
+        let pay = (type => {
+          switch (type) {
+            case 'Regular':
+              return _vm.row.payRate
+            case 'OT':
+              return _vm.row.OTRate
+            default:
+              return 0
+          }
+        })(type)
+
+        console.log(pay, '<< pay')
+
+        totals[type] = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0) * pay
         total += totals[type]
       }
 
