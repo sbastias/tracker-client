@@ -229,6 +229,7 @@ transition: .3s ease-out;
 
 &.do-not-sync{
   background: #eee;
+  transform: translateX(10px);
 }
 &.unsaved {
   background: rgb(255, 234, 171);
