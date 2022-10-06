@@ -211,6 +211,9 @@ export default {
         if (this.originalPlacement.Internal_Status__c != data.Internal_Status__c && data.Internal_Status__c == 'Cancel Rotation') {
           await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Internal_Status__c: 'Cancel Rotation' })
         }
+        if (this.originalPlacement.Rotation_Communication__c != data.Rotation_Communication__c && data.Rotation_Communication__c == 'Rotation Declined') {
+          await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Rotation_Communication__c: 'Rotation Declined' })
+        }
       })
       .catch(e => {
         let {message, stack} = e.response.data
