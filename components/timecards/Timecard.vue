@@ -117,7 +117,7 @@
         Reg: ${{totals.Regular.amount}} ({{totals.Regular.hours}}) 
         OT: ${{totals.OT.amount}}  ({{totals.OT.hours}}) 
         SB: ${{totals['Stand By'].amount}}  ({{totals['Stand By'].hours}}) 
-        <b>TOTAL: ${{totals.total.amount}}</b>
+        <b>TOTAL: ${{totals.total.amount}}({{totals.total.hours}}) </b>
       </div>
     </div>
   </div>
