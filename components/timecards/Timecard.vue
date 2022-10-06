@@ -114,7 +114,10 @@
         Pay Rate: ${{row.payRate && row.payRate.toFixed(2) || 0}} OT Rate: ${{row.OTRate && row.OTRate.toFixed(2) || 0}}
       </div>
       <div>
-        Regular: ${{totals.Regular}} OT: ${{totals.OT}}  Stand By: ${{totals['Stand By']}} <b>TOTAL: ${{totals.total}}</b>
+        Reg: ${{totals.Regular.amount}} ({{totals.Regular.hours}}) 
+        OT: ${{totals.OT.amount}}  ({{totals.OT.hours}}) 
+        SB: ${{totals['Stand By'].amount}}  ({{totals['Stand By'].hours}}) 
+        <b>TOTAL: ${{totals.total.amount}}</b>
       </div>
     </div>
   </div>
@@ -165,7 +168,7 @@ export default {
     totals () {
 
       let totals = {}
-      let total = 0
+      let total = {hours: 0, amount: 0}
       let _vm = this
 
       for (let type of this.types) {
@@ -182,9 +185,13 @@ export default {
         })(type)
 
         //console.log(pay, '<< pay')
+        totals[type] = {}
 
-        totals[type] = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0) * pay
-        total += totals[type]
+        totals[type].hours = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0)
+        totals[type].amount = totals[type].hours * pay
+        
+        total.hours += totals[type].hours
+        total.amount += totals[type].amount
       }
 
       totals.total = total
