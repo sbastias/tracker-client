@@ -11,6 +11,8 @@
 
     <div class="form" v-else>
 
+      <p>Note: Candidate Status must equal 'Current Field Staffer' to appear in the list below.</p>
+
       <div class="form-row">
         
         <div class="form-cell">
