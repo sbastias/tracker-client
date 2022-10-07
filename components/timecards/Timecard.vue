@@ -208,7 +208,7 @@ export default {
         //console.log(pay, '<< pay')
         totals[type] = {}
 
-        totals[type].hours = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += el.hours, 0)
+        totals[type].hours = this.allTimeTracks.filter(el => el.type == type).reduce((sum, el) => sum += Number(el.hours), 0)
         totals[type].amount = totals[type].hours * pay
         
         total.hours += totals[type].hours
