@@ -137,8 +137,6 @@ export default {
         this.$set(this.dataRows[x], 'saving', null)
         this.$set(this.dataRows[x], 'shownonbillable', null)
         this.$set(this.dataRows[x], 'correction', this.period == 'day' && this.formattedWeekendingOrDay)
-        this.$set(this.dataRows[x], 'payRate', Number((this.dataRows[x].Compensation__r && this.dataRows[x].Compensation__r.Default_Pay_Rate__c) || this.dataRows[x].AVTRRT__Pay_Rate__c || 0))
-        this.$set(this.dataRows[x], 'OTRate', Number((this.dataRows[x].Compensation__r && this.dataRows[x].Compensation__r.Default_OT_Pay_Rate__c) || this.dataRows[x].Overtime_Pay_Rate__c || 0))
       }
 
       //console.log(this.dataRows, '<< dataRows')

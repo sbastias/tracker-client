@@ -418,6 +418,7 @@ a {
     border-bottom-color: white;
     transform: translateY(1px);
     background: #eee;
+    cursor: pointer;
     &.isExactActive {
       font-weight: bold;
       background: white;

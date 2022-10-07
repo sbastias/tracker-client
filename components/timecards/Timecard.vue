@@ -1,7 +1,7 @@
 <template>
   <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !syncToQB}">
 
-<div class="row">
+<div class="row" :title="payRate">
   <div class="candidate-name">
     <a :href="`https://thebullittgroup.my.salesforce.com/${row.AVTRRT__Contact_Candidate__c}`" target="_blank">{{row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.LastName}}, {{row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.FirstName}}</a>
   </div>
@@ -86,16 +86,25 @@
             v-show="activeType == dailyTrack.type"
           >
 
-            <label>{{moment.utc(dow).format('MM/DD ddd')}}</label>
+            <label><span>{{moment.utc(dow).format('MM/DD ddd')}}</span></label>
 
             <div>
-              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}">
+              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}" />
               <div v-if="dailyTrack.id" class="notes-cta" @click="toggleNote" :title="dailyTrack.defaultNotes">
                 <NotesIcon :custom="dailyTrack.customNotes" />
               </div>
               <div class="notes" v-show="!!activeNoteId && activeNoteId == dailyTrack.id">
                 <input type="text" class="notes-input" v-model="dailyTrack.notes" @input="$emit('row-change', row)">
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="daily-container">
+          <div class="hours">
+            <label><span>TOTAL</span></label>
+            <div style="cursor: not-allowed;">
+              <input type="number" readonly v-model="totals[activeType].hours" style="pointer-events: none;" />
             </div>
           </div>
         </div>
@@ -111,7 +120,7 @@
     <textarea v-model="row.Additional_Notes__c" @input="$emit('row-change', row)"></textarea>
     <div class="totals-rows">
       <div>
-        Pay Rate: ${{row.payRate && row.payRate.toFixed(2) || 0}} OT Rate: ${{row.OTRate && row.OTRate.toFixed(2) || 0}}
+        Pay Rate: ${{ payRate }} OT Rate: ${{ OTRate }}
       </div>
       <div>
         Reg: ${{totals.Regular.amount}} ({{totals.Regular.hours}}) 
@@ -157,6 +166,16 @@ export default {
     }
   },
   computed: {
+    payRate () {
+
+      return Number(this.row.Compensation__r && this.row.Compensation__r.Default_Pay_Rate__c || this.row.AVTRRT__Pay_Rate__c || 0).toFixed(2)
+
+    },
+    OTRate () {
+
+      return Number(this.row.Compensation__r && this.row.Compensation__r.Default_OT_Pay_Rate__c || this.row.Overtime__Pay_Rate__c || 0).toFixed(2)
+
+    },
     allTimeTracks () {
       let billingTypes = Object.keys(this.row.timeTracks)
 
@@ -178,9 +197,9 @@ export default {
         let pay = (type => {
           switch (type) {
             case 'Regular':
-              return _vm.row.payRate
+              return this.payRate || 0
             case 'OT':
-              return _vm.row.OTRate
+              return this.OTRate || 0
             default:
               return 0
           }
@@ -389,7 +408,7 @@ background: #fff;
 
       .weekly-container {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(8, 1fr);
         grid-gap: 5px;
       }
 
@@ -408,7 +427,7 @@ background: #fff;
 
           label {position: absolute;line-height: 25px; top: 0; left: 11px; color: #999; font-size: 1rem; pointer-events: none;
             >span {
-              font-size: .8rem;
+              font-size: .7rem;
               font-style: italic;
             }
           }
