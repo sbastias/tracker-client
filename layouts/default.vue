@@ -1,7 +1,7 @@
 <template>
   <div>
     <Toaster />
-    <header>
+    <header v-show="!$bus.fullscreen">
       <div>
         <Logo />
         <h1>Starla</h1>
@@ -18,7 +18,7 @@
 
 <script>
 import Logo from '~/components/Logo'
-import Toaster from '~/components/Toaster'
+import Toaster from '~/components/ui/Toaster'
 import MainNavigation from '~/components/MainNavigation'
 import { mapGetters } from 'vuex'
 

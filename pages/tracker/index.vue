@@ -11,7 +11,7 @@
       @prepend-row="doRowPrepend"
     />
 
-    <div>
+    <div v-show="!$bus.fullscreen">
       <h1>Tracker</h1>      
     </div>
     
@@ -36,7 +36,10 @@
           <button @click="loadData">Load Placements</button>
         </div>
         
-        <div v-show="!!placements">Displaying {{placements.length}} placements</div>
+        <div>
+          <span v-show="!!placements">Displaying {{placements.length}} placements</span>
+          <span>&nbsp;&nbsp;<a @click="$bus.toggleFullscreen"><span v-if="$bus.fullscreen">Exit </span>Full Screen Mode</a></span>
+        </div>
 
         <div>
           <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
@@ -47,7 +50,7 @@
 
       <div v-if="!!placements">
 
-        <section id="search-bar">
+        <section class="search-bar tracker">
           <div class="search-field-container">
             <input type="text" v-model="textSearch" class="search-field" />
           </div>
@@ -549,7 +552,16 @@ export default {
   },
   watch: {
     showFilters () {this.$nextTick(() => this.resizeStuff())},
-    showColumns () {this.$nextTick(() => this.resizeStuff())}
+    showColumns () {this.$nextTick(() => this.resizeStuff())},
+    '$bus.fullscreen' (val) {
+      if (val) {
+        this.showFilters = false
+        this.showColumns = false
+      } else {
+        this.showFilters = true
+        this.showColumns = true
+      }
+    }
   }
 }
 </script>
@@ -594,9 +606,16 @@ button {
   text-align: center;
 }
 
-#search-bar {
+.search-bar {
   display: grid;
-  grid-template-columns: auto max-content max-content;
+
+  &.tracker{
+    grid-template-columns: auto max-content max-content;
+  }
+  &.timecards{
+    grid-template-columns: auto max-content;
+  }
+
   grid-gap: 20px;
 
   .search-field-container {
@@ -631,7 +650,7 @@ button {
   align-items: center;
 }
 
-#date-range-new-order, #filters, #search-bar, #toggleable-columns {
+#date-range-new-order, #filters, .search-bar, #toggleable-columns {
   font-size: .8rem;
   padding: 10px;
   background: #eee;

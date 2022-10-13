@@ -1,6 +1,9 @@
 <template>
   <div id="console-timecard">
-    <div id="console-timecard__header"><h3>Payroll Console</h3> <a @click="clearConsole">Clear Console</a></div>
+    <div id="console-timecard__header">
+      <h3>Payroll Console</h3>
+      <button @click="clearConsole">Clear Console</button>
+    </div>
     <ul id="console-timecard__scrolling" ref="scrolling-area">
       <li v-for="(line, idx) in statusStack" :key="idx+'line'">
         <div class="timestamp">{{moment(line.timestamp).format('YYYY-MM-DD hh:mm:ssA')}}</div>
@@ -13,7 +16,7 @@
 <script>
 import moment from 'moment'
 export default {
-  props: ['tally'],
+  props: ['starting-tally'],
   data () {
     return {
       moment,
@@ -72,7 +75,7 @@ export default {
     createSocket () {
       
       this.socket = this.$nuxtSocket({
-        name: 'timecards',
+        name: 'payroll',
         transports: ['websocket'],
         path: '/ws/'
       })
@@ -80,7 +83,7 @@ export default {
         this.$bus.log('Received UPDATE emission!', update)
         this.statusStack.push(update)
       })
-      this.socket.on('reconnection', () => alert('Reconnected!'))
+      //this.socket.on('reconnection', () => alert('Reconnected!'))
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
@@ -90,9 +93,12 @@ export default {
     },
   },
   watch: {
-    statusStack(val) {
-      console.log('should be scrolling...', this.$refs['scrolling-area'].lastElementChild)
+    statusStack (val) {
+
+      if (val.length == 0) return false
+
       this.$nextTick(() => {
+        //console.log('should be scrolling...', this.$refs['scrolling-area'].lastElementChild)
         this.$refs['scrolling-area'].lastChild.scrollIntoView(false)
       })
     }
@@ -106,6 +112,13 @@ export default {
 background: #666;
 padding: 10px;
 color: white;
+
+#console-timecard__header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+}
 
   > ul {
     list-style: none;
@@ -133,6 +146,9 @@ color: white;
         }
         &.success {
           color: rgb(33, 168, 33);
+        }
+        &.error {
+          color: rgb(168, 33, 33);
         }
       }
     }

@@ -73,10 +73,10 @@ export default {
             origin: ['http://localhost:3000','https://starla.thebullittgroup.com']
           }
         },
-        path: '/ws/'    
+        path: '/ws/'
       },
       {
-        name: 'timecards',
+        name: 'payroll',
         url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://payroll-server.thebullittgroup.com',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {

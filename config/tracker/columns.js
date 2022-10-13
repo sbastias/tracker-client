@@ -15,7 +15,7 @@ export default [
     label: 'Placement #',
     field: 'Name',
     width: 100,
-    toggle: true
+    toggle: false
   },
   {
     label: 'Job Title',
@@ -33,7 +33,7 @@ export default [
   {
     label: 'Pay Rate',
     field: 'candidateCompensation',
-    toggle: true,
+    toggle: false,
     width: 80
   },
   {

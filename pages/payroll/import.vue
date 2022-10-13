@@ -177,7 +177,7 @@
 
 <script>
 import moment from 'moment'
-import StatusBar from '~/components/StatusBar'
+import StatusBar from '~/components/ui/StatusBar'
 
 
 

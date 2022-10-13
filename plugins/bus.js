@@ -19,6 +19,7 @@ export default ({store}) => {
         metadata: false,
         accounts: false,
         users: false,
+        fullscreen: false,
         servers: {
           development: {
             payroll: 'http://localhost:8009',
@@ -36,6 +37,9 @@ export default ({store}) => {
       }
     },
     methods: {
+      toggleFullscreen () {
+        this.fullscreen = !this.fullscreen
+      },
       log () {
         //return false
         console.log(JSON.parse(JSON.stringify(arguments)))

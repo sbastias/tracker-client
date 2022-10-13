@@ -1,8 +1,8 @@
 <template>
   <section id="qbwv-import">
 
-    <div id="tally-summary" v-if="tally">
-      Records to create: {{ tally.toCreate.length }} ... Records to update: {{ tally.toUpdate.length }} ... Records to delete: {{ tally.toDelete.length }} ...
+    <div id="tally-summary">
+      <div v-if="startingTally">Records to create: {{ startingTally.toCreate.length }} ... Records to update: {{ startingTally.toUpdate.length }} ... Records to delete: {{ startingTally.toDelete.length }} ...</div>
       <button @click="queueQBQueries">Import to QB</button>
     </div>
 
@@ -19,7 +19,7 @@
 import TimecardConsole from '~/components/timecards/TimecardConsole'
 
 export default {
-  props: [ 'tally'],
+  props: [ 'starting-tally'],
   components: {
     TimecardConsole
 },  
@@ -40,9 +40,13 @@ export default {
   },
   methods: {
     resizeMain () {
-      let tallyContainerBottom = document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height
+
+      let topBoundary = this.startingTally ? 
+        document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height : 
+        document.getElementById('section-tabs').getBoundingClientRect().top + document.getElementById('section-tabs').getBoundingClientRect().height
+
       let consoleContainer = document.getElementById('timecard-console-container')
-      let consoleHeight = window.innerHeight - tallyContainerBottom - 10
+      let consoleHeight = window.innerHeight - topBoundary - 30
 
       consoleContainer.style.height = `${ consoleHeight }px`
     },

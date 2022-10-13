@@ -1,7 +1,8 @@
 export const state = () => ({
   accessToken: false,
   email: '',
-  permissions: []
+  permissions: [],
+  weekending: '',
 })
 
 export const mutations = {
@@ -13,6 +14,9 @@ export const mutations = {
   },
   STORE_EMAIL: (state, email) => {
     state.email = email
+  },
+  STORE_WEEKENDING: (state, weekending) => {
+    state.weekending = weekending
   },
   LOGOUT: (state) => {
     state.accessToken = false
@@ -27,5 +31,6 @@ export const actions = {
 
 export const getters = {
   hasPermissions: (state) => (permission) => state.permissions.indexOf(permission) > -1,
-  accessToken: (state) => state.accessToken
+  accessToken: (state) => state.accessToken,
+  storedWeekending: (state) => state.weekending,
 }

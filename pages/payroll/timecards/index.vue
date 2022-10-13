@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b>Found {{ dataRows.length }} active placements for {{ $parent.supplier }} between {{ moment.utc($parent.startDate).format('YYYY-MM-DD') }} and {{ moment.utc($parent.endDate).format('YYYY-MM-DD') }} </b>
+    <b>Select Company and Weekending to manage Timecards, Quickbooks Time Entry Imports and Invoicing</b>
   </div>
 </template>
 

@@ -1,68 +1,60 @@
 <template>
   <div class="container subpage">
+
     <div class="header-controls" ref="header-controls">
+
       <h2>Timecards Management</h2>
 
-      <div v-if="!startDate && !importingData" class="timecard-params">
+      <div class="timecard-params">
+
         <div>
           <select v-model="supplier">
             <option value="">Select Company</option>
             <option value="YORK">York Search Group</option>
             <option value="QAJAQ">Qajaq Northern Builders</option>
           </select>
-          <div id="input-type">
-            <label for="single-day"><input type="radio" id="single-day" value="day" v-model="period" />Specific Date</label>
-            <label for="weekending"><input type="radio" id="weekending" value="weekending" v-model="period" />Weekending</label>
+        </div>
+
+        <!--div id="input-type">
+          <label for="weekending"><input type="radio" id="weekending" value="weekending" v-model="period" />Weekending</label>
+        </div-->
+
+        <client-only>
+          <div>
+            <Datepicker
+              v-if="period"
+              v-model="weekendingOrDay"
+              :disabled-dates="{
+                days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
+              }"
+              format="yyyy-MM-dd"
+              :use-utc="true" />
           </div>
+        </client-only>
 
-          <Datepicker
-            v-if="period"
-            v-model="weekendingOrDay"
-            :disabled-dates="{
-              days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
-            }"
-            format="yyyy-MM-dd"
-            :use-utc="true"
-          />
-
-          <div v-if="folders !== false">
+          <!--div v-if="folders !== false">
             <select v-if="folders.length" v-model="folder">
               <option value="">Select Contractor</option>
               <option v-for="(folder, idx) in folders" :key="`folder-${idx}`" :value="folder.Id">{{ folder.Name }}</option>
             </select>
             <span v-else>No payroll data for given date found!</span>
-          </div>
+          </div-->
 
-          <button @click="initiateSalesforceImport" :disabled="!weekendingOrDay">
-            Load Placements
-          </button>
-        </div>
+          
+        
       </div>
 
-      <div v-else-if="importingData" :key="importingData ? 'importing' : 'formatting'">
-        <div class="loading-container">
-          <Loader :message="`Importing Salesforce Data for ${moment.utc(weekendingOrDay).format('MMMM Do') + (period == 'weekending' ? ' weekending...' : '...')}`" />
-        </div>
-      </div>
+      
     </div>
 
-    <div v-if="!!dataRows" id="timecards-ui">
+    <div id="timecards-ui">
       
-      <div v-if="!dataRows.length">
-        There were no placements found between
-        {{ moment.utc(startDate).format('YYYY-MM-DD') }} and
-        {{ moment.utc(endDate).format('YYYY-MM-DD') }}
-      </div>
 
-      <div v-else>
-
-        <div class="details">          
+        <!--div class="details">          
           <button @click="resetDates">Change Weekending/Company</button>
-          &nbsp;
-          <button @click="refreshResult">Refresh Results</button>
-        </div>
+        </div-->
 
-        <nav id="section-tabs">
+        <nav id="section-tabs" v-if="weekendingOrDay && supplier">
           <ul>
             <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
               <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
@@ -70,14 +62,17 @@
             <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom>
               <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
             </n-link>
+            <n-link :to="{name: 'payroll-timecards-invoices'}" v-slot="{navigate, isExactActive}" custom>
+              <li @click="navigate" :class="{ isExactActive }">Generate Invoices</li>
+            </n-link>
             
           </ul>
         </nav>
 
-        <n-child keep-alive :data-rows="dataRows" :weekending="formattedWeekendingOrDay" :starting-tally="tally" />
+        <n-child keep-alive :weekending="formattedWeekendingOrDay" :supplier="supplier" />
 
         
-      </div>
+      
     </div>
   </div>
 </template>
@@ -86,6 +81,7 @@
 
 import Loader from '~/components/ui/Loader'
 import moment from 'moment'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -97,16 +93,19 @@ export default {
       dataRows: false,
       startDate: false,
       endDate: false,
-      weekendingOrDay: '',
+      weekendingOrDay: "",
       weekday: '',
       supplier: 'YORK',
       moment,
-      period: '',
+      period: 'weekending',
       folders: false,
       folder: ''
     }
   },
   created() {
+
+    
+
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
     }
@@ -121,9 +120,13 @@ export default {
     //alert(this.$axios.defaults.baseURL)
     console.log(process.env.NODE_ENV)
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+
+    if (!this.storedWeekending && this.$route.name != 'payroll-timecards') this.$router.push({name: 'payroll-timecards'})
+    else this.weekendingOrDay = new Date(this.storedWeekending)
     
   },
   computed: {
+    ...mapGetters(['storedWeekending']),
     /*
     lastSaturday () {
 
@@ -140,6 +143,7 @@ export default {
     },
     */
     formattedWeekendingOrDay() {
+      console.log(this.weekendingOrDay)
       return this.weekendingOrDay && this.weekendingOrDay.toISOString().substring(0, 10)
     },
     
@@ -170,92 +174,7 @@ export default {
       this.startDate = false
       this.dataRows = {}
     },
-    refreshResult() {
-      return this.initiateSalesforceImport()
-    },
     
-    async initiateSalesforceImport() {
-      this.correction = false
-      //this.prepareAndAssignDataRows([])
-
-      if (!this.period) return alert('No period selected!')
-      else console.log(this.period, '<< period selected')
-
-      //alert(formattedWeekendingOrDay)
-
-      this.importingData = true
-
-      let _vm = this
-
-      if (this.period == 'weekending') {
-        await this.$axios
-          .post(`/payroll/salesforce/import/weekending`, {
-            Weekending: this.formattedWeekendingOrDay,
-            supplier: this.supplier
-          })
-          .then(async ({ data }) => {
-            this.importingData = false
-            
-            await this.$forceUpdate()
-
-            
-
-            return data
-          })
-          .then(data => {
-            //console.log('In here!')
-
-            this.$nextTick(() => {
-              this.startDate = new Date(data.start)
-              this.endDate = new Date(data.end)
-              this.weekday = data.weekday
-              this.tally = data.tally
-              this.dataRows = data.placements
-            })
-          })
-          .catch(e => {
-            alert((e.response && e.response.data) || e.message)
-            this.importingData = false
-            return false
-          })
-      } else {
-        if (!this.folder) {
-          // get all payroll folders{} for this specific day and supplier
-          await this.$axios
-            .post('/payroll/salesforce/import/day', {
-              Date: this.formattedWeekendingOrDay,
-              supplier: this.supplier
-            })
-            .then(({ data }) => {
-              this.folders = data
-              this.importingData = false
-            })
-            .catch(e => {
-              alert((e.response && e.response.data) || e.message)
-              this.importingData = false
-            })
-        } else {
-          await this.$axios
-            .post('/payroll/salesforce/import/day', {
-              Date: this.formattedWeekendingOrDay,
-              supplier: this.supplier,
-              folder: this.folder
-            })
-            .then(({ data }) => {
-              this.correction = true
-
-              this.tally = false //hide tally
-              this.importingData = false
-
-              return
-            })
-            .catch(e => {
-              alert((e.response && e.response.data) || e.message)
-              this.importingData = false
-            })
-        }
-      }
-    },
     
     
   },
@@ -265,7 +184,9 @@ export default {
       this.folder = ''
       this.folders = false
       this.dataRows = false
-      return val !== '' && this.weekendingOrDay.setUTCHours(12)
+      if (val !== '') this.weekendingOrDay.setUTCHours(12)
+      this.$store.commit('STORE_WEEKENDING', val)
+      
     },
     period() {
       this.weekendingOrDay = ''
