@@ -317,7 +317,17 @@ export default {
 
         //console.log(uniqueFilterValues)
 
-        for (let val of uniqueFilterValues) this.$set(filter.values, val, true)
+        for (let val of uniqueFilterValues) {
+          switch (filter.field) {
+            case 'Internal_Status__c':
+              this.$set(filter.values, val, ['Client Cancelled', 'Not Filled'].indexOf(val) == -1) 
+              break
+            default:
+              this.$set(filter.values, val, true)
+          }
+          
+          
+        }
       }
 
       this.$bus.log(this.params.filters, '<< generated filter values')

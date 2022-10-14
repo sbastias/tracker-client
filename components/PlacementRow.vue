@@ -173,9 +173,9 @@ export default {
   &:not(.internalStatus) {
     &.confirmed {
       &:before {background-color: green;}
-      background-color: rgba(rgb(52, 136, 233),0.2);
+      background-color: rgba(rgb(74, 193, 5),0.2);
       &:hover {
-        background-color:  rgba(rgb(52, 136, 233),0.2);
+        background-color: rgba(rgb(74, 193, 5),0.4);
       }
     }
     &.sent {
