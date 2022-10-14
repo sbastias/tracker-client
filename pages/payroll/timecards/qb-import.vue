@@ -19,7 +19,7 @@
 import TimecardConsole from '~/components/timecards/TimecardConsole'
 
 export default {
-  props: [ 'starting-tally'],
+  props: [ 'starting-tally','supplier'],
   components: {
     TimecardConsole
 },  
@@ -35,20 +35,21 @@ export default {
     }
   },
   mounted () {
+
     this.resizeMain()
+    
   
   },
   methods: {
     resizeMain () {
-
-      let topBoundary = this.startingTally ? 
-        document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height : 
-        document.getElementById('section-tabs').getBoundingClientRect().top + document.getElementById('section-tabs').getBoundingClientRect().height
+    
+      let topBoundary = document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height
 
       let consoleContainer = document.getElementById('timecard-console-container')
       let consoleHeight = window.innerHeight - topBoundary - 30
 
       consoleContainer.style.height = `${ consoleHeight }px`
+      
     },
     async queueQBQueries () {
       await this.$axios.post(`/payroll/quickbooks/update`, {weekendingOrDay: this.$parent.formattedWeekendingOrDay, period: this.$parent.period, supplier: this.$parent.supplier})

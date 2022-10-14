@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <TrackerOverlay 
+    <!--TrackerOverlay 
       v-if="overlayMode"
       :mode="overlayMode" 
       :placement="overlayPlacement"  
@@ -9,10 +9,10 @@
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
       @prepend-row="doRowPrepend"
-    />
+    /-->
 
     <div v-show="!$bus.fullscreen">
-      <h1>Tracker</h1>      
+      <h1>Workforce</h1>      
     </div>
     
 
@@ -82,7 +82,7 @@
             </tr>
           </thead>
           
-          <TrackerRow 
+          <WorkforceRow 
             v-for="(placement, idx) in placements" 
             :key="placement.Id" :id="`placement-${idx}`"
             :placement="placement"
@@ -109,9 +109,9 @@
 </template>
 
 <script>
-import TrackerRow from '~/components/tracker/TrackerRow'
+import WorkforceRow from '~/components/workforce/WorkforceRow'
 import PlacementControls from '~/components/PlacementControls'
-import TrackerOverlay from '~/components/tracker/TrackerOverlay'
+//import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
 import trackerColumnsConfig from '~/config/tracker/columns'
@@ -169,9 +169,9 @@ export default {
     title: 'Tracker'
   },
   components: {
-    TrackerRow,
+    WorkforceRow,
     PlacementControls,
-    TrackerOverlay,
+    //TrackerOverlay,
     TrackerFilters,
     Loader,
     Sort,

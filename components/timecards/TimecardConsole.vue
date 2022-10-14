@@ -1,7 +1,7 @@
 <template>
   <div id="console-timecard">
     <div id="console-timecard__header">
-      <h3>Payroll Console</h3>
+      <h3>Payroll Console for {{$parent.supplier}}</h3>
       <button @click="clearConsole">Clear Console</button>
     </div>
     <ul id="console-timecard__scrolling" ref="scrolling-area">
@@ -25,10 +25,9 @@ export default {
     }
   },
   mounted () {
-    this.createSocket()
 
-    this.$axios.post('/test/io')
-    .then(({data}) => console.log(data))
+    this.initiateComms()
+    
     
     /*
     this.postInterval = setInterval(() => {
@@ -47,6 +46,15 @@ export default {
     //clearInterval(this.postInterval)
   },
   methods: {
+    initiateComms () {
+
+      try {
+        this.createSocket(this.$parent.supplier)
+      } catch (e) {throw e}
+
+      setTimeout(() => this.$axios.post('/console/io')
+      .then(({data}) => console.log(data, this.$parent.supplier)), 1000)
+    },
     resizeMain () {
 
       this.$nextTick(() => {
@@ -65,17 +73,17 @@ export default {
     tryToReconnect () {
       this.reconnectInterval = setInterval(() => {
         try {
-          this.createSocket()
+          this.initiateComms()
           clearInterval(this.reconnectInterval)
         } catch (e) {
           console.log(e)
         }
       }, 1000)
     },
-    createSocket () {
+    createSocket (supplier) {
       
       this.socket = this.$nuxtSocket({
-        name: 'payroll',
+        name: 'payroll-' + supplier,
         transports: ['websocket'],
         path: '/ws/'
       })
@@ -93,6 +101,15 @@ export default {
     },
   },
   watch: {
+    '$parent.supplier' (val) {
+
+      console.log('SUPPLIER CHANGE IN CONSOLE:', val)
+      this.statusStack.push({timestamp: Date.now(), content: {status: 'info', message: 'Changing Supplier... please hold...'}})
+      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+      this.socket.disconnect()
+      //this.createSocket(val)
+
+    },
     statusStack (val) {
 
       if (val.length == 0) return false

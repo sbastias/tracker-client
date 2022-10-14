@@ -73,7 +73,7 @@
         <button @click="generateInvoice" :disabled="waitingForInvoiceLink">Generate Invoice</button>
       </li>
 
-      <li v-if="downloadLink"><a :href="downloadLink">Click to download</a></li>
+      <li v-if="downloadLink"><a :href="`https://starla.thebullittgroup.com${downloadLink}`">Click to download</a></li>
 
     </template>
     </ol>

@@ -3,6 +3,7 @@ export const state = () => ({
   email: '',
   permissions: [],
   weekending: '',
+  supplier: ''
 })
 
 export const mutations = {
@@ -18,9 +19,13 @@ export const mutations = {
   STORE_WEEKENDING: (state, weekending) => {
     state.weekending = weekending
   },
+  STORE_SUPPLIER: (state, supplier) => {
+    state.supplier = supplier
+  },
   LOGOUT: (state) => {
     state.accessToken = false
     state.permissions = []
+    state.weekending = ''
     state.email = ''
   }
 }
@@ -33,4 +38,5 @@ export const getters = {
   hasPermissions: (state) => (permission) => state.permissions.indexOf(permission) > -1,
   accessToken: (state) => state.accessToken,
   storedWeekending: (state) => state.weekending,
+  storedSupplier: (state) => state.supplier,
 }

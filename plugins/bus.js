@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import {mapGetters} from 'vuex'
 
 export default ({store}) => {
   Vue.prototype.$bus = new Vue({
@@ -20,17 +21,22 @@ export default ({store}) => {
         accounts: false,
         users: false,
         fullscreen: false,
-        servers: {
+      }
+    },
+    computed: {
+      ...mapGetters(['storedSupplier']),
+      servers () {
+        return {
           development: {
             payroll: 'http://localhost:8009',
             tracker: 'http://localhost:8011'
           },
           testing: {
-            payroll: 'https://qbwc.thebullittgroup.com/test/ysg/',
+            payroll: `https://qbwc.thebullittgroup.com/test/${store.getters.storedSupplier == 'QAJAQ' && 'qajaq' || 'ysg'}/`,
             tracker: 'https://starla-server.thebullittgroup.com'
           },
           production: {
-            payroll: 'https://qbwc.thebullittgroup.com/ysg/',
+            payroll: `https://qbwc.thebullittgroup.com/${store.getters.storedSupplier == 'QAJAQ' && 'qajaq' || 'ysg'}/`,
             tracker: 'https://starla-server.thebullittgroup.com'
           }
         }

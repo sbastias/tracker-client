@@ -47,14 +47,14 @@
       
     </div>
 
-    <div id="timecards-ui">
+    <div id="timecards-ui" v-if="weekendingOrDay && supplier">
       
 
         <!--div class="details">          
           <button @click="resetDates">Change Weekending/Company</button>
         </div-->
 
-        <nav id="section-tabs" v-if="weekendingOrDay && supplier">
+        <nav id="section-tabs">
           <ul>
             <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
               <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
@@ -70,8 +70,6 @@
         </nav>
 
         <n-child keep-alive :weekending="formattedWeekendingOrDay" :supplier="supplier" />
-
-        
       
     </div>
   </div>
@@ -95,16 +93,16 @@ export default {
       endDate: false,
       weekendingOrDay: "",
       weekday: '',
-      supplier: 'YORK',
       moment,
       period: 'weekending',
       folders: false,
-      folder: ''
+      folder: '',
+      supplier: this.storedSupplier,
     }
   },
   created() {
 
-    
+    this.supplier = this.storedSupplier
 
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
@@ -123,10 +121,12 @@ export default {
 
     if (!this.storedWeekending && this.$route.name != 'payroll-timecards') this.$router.push({name: 'payroll-timecards'})
     else this.weekendingOrDay = new Date(this.storedWeekending)
+
+    
     
   },
   computed: {
-    ...mapGetters(['storedWeekending']),
+    ...mapGetters(['storedWeekending','storedSupplier']),
     /*
     lastSaturday () {
 
@@ -187,6 +187,9 @@ export default {
       if (val !== '') this.weekendingOrDay.setUTCHours(12)
       this.$store.commit('STORE_WEEKENDING', val)
       
+    },
+    supplier (val) {
+      this.$store.commit('STORE_SUPPLIER', val)
     },
     period() {
       this.weekendingOrDay = ''

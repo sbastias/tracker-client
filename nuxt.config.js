@@ -9,6 +9,8 @@ let baseURL = (env => {
 console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} mode.`)
 console.log(`Default Server URL: ${baseURL}\n`)
 
+const ALLOWED_ORIGINS = ['http://localhost:3000','https://starla.thebullittgroup.com']
+
 export default {
   env: {
     NODE_ENV: process.env.NODE_ENV
@@ -70,18 +72,29 @@ export default {
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
-            origin: ['http://localhost:3000','https://starla.thebullittgroup.com']
+            origin: ALLOWED_ORIGINS
           }
         },
         path: '/ws/'
       },
       {
-        name: 'payroll',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://payroll-server.thebullittgroup.com',
+        name: 'payroll-YORK',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://york.payroll-server.thebullittgroup.com',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
-            origin: ['http://localhost:3000','https://starla.thebullittgroup.com']
+            origin: ALLOWED_ORIGINS
+          }
+        },
+        path: '/ws/'    
+      },
+      {
+        name: 'payroll-QAJAQ',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8014' || 'https://qajaq.payroll-server.thebullittgroup.com',
+        //url:'https://mgmt-server.thebullittgroup.com',
+        server: {
+          cors: {
+            origin: ALLOWED_ORIGINS
           }
         },
         path: '/ws/'    
