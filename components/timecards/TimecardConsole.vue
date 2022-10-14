@@ -48,6 +48,8 @@ export default {
   methods: {
     initiateComms () {
 
+      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+
       try {
         this.createSocket(this.$parent.supplier)
       } catch (e) {throw e}
@@ -105,8 +107,8 @@ export default {
 
       console.log('SUPPLIER CHANGE IN CONSOLE:', val)
       this.statusStack.push({timestamp: Date.now(), content: {status: 'info', message: 'Changing Supplier... please hold...'}})
-      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
-      this.socket.disconnect()
+
+      this.socket.disconnect()//triggers initiateComms
       //this.createSocket(val)
 
     },
