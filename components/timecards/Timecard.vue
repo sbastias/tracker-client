@@ -161,7 +161,7 @@ export default {
       moment,
       activeNoteId: false,
       activeType: 'Regular',
-      syncToQB: true,
+      syncToQB: false,
       types: ['Regular','OT','Stand By'] 
     }
   },
@@ -235,7 +235,7 @@ export default {
       else this.activeNoteId = $ev.target.closest('.hours').id
     },
     checkSync () {
-      if (this.allTimeTracks.find(el => !!el.doNotSync)) this.syncToQB = false
+      if (this.allTimeTracks.find(el => !el.doNotSync)) this.syncToQB = true
     },
     toggleTimeTrackingsSyncFlag () {
       

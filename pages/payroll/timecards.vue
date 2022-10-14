@@ -7,6 +7,8 @@
 
       <div class="timecard-params">
 
+        <div v-if="env == 'development'"><button @click="revertTimecards">Revert Timecards</button></div>
+
         <div>
           <select v-model="supplier">
             <option value="">Select Company</option>
@@ -98,6 +100,7 @@ export default {
       folders: false,
       folder: '',
       supplier: this.storedSupplier,
+      env: process.env.NODE_ENV
     }
   },
   created() {
@@ -160,6 +163,11 @@ export default {
     }
   },
   methods: {
+    async revertTimecards () {
+      await this.$axios.post('/revert/time-trackings')
+      .then(({data}) => alert('REVERTED'))
+      .catch(e => alert('not reverted!'))
+    },
     switchTab (tab) {
       console.log(tab)
       console.log(this.$route.params.tab)
