@@ -235,7 +235,7 @@ export default {
       else this.activeNoteId = $ev.target.closest('.hours').id
     },
     checkSync () {
-      if (this.allTimeTracks.find(el => !el.doNotSync)) this.syncToQB = true
+      if (this.allTimeTracks.find(el => !el.doNotSync)) return this.syncToQB = true
     },
     toggleTimeTrackingsSyncFlag () {
       
