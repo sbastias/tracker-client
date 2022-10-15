@@ -24,7 +24,6 @@
         <client-only>
           <div>
             <Datepicker
-              v-if="period"
               v-model="weekendingOrDay"
               :disabled-dates="{
                 days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
