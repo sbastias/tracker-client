@@ -94,7 +94,7 @@ export default {
       dataRows: false,
       startDate: false,
       endDate: false,
-      weekendingOrDay: "",
+      weekendingOrDay: new Date(),
       weekday: '',
       moment,
       period: 'weekending',
