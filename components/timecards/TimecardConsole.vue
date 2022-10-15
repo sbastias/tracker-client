@@ -7,7 +7,16 @@
     <ul id="console-timecard__scrolling" ref="scrolling-area">
       <li v-for="(line, idx) in statusStack" :key="idx+'line'">
         <div class="timestamp">{{moment(line.timestamp).format('YYYY-MM-DD hh:mm:ssA')}}</div>
-        <div :class="line.content.status">{{line.content.message}}</div>
+        <div :class="line.content.status">
+          <div v-html="line.content.message"></div>
+          <div v-if="line.content.requests">
+            <ul>
+              <li v-for="(req, idx) in line.content.requests" :key="`req-${idx}`">
+                <b>{{req.type}}</b> {{req.name}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </li>
     </ul>
   </div>

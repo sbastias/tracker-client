@@ -7,7 +7,7 @@
 
       <div class="timecard-params">
 
-        <div v-if="env == 'development'"><button @click="revertTimecards">Revert Timecards</button></div>
+        
 
         <div>
           <select v-model="supplier">
@@ -71,7 +71,7 @@
           </ul>
         </nav>
 
-        <n-child keep-alive :weekending="formattedWeekendingOrDay" :supplier="supplier" />
+        <n-child keep-alive :weekending="weekendingYYYYMMDD" :supplier="supplier" />
       
     </div>
   </div>
@@ -82,6 +82,7 @@
 import Loader from '~/components/ui/Loader'
 import moment from 'moment'
 import { mapGetters } from 'vuex'
+import path from 'path'
 
 export default {
   components: {
@@ -145,7 +146,7 @@ export default {
       return lastSaturday.toISOString().substring(0,10)
     },
     */
-    formattedWeekendingOrDay() {
+    weekendingYYYYMMDD() {
       console.log(this.weekendingOrDay)
       return this.weekendingOrDay && this.weekendingOrDay.toISOString().substring(0, 10)
     },
@@ -163,11 +164,7 @@ export default {
     }
   },
   methods: {
-    async revertTimecards () {
-      await this.$axios.post('/revert/time-trackings')
-      .then(({data}) => alert('REVERTED'))
-      .catch(e => alert('not reverted!'))
-    },
+    
     switchTab (tab) {
       console.log(tab)
       console.log(this.$route.params.tab)
