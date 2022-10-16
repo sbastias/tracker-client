@@ -23,19 +23,21 @@
 import TimecardConsole from '~/components/timecards/TimecardConsole'
 
 export default {
-  props: [ 'starting-tally','supplier'],
+  props: [ 'starting-tally','supplier','weekending-raw'],
   components: {
     TimecardConsole
   },  
   data () {
     return {
-      local: process.client && location.href.indexOf('localhost:3000') > -1
+      local: process.client && location.href.indexOf('localhost:3000') > -1,
+      weekending: false
     }
   },
   created () {
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
     }
+    this.weekending = this.weekendingRaw.toISOString().substring(0,10)
     //console.log(this.$route.params)
   },
   beforeDestroy() {

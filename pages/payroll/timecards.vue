@@ -21,17 +21,21 @@
           <label for="weekending"><input type="radio" id="weekending" value="weekending" v-model="period" />Weekending</label>
         </div-->
 
+        <div>
         <client-only>
-          <div>
+          
             <Datepicker
               v-model="weekendingOrDay"
               :disabled-dates="{
                 days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
               }"
               format="yyyy-MM-dd"
-              :use-utc="true" />
-          </div>
+              :use-utc="true"
+              @input="storeWeekending" />
+          
         </client-only>
+        </div>
+
 
           <!--div v-if="folders !== false">
             <select v-if="folders.length" v-model="folder">
@@ -48,14 +52,18 @@
       
     </div>
 
-    <div id="timecards-ui" v-if="weekendingOrDay && supplier">
+    <div id="timecards-ui">
       
 
         <!--div class="details">          
           <button @click="resetDates">Change Weekending/Company</button>
         </div-->
 
-        <nav id="section-tabs">
+        <div v-show="!(weekendingOrDay && supplier)">
+          <b>Select Company and Weekending to manage Timecards, Quickbooks Time Entry Imports and Invoicing</b>
+        </div>
+
+        <nav id="section-tabs" v-show="weekendingOrDay && supplier">
           <ul>
             <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
               <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
@@ -70,9 +78,14 @@
           </ul>
         </nav>
 
-        <n-child keep-alive :weekending="weekendingYYYYMMDD" :supplier="supplier" />
+        
+
+        <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" />
       
     </div>
+
+    
+
   </div>
 </template>
 
@@ -93,7 +106,7 @@ export default {
       dataRows: false,
       startDate: false,
       endDate: false,
-      weekendingOrDay: new Date(),
+      weekendingOrDay: '',
       weekday: '',
       moment,
       period: 'weekending',
@@ -105,7 +118,8 @@ export default {
   },
   created() {
 
-    this.supplier = this.storedSupplier
+    this.supplier = this.storedSupplier || ''
+    this.weekendingOrDay = new Date(this.storedWeekending) || ''
 
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
@@ -122,10 +136,8 @@ export default {
     console.log(process.env.NODE_ENV)
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
 
-    if (!this.storedWeekending && this.$route.name != 'payroll-timecards') this.$router.push({name: 'payroll-timecards'})
-    else this.weekendingOrDay = new Date(this.storedWeekending)
-
-    
+    //if (!this.storedWeekending && this.$route.name != 'payroll-timecards') this.$router.push({name: 'payroll-timecards'})
+    //else this.weekendingOrDay = new Date(this.storedWeekending)
     
   },
   computed: {
@@ -145,10 +157,7 @@ export default {
       return lastSaturday.toISOString().substring(0,10)
     },
     */
-    weekendingYYYYMMDD() {
-      console.log(this.weekendingOrDay)
-      return this.weekendingOrDay && this.weekendingOrDay.toISOString().substring(0, 10)
-    },
+    
     
 
     
@@ -163,7 +172,9 @@ export default {
     }
   },
   methods: {
-    
+    storeWeekending () {
+      this.$store.commit('STORE_WEEKENDING', this.weekendingOrDay)
+    },
     switchTab (tab) {
       console.log(tab)
       console.log(this.$route.params.tab)
@@ -188,8 +199,11 @@ export default {
       this.folder = ''
       this.folders = false
       this.dataRows = false
-      if (val !== '') this.weekendingOrDay.setUTCHours(12)
-      this.$store.commit('STORE_WEEKENDING', val)
+
+      if (val !== '') {
+        this.weekendingOrDay.setUTCHours(12)
+        this.$store.commit('STORE_WEEKENDING', val)
+      }
       
     },
     supplier (val) {

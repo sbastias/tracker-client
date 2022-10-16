@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b>Select Company and Weekending to manage Timecards, Quickbooks Time Entry Imports and Invoicing</b>
+    
   </div>
 </template>
 
