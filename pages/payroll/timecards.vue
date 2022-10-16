@@ -120,7 +120,7 @@ export default {
   created() {
 
     this.supplier = this.storedSupplier || ''
-    this.weekendingOrDay = new Date(this.storedWeekending) || ''
+    this.weekendingOrDay = this.storedWeekending && new Date(this.storedWeekending) || ''
 
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
