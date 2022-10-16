@@ -32,6 +32,7 @@
               format="yyyy-MM-dd"
               :use-utc="true"
               @input="storeWeekending" />
+              <button @click="clearDate">Clear</button>
           
         </client-only>
         </div>
@@ -172,6 +173,10 @@ export default {
     }
   },
   methods: {
+    clearDate () {
+      this.weekendingOrDay = ''
+      this.$store.commit('STORE_WEEKENDING', false)
+    },
     storeWeekending () {
       this.$store.commit('STORE_WEEKENDING', this.weekendingOrDay)
     },

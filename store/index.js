@@ -2,7 +2,7 @@ export const state = () => ({
   accessToken: false,
   email: '',
   permissions: [],
-  weekending: '',
+  weekending: false,
   supplier: ''
 })
 
