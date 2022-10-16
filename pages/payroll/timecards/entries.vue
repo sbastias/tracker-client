@@ -91,7 +91,7 @@ import Loader from '~/components/ui/Loader'
 import moment from 'moment'
 
 export default {
-  props: ['weekending','supplier'],
+  props: ['weekending-raw','supplier'],
   components: {Timecard, TimecardFilters, Loader, MaxMin},
   data () {
     return {
@@ -120,6 +120,9 @@ export default {
         return acc
       }, {})
     },
+    weekending () {
+      return this.weekendingRaw && this.weekendingRaw.toISOString().substring(0,10)
+    }
   },
   created () {
     if (process.client) {

@@ -33,11 +33,16 @@ export default {
       weekending: false
     }
   },
+  computed: {
+    weekending () {
+      return this.weekendingRaw && this.weekendingRaw.toISOString().substring(0,10)
+    }
+  },
   created () {
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
     }
-    this.weekending = this.weekendingRaw.toISOString().substring(0,10)
+    
     //console.log(this.$route.params)
   },
   beforeDestroy() {

@@ -25,7 +25,7 @@ export const mutations = {
   LOGOUT: (state) => {
     state.accessToken = false
     state.permissions = []
-    state.weekending = ''
+    state.weekending = false
     state.email = ''
   }
 }
