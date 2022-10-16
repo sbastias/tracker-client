@@ -12,7 +12,9 @@
 
     
     <div id="timecard-console-container">
-      <TimecardConsole />
+
+      <TimecardConsole v-show="weekending" />
+      
     </div>
   
 
@@ -29,8 +31,7 @@ export default {
   },  
   data () {
     return {
-      local: process.client && location.href.indexOf('localhost:3000') > -1,
-      weekending: false
+      local: process.client && location.href.indexOf('localhost:3000') > -1
     }
   },
   computed: {

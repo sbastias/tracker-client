@@ -55,7 +55,6 @@
 
     <div id="timecards-ui">
       
-
         <!--div class="details">          
           <button @click="resetDates">Change Weekending/Company</button>
         </div-->
@@ -80,9 +79,8 @@
             </ul>
           </nav>
 
-          
-
           <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" />
+
         </div>
       
     </div>
