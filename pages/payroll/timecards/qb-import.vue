@@ -94,3 +94,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  #tally-summary {
+    padding-bottom: 20px;
+  }
+</style>

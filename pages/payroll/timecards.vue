@@ -15,16 +15,17 @@
             <option value="YORK">York Search Group</option>
             <option value="QAJAQ">Qajaq Northern Builders</option>
           </select>
-        </div>
+        
 
         <!--div id="input-type">
           <label for="weekending"><input type="radio" id="weekending" value="weekending" v-model="period" />Weekending</label>
         </div-->
 
-        <div>
+        
         <client-only>
           
             <Datepicker
+              class="inline" 
               v-model="weekendingOrDay"
               :disabled-dates="{
                 days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
@@ -32,10 +33,14 @@
               format="yyyy-MM-dd"
               :use-utc="true"
               @input="storeWeekending" />
-              <button @click="clearDate">Clear</button>
+
+              <button @click="clearFields">Reset</button>
           
         </client-only>
+
         </div>
+
+        
 
 
           <!--div v-if="folders !== false">
@@ -104,7 +109,7 @@ export default {
   data() {
     return {
       importingData: false,
-      dataRows: false,
+      
       startDate: false,
       endDate: false,
       weekendingOrDay: '',
@@ -173,8 +178,9 @@ export default {
     }
   },
   methods: {
-    clearDate () {
+    clearFields () {
       this.weekendingOrDay = ''
+      this.supplier = false
       this.$store.commit('STORE_WEEKENDING', false)
     },
     storeWeekending () {
@@ -192,7 +198,7 @@ export default {
     resetDates() {
       this.weekendingOrDay = ''
       this.startDate = false
-      this.dataRows = {}
+      
     },
     
     

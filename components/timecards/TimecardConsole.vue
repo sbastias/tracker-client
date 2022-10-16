@@ -78,8 +78,12 @@ export default {
       })
       
     },
-    clearConsole () {
-      this.statusStack = []
+    async clearConsole () {
+      
+      await this.$axios.post('/clear', {supplier: this.$parent.supplier})
+      .then(() => {
+        this.statusStack = []
+      })
     },
     tryToReconnect () {
       this.reconnectInterval = setInterval(() => {
