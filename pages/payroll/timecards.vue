@@ -64,24 +64,26 @@
           <b>Select Company and Weekending to manage Timecards, Quickbooks Time Entry Imports and Invoicing</b>
         </div>
 
-        <nav id="section-tabs" v-show="weekendingOrDay && supplier">
-          <ul>
-            <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
-              <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
-            </n-link>
-            <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom>
-              <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
-            </n-link>
-            <n-link :to="{name: 'payroll-timecards-invoices'}" v-slot="{navigate, isExactActive}" custom>
-              <li @click="navigate" :class="{ isExactActive }">Generate Invoices</li>
-            </n-link>
-            
-          </ul>
-        </nav>
+        <div v-show="weekendingOrDay && supplier">
+          <nav id="section-tabs">
+            <ul>
+              <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
+                <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
+              </n-link>
+              <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom>
+                <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
+              </n-link>
+              <n-link :to="{name: 'payroll-timecards-invoices'}" v-slot="{navigate, isExactActive}" custom>
+                <li @click="navigate" :class="{ isExactActive }">Generate Invoices</li>
+              </n-link>
+              
+            </ul>
+          </nav>
 
-        
+          
 
-        <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" />
+          <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" />
+        </div>
       
     </div>
 

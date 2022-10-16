@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div v-show="loggedin">
+    <LoggingOut v-if="loggingout" />
     <Toaster />
     <header v-show="!$bus.fullscreen">
       <div>
@@ -17,6 +18,7 @@
 </template>
 
 <script>
+import LoggingOut from '~/components/ui/LoggingOut'
 import Logo from '~/components/Logo'
 import Toaster from '~/components/ui/Toaster'
 import MainNavigation from '~/components/MainNavigation'
@@ -26,7 +28,14 @@ export default {
   components: {
     Logo, 
     Toaster,
-    MainNavigation
+    MainNavigation,
+    LoggingOut
+  },
+  data (){
+    return {
+      loggingout: false,
+      loggedin: false
+    }
   },
   computed: {
     ...mapGetters(['accessToken'])
@@ -37,6 +46,8 @@ export default {
     //console.log('DEFAULT CREATED')
 
     if (!this.$store.state.accessToken) return this.$router.push('/login')
+
+    this.loggedin = true
 
     this.$axios.defaults.headers.common['Authorization'] = `Bearer ${this.$store.state.accessToken}`
 
@@ -54,9 +65,12 @@ export default {
   },
   methods: {
     logout () {
-      this.$store.commit('LOGOUT')
-      delete this.$axios.defaults.headers.common['Authorization']
-      return location.reload()
+      this.loggingout = true
+      this.$nextTick(() => {
+        this.$store.commit('LOGOUT')
+        delete this.$axios.defaults.headers.common['Authorization']
+        return this.$nextTick(() => location.reload())
+      })
     },
   }
 }

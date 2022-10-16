@@ -69,7 +69,7 @@ export default {
     },
     async revertTimecards () {
       if (confirm(`Are you sure you want to clear all QB data for ${this.supplier} for the weekending of ${this.$parent.weekendingYYYYMMDD}?`)) {
-        await this.$axios.post('/revert/time-trackings',{weekending: this.$parent.weekendingYYYYMMDD, supplier: this.supplier})
+        await this.$axios.post('/revert/time-trackings',{weekending: this.weekending, supplier: this.supplier})
         .then(({data}) => console.log(data))
         .catch(e => {
           alert('Not reverted! Error!')
@@ -78,12 +78,12 @@ export default {
       }
     },
     async reconcileTimecards () {
-      await this.$axios.post('/reconcile/time-trackings', {weekending: this.$parent.weekendingYYYYMMDD, supplier: this.supplier})
+      await this.$axios.post('/reconcile/time-trackings', {weekending: this.weekending, supplier: this.supplier})
       .then(({data}) => console.log(data))
       .catch(e => alert('not reverted!'))
     },
     async queueQBQueries () {
-      await this.$axios.post(`/payroll/quickbooks/update`, {weekendingOrDay: this.$parent.weekendingYYYYMMDD, period: this.$parent.period, supplier: this.supplier})
+      await this.$axios.post(`/payroll/quickbooks/update`, {weekendingOrDay: this.weekending, period: this.$parent.period, supplier: this.supplier})
       .then(async ({data}) => console.log(data))
       .catch(e => {
         console.log(e)

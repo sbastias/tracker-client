@@ -159,7 +159,7 @@ export default {
       return await this.$axios
         .post(`/payroll/salesforce/autofill`, {
           Weekending: this.weekending,
-          supplier: this.$parent.supplier
+          supplier: this.supplier
         })
         .then(({ data }) => {
           this.$bus.$emit('toaster', {status: 'success', message: `Autofill completed for ${data.autofilledPayrollFolders} timecards!${(data.skippedPlacements && ` (Skipped ${data.skippedPlacements})`) || ''}`})
