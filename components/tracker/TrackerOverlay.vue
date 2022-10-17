@@ -124,6 +124,9 @@ export default {
       height: auto;
       width: 95%;
       max-height: 750px;
+      @media (max-height: 750px) {
+        max-height: 100%;
+      }
       overflow: auto;
       max-width: 900px;
       min-height: 200px;
