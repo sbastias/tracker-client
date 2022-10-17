@@ -45,7 +45,7 @@
               <h3 class="max-min-label"><span>Filters</span> <MaxMin @click="showFilters = !showFilters" :maximized="showFilters" :width-px="15" /></h3>
             </div>
 
-            <TimecardFilters :filters="filters" v-show="showFilters" :maximized="showFilters" />  
+            <TimecardFilters :filters="filters" v-show="showFilters" :maximized="showFilters" @toggle="toggleFilter" />  
             
           </div>
           
@@ -59,6 +59,9 @@
                 && activeFilters.client.indexOf(row.AVTRRT__Employer__r.Name) > -1
                 && activeFilters.shift.indexOf(row.Shift__c) > -1
                 && (searchTerm.length > 2 && row.AVTRRT__Contact_Candidate__r && row.AVTRRT__Contact_Candidate__r.Name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || searchTerm.length < 3)"
+
+                :show-synced="showSynced"
+                :show-not-synced="showNotSynced"
 
                 :key="`placement-${idx}`"
                 :row="row"
@@ -109,7 +112,9 @@ export default {
       activeNoteId: false,
       saveTimers: {},
       unsaved: {},
-      tally: {}
+      tally: {},
+      showSynced: true,
+      showNotSynced: true
     }
   },
   computed: {
@@ -138,6 +143,10 @@ export default {
     }
   },
   methods: {
+    toggleFilter (field) {
+      console.log('toggling', field)
+      this[field] = !this[field]
+    },
     resizeMain() {
       console.log('Resizing main...')
       //console.log(this.$refs['header-controls'].getBoundingClientRect().height)

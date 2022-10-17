@@ -1,5 +1,5 @@
 <template>
-  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !syncToQB}">
+  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !syncToQB}" v-show="(showSynced && syncToQB) || (showNotSynced && !syncToQB)">
 
 <div class="row" :title="payRate">
   <div class="candidate-name">
@@ -152,7 +152,7 @@ import moment from 'moment'
 import NotesIcon from '~/components/NotesIcon'
 
 export default {
-  props: ['row'],
+  props: ['row','show-synced','show-not-synced'],
   components: {
     NotesIcon
   },

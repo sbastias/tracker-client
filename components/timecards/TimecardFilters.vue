@@ -10,6 +10,21 @@
           </label>
         </li>
       </ul>
+
+      <ul id="synced-filters">
+        <li>
+          <label :class="{active: $parent.showSynced}" @click="toggle" data-field="showSynced">
+            <input type="checkbox" v-model="$parent.showSynced" readonly style="pointer-events: none;" />
+            TRUE
+          </label>
+        </li>
+        <li>
+          <label :class="{active: $parent.showNotSynced}" @click="toggle" data-field="showNotSynced">
+            <input type="checkbox" v-model="$parent.showNotSynced" readonly style="pointer-events: none;" />
+            FALSE
+          </label>
+        </li>
+      </ul>
       
     </div>
   </div>
@@ -18,10 +33,16 @@
 <script>
 
 export default {
-  props: ['filters'],
+  props: ['filters','show-synced','show-not-synced'],
   data () {
     return {
       types: ['payType','shift','client']
+    }
+  },
+  methods: {
+    toggle ($ev) {
+      $ev.preventDefault()
+      this.$emit('toggle', $ev.target.dataset.field)
     }
   }
 }
@@ -37,7 +58,7 @@ export default {
   text-transform: uppercase;
   display: flex;
   margin-top: 10px;
-  
+  padding: 0 20px 20px 20px;
 
   ul {
     display: inline-block;
@@ -64,6 +85,7 @@ export default {
     &#payType-filters:before {content: 'Pay Types'}
     &#client-filters:before {content: 'Clients'}
     &#shift-filters:before {content: 'Shift'}
+    &#synced-filters:before {content: 'Sync to QB'}
 
     li {      
       display: block;
