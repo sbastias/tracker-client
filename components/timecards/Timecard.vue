@@ -134,8 +134,8 @@
   </div>
 </div>
 
-<div class="row">
-  {{row.lambdaStart}} {{row.lambdaEnd}} {{row.daysToTrack}}
+<div class="row error-msg" v-if="conflictingSyncs">
+  This timecard has some time entries flagged to NOT sync. Uncheck "Sync to DB" and re-check to resolve this conflict.
 </div>
 
 <div v-if="!!row.corrections && row.corrections.length">
@@ -162,6 +162,7 @@ export default {
       activeNoteId: false,
       activeType: 'Regular',
       syncToQB: false,
+      conflictingSyncs: false,
       types: ['Regular','OT','Stand By'] 
     }
   },
@@ -235,7 +236,12 @@ export default {
       else this.activeNoteId = $ev.target.closest('.hours').id
     },
     checkSync () {
-      if (this.allTimeTracks.find(el => !el.doNotSync)) return this.syncToQB = true
+      let shouldSync = this.allTimeTracks.find(el => !el.doNotSync)
+      let shouldNOTSync = this.allTimeTracks.find(el => el.doNotSync && el.hours != null)
+      if (shouldSync) {
+        this.conflictingSyncs = shouldNOTSync
+        return this.syncToQB = true
+      }
     },
     toggleTimeTrackingsSyncFlag () {
       
@@ -506,5 +512,10 @@ background: #fff;
 
 .totals-rows > div {
   margin: 5px 0;
+}
+
+.error-msg {
+  color: red;
+  font-weight: bold;
 }
 </style>

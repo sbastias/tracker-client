@@ -84,7 +84,7 @@
 import moment from 'moment'
 import hardCodedClients from '~/config/payroll/hardcoded-clients-york-2022-10-08'
 export default {
-  props: ['weekending','supplier'],
+  props: ['weekending-raw','supplier'],
   data () {
     return {
       clientToInvoice: '',
@@ -95,6 +95,11 @@ export default {
       invoiceDate: '',
       invoiceNumber: '',
       downloadLink: false
+    }
+  },
+  computed: {
+    weekending () {
+      return this.weekendingRaw && this.weekendingRaw.toISOString().substring(0,10)
     }
   },
   mounted () {
