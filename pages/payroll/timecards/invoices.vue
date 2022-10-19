@@ -73,7 +73,15 @@
         <button @click="generateInvoice" :disabled="waitingForInvoiceLink">Generate Invoice</button>
       </li>
 
-      <li v-if="downloadLink"><a :href="`https://starla.thebullittgroup.com${downloadLink}`">Click to download</a></li>
+      <li v-if="waitingForWebConnector">Waiting for Web Connector...</li>
+
+      <li v-else-if="downloadLink">
+
+        <div v-if="downloadLink == 'NO_DATA'">No invoice data found for {{invoiceDate}}</div>
+        <a v-else :href="`https://starla.thebullittgroup.com${downloadLink}`">Click to download</a>
+      </li>
+
+      <!--li v-else>Something went wrong...</li-->
 
     </template>
     </ol>
@@ -91,6 +99,7 @@ export default {
       activeClients: false,
       waitingForClients: false,
       waitingForInvoiceLink: false,
+      waitingForWebConnector: false,
       invoiceBy: false,
       invoiceDate: '',
       invoiceNumber: '',
@@ -103,7 +112,7 @@ export default {
     }
   },
   mounted () {
-    this.createSocket()
+    //this.createSocket()
   },
   methods: {
     tryToReconnect () {
@@ -117,8 +126,9 @@ export default {
       }, 1000)
     },
     createSocket () {
+      console.log('Connecting...')
       this.socket = this.$nuxtSocket({
-        name: 'payroll',
+        name: `payroll-${this.supplier}`,
         transports: ['websocket'],
         path: '/ws/'
       })
@@ -128,8 +138,12 @@ export default {
       })
       this.socket.on('generate-invoice-link', data => {
         this.waitingForInvoiceLink = false
+        this.waitingForWebConnector = false
+
         this.downloadLink = data.link
+
       })
+      this.socket.on('connect', (id) => console.log('Socket connected.', id))
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
@@ -139,20 +153,21 @@ export default {
     },
     async loadActiveClients () {
 
-      /*
+      
       await this.$axios.post(`/payroll/get-active-clients`, {weekending: this.weekending, supplier: this.supplier})
       .then(({data}) => {
 
         if (data == 'OK') this.waitingForClients = true
         //this.activeClients = data
       })
-      */
+      
 
-      this.activeClients = hardCodedClients
+      //this.activeClients = hardCodedClients
       
     },
     async generateInvoice () {
-      this.waitingForInvoiceLink = true
+      //this.waitingForInvoiceLink = true
+      
 
       let invoiceData = {
         supplier: this.supplier,
@@ -163,7 +178,18 @@ export default {
       }
 
       await this.$axios.post('/payroll/invoice', invoiceData)
-      .then(({data}) => console.log(data))
+      .then(({data}) => {
+        console.log(data)
+      })
+    }
+  },
+  watch: {
+    supplier: {
+      handler (val) {
+        console.log(val)
+        this.createSocket()
+      },
+      immediate: true
     }
   }
 }
