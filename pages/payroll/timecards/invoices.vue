@@ -158,7 +158,7 @@ export default {
       .then(({data}) => {
 
         if (data == 'OK') this.waitingForClients = true
-        //this.activeClients = data
+        this.activeClients = data
       })
       
 
