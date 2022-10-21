@@ -4,10 +4,14 @@
     <div id="tally-summary">
       <div v-if="startingTally">Records to create: {{ startingTally.toCreate.length }} ... Records to update: {{ startingTally.toUpdate.length }} ... Records to delete: {{ startingTally.toDelete.length }} ...</div>
       <button @click="queueQBQueries">Import to QB</button>
-      <client-only>
-          <div style="display: inline-block" v-if="local"><button @click="revertTimecards">Revert Timecards</button>
-          <button @click="reconcileTimecards">Reconcile Timecards</button></div>
-        </client-only>
+      <template v-if="local">
+        
+          <button @click="revertTimecards">Revert Timecards</button>
+          <button @click="reconcileTimecards">Reconcile Timecards</button>
+          <button @click="doNotSyncAll">Do Not Sync ALL Payroll Folders</button>
+
+      </template>
+    
     </div>
 
     
@@ -67,6 +71,14 @@ export default {
 
       consoleContainer.style.height = `${ consoleHeight }px`
       
+    },
+    async doNotSyncAll () {
+      await this.$axios.post(`/batch/do-not-sync`)
+      .then(({data}) => console.log(data))
+      .catch(e => {
+        console.log(e)
+        alert('Error!')
+      })
     },
     async revertTimecards () {
       if (confirm(`Are you sure you want to clear all QB data for ${this.supplier} for the weekending of ${this.$parent.weekendingYYYYMMDD}?`)) {

@@ -1,5 +1,5 @@
 <template>
-  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !syncToQB}" v-show="(showSynced && syncToQB) || (showNotSynced && !syncToQB)">
+  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !row.folder || row.folder.doNotSync}">
 
 <div class="row" :title="payRate">
   <div class="candidate-name">
@@ -68,7 +68,11 @@
         </li>
       </ul>
 
-      <label class="sync-to-qb">Sync to QB <input type="checkbox" v-model="syncToQB" @change="toggleTimeTrackingsSyncFlag" /></label>
+      <span v-if="row.folder">
+        <a :href="`https://thebullittgroup.my.salesforce.com/${row.folder.Id}`" target="_blank">Open Folder</a>&nbsp;
+        <label class="sync-to-qb" @click="toggleSync">Sync to QB <input type="checkbox" :checked="!row.folder.doNotSync" readonly /> </label>
+      </span>
+      <span v-else>No Folder</span>
     </div>
 
     <div class="week" :style="{display: billingType == 'NonBillable' && !row.shownonbillable && 'none' || 'block'}" v-for="billingType of ['Billable','NonBillable']" :key="billingType" :class="{'non-billable': billingType == 'NonBillable'}">
@@ -94,7 +98,7 @@
                 <NotesIcon :custom="dailyTrack.customNotes" />
               </div>
               <div class="notes" v-show="!!activeNoteId && activeNoteId == dailyTrack.id">
-                <input type="text" class="notes-input" v-model="dailyTrack.notes" @input="$emit('row-change', row)">
+                <input type="text" class="notes-input" v-model="dailyTrack.notes" @input="startSaveTimer">
               </div>
             </div>
           </div>
@@ -117,7 +121,7 @@
   </div>
   <div class="placement-notes">
     <div class="heading">Additional Notes</div>
-    <textarea v-model="row.Additional_Notes__c" @input="$emit('row-change', row)"></textarea>
+    <textarea v-model="row.Additional_Notes__c" @input="startSaveTimer"></textarea>
     <div class="totals-rows">
       <div>
         Pay Rate: ${{ payRate }} OT Rate: ${{ OTRate }}
@@ -134,9 +138,6 @@
   </div>
 </div>
 
-<div class="row error-msg" v-if="conflictingSyncs">
-  This timecard has some time entries flagged to NOT sync. Uncheck "Sync to DB" and re-check to resolve this conflict.
-</div>
 
 <div v-if="!!row.corrections && row.corrections.length">
   Placement has {{row.corrections.length}} corrections.
@@ -152,7 +153,7 @@ import moment from 'moment'
 import NotesIcon from '~/components/NotesIcon'
 
 export default {
-  props: ['row','show-synced','show-not-synced'],
+  props: ['row','weekending'],
   components: {
     NotesIcon
   },
@@ -161,12 +162,19 @@ export default {
       moment,
       activeNoteId: false,
       activeType: 'Regular',
-      syncToQB: false,
-      conflictingSyncs: false,
-      types: ['Regular','OT','Stand By'] 
+      syncToQB: false,  
+      types: ['Regular','OT','Stand By'],
+      saveTimer: false
     }
   },
+  mounted () {
+    
+  },
+  created () {
+    this.syncToQB = this.row.folder && !this.row.folder.doNotSync
+  },
   computed: {
+    
     payRate () {
 
       return Number(this.row.Compensation__r && this.row.Compensation__r.Default_Pay_Rate__c || this.row.AVTRRT__Pay_Rate__c || 0).toFixed(2)
@@ -221,35 +229,112 @@ export default {
       return totals
     }
   },
-  mounted () {
-    
-    this.checkSync()
-    
-  },
+  
   methods: {
     hourChange ($ev, track) {
       track.synced = false
-      this.$emit('row-change', this.row)
+      this.startSaveTimer()
     },
     toggleNote ($ev) {
       if (this.activeNoteId == $ev.target.closest('.hours').id) this.activeNoteId = false
       else this.activeNoteId = $ev.target.closest('.hours').id
     },
-    checkSync () {
-      let shouldSync = this.allTimeTracks.find(el => !el.doNotSync)
-      let shouldNOTSync = this.allTimeTracks.find(el => el.doNotSync && el.hours != null)
-      if (shouldSync) {
-        this.conflictingSyncs = shouldNOTSync
-        return this.syncToQB = true
-      }
-    },
-    toggleTimeTrackingsSyncFlag () {
-      
-     this.allTimeTracks.map(el => el.doNotSync = !this.syncToQB)
-     console.log(this.row.timeTracks)
+    async toggleSync (ev) {
+      ev.preventDefault()
 
-     this.$emit('row-change', this.row)
+      return await this.$axios.post(`/payroll/folder/update-sync`, this.row.folder)
+      .then(({data}) => this.row.folder.doNotSync = data.doNotSync)
+      .catch(e => {
+        console.log(e)
+        alert('Toggle Sync Failed!')
+        return false
+      })
+    },
+    startSaveTimer() {
+      //return console.log('starting timer...')
+
+      this.row.unsaved = true
+      //this.$set(this.unsaved, id, true)
+      //this.$set(this.saved, id, false)
+      clearTimeout(this.saveTimer)
+
+      this.saveTimer = setTimeout(() => this.save(), 2000)
+    },
+    async save() {
+      //console.log(row)
+      //return
+
+      this.row.saving = true
+      this.row.Weekending = this.$parent.weekending
+
+      await this.$axios
+        .post(`/payroll/salesforce/update`, this.row, {
+          headers: { 'Content-type': 'application/json' }
+        })
+        .then(({ data }) => {
+          // data = {payrollFolderId, timeTrackObjs}
+          //console.log(resp.data)
+          if (!this.row.folder) this.$set(this.row, 'folder', { Id: data.payrollFolderId, doNotSync: true })
+          this.row.unsaved = null
+          this.row.saving = null
+          this.row.saved = true
+
+          console.log(data)
+
+          let validTimeTracks = data.timeTrackObjs.filter(el => !!el)
+
+          for (let timeTrack of validTimeTracks) {
+            timeTrack.Id = timeTrack.id || timeTrack.Id
+
+            let timeTracking = this.row.timeTracks[timeTrack.billingType].find(el => el.type == timeTrack.type && el.date == timeTrack.date)
+
+            timeTracking.id = timeTrack.id
+            timeTracking.notes = timeTrack.notes
+            timeTracking.customNotes = timeTrack.customNotes
+
+            if (timeTrack.qb) {
+              let updateIdx = this.tally.toUpdate.map(el => el.Id).indexOf(timeTrack.id)
+              let deleteIdx = this.tally.toDelete.map(el => el.Id).indexOf(timeTrack.id)
+
+              //if (updateIdx > -1 && !timeTrack.op) this.tally.toUpdate.splice(updateIdx, 1)
+
+              if (timeTrack.op == 'DELETE') {
+                this.row.timeTracks[timeTrack.billingType][timeTrack.timeType].hours = '0'
+
+                if (this.tally) {
+                  if (updateIdx > -1) this.tally.toUpdate.splice(updateIdx, 1)
+                  if (deleteIdx == -1) this.tally.toDelete.push(timeTrack)
+                }
+              } else if (this.tally && timeTrack.op == 'UPDATE') {
+                if (deleteIdx > -1) this.tally.toDelete.splice(deleteIdx, 1)
+                if (updateIdx == -1) this.tally.toUpdate.push(timeTrack)
+              }
+            } else {
+              if (timeTrack.op == 'DELETE') {
+                timeTracking.hours = ''
+                timeTracking.notes = ''
+                timeTracking.id = null
+              }
+
+              if (this.tally) {
+                let createIdx = this.tally.toCreate.map(el => el.Id).indexOf(timeTrack.id)
+
+                if (createIdx == -1 && timeTrack.op == 'CREATE') this.tally.toCreate.push(timeTrack)
+                else if (createIdx > -1 && (timeTrack.op == 'DELETE' || !timeTrack.op)) this.tally.toCreate.splice(createIdx, 1)
+              }
+            }
+          }
+
+          setTimeout(() => (this.row.saved = null), 2000)
+        })
+        .catch(e => {
+          this.row.unsaved = null
+          this.row.saving = null
+          console.log(e)
+          alert(e.message)
+        })
     }
+    
   }
 
 }
