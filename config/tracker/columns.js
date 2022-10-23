@@ -8,7 +8,7 @@ export default [
     width: 45
   },
   {
-    label: 'Candidate Name',
+    label: 'Field Staff',
     width: 160
   },
   {

@@ -4,7 +4,7 @@
     <!--TrackerOverlay 
       v-if="overlayMode"
       :mode="overlayMode" 
-      :placement="overlayPlacement"  
+      :contact="overlayContact"  
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
@@ -21,34 +21,48 @@
       <div v-if="Object.keys(emitErrors).length">{{emitErrors}}</div>
 
       <client-only>
-      <section id="date-range-new-order">
-        <div>
-          From
-          <select v-model="params.range.startOrEndFrom">
-            <option value="AVTRRT__Start_Date__c >=">Start Date</option>
-            <option value="AVTRRT__End_Date__c >=">End Date</option>
-          </select> <Datepicker class="inline" v-model="params.range.fromDate" name="from-date" format="yyyy-MM-dd" :use-utc="true" />
-          to
-          <select v-model="params.range.startOrEndTo">
-            <option value="AVTRRT__Start_Date__c <=">Start Date</option>
-            <option value="AVTRRT__End_Date__c <=">End Date</option>
-          </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
-          <button @click="loadData">Load Placements</button>
-        </div>
-        
-        <div>
-          <span v-show="!!placements">Displaying {{placements.length}} placements</span>
-          <span>&nbsp;&nbsp;<a @click="$bus.toggleFullscreen"><span v-if="$bus.fullscreen">Exit </span>Full Screen Mode</a></span>
-        </div>
+        <section id="date-range-new-order">
+          
+          
+          <div>
+            From
+            <select v-model="params.range.startOrEndFrom">
+              <option value="AVTRRT__Job__r.AVTRRT__Start_Date__c >=">Start Date</option>
+              <option value="Expected_End_Date__c >=">End Date</option>
+            </select> <Datepicker class="inline" v-model="params.range.fromDate" name="from-date" format="yyyy-MM-dd" :use-utc="true" />
+            to
+            <select v-model="params.range.startOrEndTo">
+              <option value="AVTRRT__Job__r.AVTRRT__Start_Date__c <=">Start Date</option>
+              <option value="Expected_End_Date__c <=">End Date</option>
+            </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
+            &nbsp;
+            <select v-model="params.account">
+              <option :value="false">Select Client</option>
+              <option value="BIM">Baffinland Iron Mines</option>
+              <option value="ACDC">Arctic Canadian Diamond</option>
+              <option value="VG">Victoria Gold</option>
+            </select>
+            <button 
+              @click="loadData" 
+              :disabled="!(this.params.account && this.params.range.startOrEndFrom && this.params.range.startOrEndFrom)">
+              Load Contacts
+            </button>
+          </div>
+          
+          <div>
+            <span v-show="!!contacts">Displaying {{contacts.length}} contacts</span>
+            <span>&nbsp;&nbsp;<a @click="$bus.toggleFullscreen"><span v-if="$bus.fullscreen">Exit </span>Full Screen Mode</a></span>
+          </div>
 
-        <div>
-          <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
-        </div>
-        
-      </section>
+          <div>
+            <!--button style="height: auto" v-show="$bus.accounts" @click="addContact">Add New Order</button-->
+          </div>
+          
+          
+        </section>
       </client-only>
 
-      <div v-if="!!placements">
+      <div v-if="!!contacts">
 
         <section class="search-bar tracker">
           <div class="search-field-container">
@@ -58,21 +72,21 @@
           <h3 id="max-min-label"><span>Columns</span> <MaxMin @click="showColumns = !showColumns" :maximized="showColumns" :width-px="15" /></h3>
         </section>
 
-        <section id="toggleable-columns" v-if="!!placements && showColumns">
+        <section id="toggleable-columns" v-if="!!contacts && showColumns">
           <b style="font-size: .6rem;">Customize Columns</b>&nbsp;&nbsp;
           <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
         </section>
 
-        <TrackerFilters v-show="!!placements && showFilters" :filters="params.filters" :maximized="showFilters" />
+        <WorkforceFilters v-show="!!contacts && showFilters" :filters="params.filters" :maximized="showFilters" />
 
       </div>
       
-      <div class="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
+      <div class="loading-container" v-if="loadingData"><Loader message="Loading Candidates..." /></div>
       
 
-      <section id="placements" ref="placements" :class="{disabled: loadingData}">
+      <section id="contacts" ref="contacts" :class="{disabled: loadingData}">
 
-        <table id="placements-table" v-show="placements.length" cellspacing="0">
+        <table id="contacts-table" v-show="contacts.length" cellspacing="0">
           <thead>
             <tr>
               <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="{sortable: col.sortable, sorted: sortedBy == col.field}" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
@@ -83,18 +97,14 @@
           </thead>
           
           <WorkforceRow 
-            v-for="(placement, idx) in placements" 
-            :key="placement.Id" :id="`placement-${idx}`"
-            :placement="placement"
-            :active="activatedPlacement == placement"
+            v-for="(contact, idx) in contacts" 
+            :key="contact.Id" :id="`contact-${idx}`"
+            :contact="contact"
+            :active="activatedContact == contact"
             :active-columns="activeColumns"
             :width="tableWidth"
             @toggle-row="toggleRow" 
-            @update="updatePlacement"
-            @extend="extendPlacement"
-            @assign="assignStaffer"
-            @hire="hireStaffer"
-            @reopen="removeStaffer"
+            @update="updateContact"
             
           />
           
@@ -110,13 +120,12 @@
 
 <script>
 import WorkforceRow from '~/components/workforce/WorkforceRow'
-import PlacementControls from '~/components/PlacementControls'
+import WorkforceFilters from '~/components/workforce/WorkforceFilters'
 //import TrackerOverlay from '~/components/tracker/TrackerOverlay'
+import workforceColumnsConfig from '~/config/workforce/columns'
+import workforceFiltersConfig from '~/config/workforce/filters'
 import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
-import trackerColumnsConfig from '~/config/tracker/columns'
-import trackerFiltersConfig from '~/config/tracker/filters'
-import TrackerFilters from '~/components/tracker/TrackerFilters'
 import moment from 'moment'
 import MaxMin from '~/components/ui/MaxMin'
 
@@ -133,10 +142,8 @@ class rangeObj  {
       return date
     })(new Date())
 
-    this.startOrEndFrom = 'AVTRRT__Start_Date__c >='
-    this.startOrEndTo = 'AVTRRT__Start_Date__c <='
-
-    
+    this.startOrEndFrom = 'AVTRRT__Job__r.AVTRRT__Start_Date__c >='
+    this.startOrEndTo = 'AVTRRT__Job__r.AVTRRT__Start_Date__c <='
   }
 }
 
@@ -166,31 +173,30 @@ class filterObj {
 
 export default {
   head: {
-    title: 'Tracker'
+    title: 'Workforce'
   },
   components: {
     WorkforceRow,
-    PlacementControls,
+    WorkforceFilters,
     //TrackerOverlay,
-    TrackerFilters,
     Loader,
     Sort,
     MaxMin
   },
   data () {
     return {
-      trackerColumnsConfig,
       params: {
         range: new rangeObj(),
-        filters: []
+        filters: [],
+        account: false
       },
       metadata: false,
-      unfilteredPlacements: [],
+      unfilteredContacts: [],
       textSearch: '',
-      activatedPlacement: false,
+      activatedContact: false,
       moment,
-      overlayMode: false,
-      overlayPlacement: false,
+      //overlayMode: false,
+      //overlayContact: false,
       loadingData: false,
       sortedBy: false,
       ascending: true,
@@ -202,18 +208,26 @@ export default {
     }
   },
   computed: {
+    workforceColumnsConfig () {
+
+      
+      if (!this.params.account) return workforceColumnsConfig.common
+      else return [...workforceColumnsConfig.common, ...workforceColumnsConfig[this.params.account]]
+      
+
+    },
     activeColumns () {
-      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
+      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
     },
     toggleableColumns () {
-      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
+      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
     },
-    placements () {
+    contacts () {
 
-      //console.log('...updating computed placements')
-      let filteredPlacements = false
+      //console.log('...updating computed contacts')
+      let filteredContacts = false
 
-      if (this.unfilteredPlacements.length) {
+      if (this.unfilteredContacts.length) {
 
         if (this.textSearch.length > 2) { 
 
@@ -224,15 +238,12 @@ export default {
           
           
 
-          filteredPlacements = this.unfilteredPlacements.filter(el => [
-              el.AVTRRT__Contact_Candidate__r.FirstName || '', 
-              el.AVTRRT__Contact_Candidate__r.LastName || '',
-              el.AVTRRT__Job_Title__c || '', 
-              el.Additional_Notes__c || '', 
-              el.Coverage__c || '',
-              el.Name || ''
+          filteredContacts = this.unfilteredContacts.filter(el => [
+              el.FirstName || '', 
+              el.LastName || '',
+              el.AVTRRT__Job_Title__c || ''
             ].join('||').match(searchRegex))
-          //filteredPlacements = this.unfilteredPlacements.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
+          //filteredContacts = this.unfilteredContacts.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
         
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
             //|| searchRegex.test(el.AVTRRT__Job_Title__c)
@@ -240,19 +251,19 @@ export default {
             //|| el.Coverage__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
             //|| el.Additional_Notes__c.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1
           //})
-        } else filteredPlacements = this.unfilteredPlacements
+        } else filteredContacts = this.unfilteredContacts
 
         
         for (let filter of this.params.filters) {
           let activeFilters = Object.keys(filter.values).filter(key => !!filter.values[key])
-          filteredPlacements = filteredPlacements.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
+          filteredContacts = filteredContacts.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
         }
 
         if (this.sortedBy) {
-          filteredPlacements.sort((a,b) => {
+          filteredContacts.sort((a,b) => {
 
-            let a1 = a.AVTRRT__Contact_Candidate__r.FirstName[0]
-            let b1 = b.AVTRRT__Contact_Candidate__r.FirstName[0]
+            let a1 = a.FirstName[0]
+            let b1 = b.FirstName[0]
 
             if (a[this.sortedBy] === b[this.sortedBy]) return  a1 - b1
             else if (a[this.sortedBy] === null) return this.ascending ? -1 : 1
@@ -266,9 +277,9 @@ export default {
 
       }
 
-      //console.log(filteredPlacements)
+      //console.log(filteredContacts)
       
-      return filteredPlacements
+      return filteredContacts
     }
   },
   created () {
@@ -284,15 +295,17 @@ export default {
     //this.resizeStuff()
     if (process.client) {
       
-      document.querySelector('#placements-table').style.width = `${ this.trackerColumnsConfig.reduce((acc, el) => acc += el.width, 0) }px`
+      document.querySelector('#contacts-table').style.width = `${ this.workforceColumnsConfig.reduce((acc, el) => acc += el.width, 0) }px`
 
       this.createSocket()
 
+      //this.loadData()
+
       /*
-      this.$refs.placements.addEventListener('scroll', e => {
-        console.log('scrolling...', this.$refs.placements.scrollLeft)
-        //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.placements.scrollLeft }px)`
-        this.offsetLeft = `${ this.$refs.placements.scrollLeft }px`
+      this.$refs.contacts.addEventListener('scroll', e => {
+        console.log('scrolling...', this.$refs.contacts.scrollLeft)
+        //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.contacts.scrollLeft }px)`
+        this.offsetLeft = `${ this.$refs.contacts.scrollLeft }px`
       })
       */
     }
@@ -301,13 +314,13 @@ export default {
     
     generateFilters () {
       
-      this.params.filters = trackerFiltersConfig.map(el => new filterObj(el.label, el.field))
+      this.params.filters = workforceFiltersConfig.map(el => new filterObj(el.label, el.field))
 
       for(let filter of this.params.filters) {
 
         filter.values = {}
 
-        let uniqueFilterValues = this.unfilteredPlacements.reduce((acc, el) => [...acc, el[filter.field] || 'None'], [])
+        let uniqueFilterValues = this.unfilteredContacts.reduce((acc, el) => [...acc, el[filter.field] || 'None'], [])
         .filter((el, idx, self) => self.indexOf(el) == idx)
         .sort((a,b) => {
           if (a === null || a === 'None') return 1
@@ -339,14 +352,14 @@ export default {
       //console.log(this.$axios.defaults.baseURL)
       //console.log(this.$axios.defaults.headers.common['Authorization'])
       this.$bus.log('loading data...')
-      await this.$axios.post(`/tracker/placements/load`, this.params)
+      await this.$axios.post(`/workforce/contacts/load`, this.params)
       .then(({data}) => {
         //console.log(data)
-        let unfilteredPlacements = data.placements.map(el => {
+        let unfilteredContacts = data.contacts.map(el => {
 
           try {
-            el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
-            el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
+            //el.candidateCompensation = (parseFloat(el.AVTRRT__Pay_Rate__c || 0) + (parseFloat(el.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c || 0))).toFixed(2)
+            //el.jobApplicantPayRate = (el.AVTRRT__Job_Applicant__r && parseFloat(el.AVTRRT__Job_Applicant__r.Pay_Rate__c) || 0).toFixed(2)
             
           } catch (e) {
             console.log(e)
@@ -355,9 +368,9 @@ export default {
           return el
         })
 
-        this.unfilteredPlacements = unfilteredPlacements
+        this.unfilteredContacts = unfilteredContacts
 
-        console.log(this.unfilteredPlacements, '<< unfiltered')
+        console.log(this.unfilteredContacts, '<< unfiltered')
 
         this.$bus.accounts = data.accounts
         this.$bus.users = data.users
@@ -391,101 +404,34 @@ export default {
       }
       else this.sortedBy = sortField
     },
-    updateRow (update) {
 
-      if(!this.unfilteredPlacements.length) return
-
-      let current = this.unfilteredPlacements.find(el => el.Id == update.Id)
-      current = Object.assign(current, JSON.parse(JSON.stringify(update)))
-      this.generateFilters()
-      
+    updateContact (updatingContact) {
+      this.overlayContact = updatingContact
+      this.overlayMode = 'update-contact'
     },
+    
     async doRowUpdate (update) {
-      await this.socket.emitP('updatePlacement', update)
+      await this.socket.emitP('updateContact', update)
       .then((resp) => {
-        this.$bus.log('Update', resp, 'WTF?!')
-        //this.updateRow(resp)
-        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
+        this.$bus.log('Update', resp)
       })
       .catch(e => {
         console.log(e.stack)
       })
     },
-    insertRow (insert) {
-
-      if(!this.unfilteredPlacements.length) return
-
-      let originalIdx = this.unfilteredPlacements.indexOf(this.unfilteredPlacements.find(el => el.Id == insert.originalId)) + 1
-
-      this.$bus.log(originalIdx, '<< insertion point')
-
-      delete insert.originalId
-
-      this.unfilteredPlacements.splice(originalIdx, 0, insert)
-      this.generateFilters()
-      
-    },
-    async doRowInsert (insert) {
-      await this.socket.emitP('insertPlacement', insert)
-      .then((resp) => {
-        this.$bus.log('Extend', resp, 'WTF?!')
-        //this.updateRow(resp)
-        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
-      })
-      .catch(e => {
-        console.log(e.stack)
-      })
-    },
-    prependRow (prepend) {
-
-      if(!this.unfilteredPlacements.length) return
-
-      try {
-        this.unfilteredPlacements.unshift(prepend)
-      } catch (e) {
-        console.log(e)
-      }
-      //this.generateFilters()
-      
-    },
-    async doRowPrepend (prepend) {
-      await this.socket.emitP('prependPlacement', prepend)
-      .then((resp) => {
-        this.$bus.log('Create', resp, 'WTF?!')
-        //this.updateRow(resp)
-        //this.unfilteredPlacements.splice(currentIdx, 1, resp)
-      })
-      .catch(e => {
-        console.log(e.stack)
-      })
-    },
+  
     createSocket () {
       this.socket = this.$nuxtSocket({
-        name: 'tracker',
+        name: 'workforce',
         transports: ['websocket'],
         path: '/ws/'
       })
       
-      this.socket.on('placementDeclined', ({declinedPlacement, replacementOrder}) => {
-
-        this.$bus.log('Received PLACEMENT DECLINED emission!', declinedPlacement)
-
-        this.updateRow(declinedPlacement)
-        this.prependRow(replacementOrder)
-      })
-      
-      this.socket.on('updatePlacement', update => {
+      this.socket.on('updateContact', update => {
         this.$bus.log('Received UPDATE emission!', update)
         this.updateRow(update)
       })
-      this.socket.on('insertPlacement', insert => {
-        this.$bus.log('Received EXTEND emission!', insert)
-        this.insertRow(insert)
-      })
-      this.socket.on('prependPlacement', prepend => {
-        this.$bus.log('Received ADD emission!', prepend)
-        this.prependRow(prepend)
-      })
+      
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
@@ -493,6 +439,17 @@ export default {
         
       })
     },
+
+    updateRow (update) {
+
+    if(!this.unfilteredContacts.length) return
+
+      let current = this.unfilteredContacts.find(el => el.Id == update.Id)
+      current = Object.assign(current, JSON.parse(JSON.stringify(update)))
+      this.generateFilters()
+
+    },
+
     tryToReconnect () {
       this.reconnectInterval = setInterval(() => {
         try {
@@ -503,61 +460,33 @@ export default {
         }
       }, 1000)
     },
-    toggleRow (placement) {
-      if (this.activatedPlacement == placement) this.activatedPlacement = false
-      else this.activatedPlacement = placement
+    toggleRow (contact) {
+      if (this.activatedContact == contact) this.activatedContact = false
+      else this.activatedContact = contact
     },
-    assignStaffer (openOrder) {
-      this.overlayPlacement = openOrder
-      this.overlayMode = 'assign-staffer'  
-    },
-    hireStaffer (openOrder) {
-      this.overlayPlacement = openOrder
-      this.overlayMode = 'hire-staffer'  
-    },
-    async removeStaffer (placement) {
-      if (confirm('Are you sure you want to remove staffer and re-open this order?')) {
-
-        await this.$axios.post('/tracker/order/reopen', placement)
-        .then(({data}) => {
-          this.doRowUpdate(data)
-        })
-        .catch(e => {
-          let {message, stack} = e.response.data
-          this.$bus.$emit('toaster',{status: 'error', message})
-          console.log(stack)
-        })
-      }
-    },
-    addPlacement () {
-      this.overlayPlacement = false
-      this.overlayMode = 'add-placement'  
-    },
-    extendPlacement (extendingPlacement) {
-      this.overlayPlacement = extendingPlacement
-      this.overlayMode = 'extend-placement'
-    },
-    updatePlacement (updatingPlacement) {
-      this.overlayPlacement = updatingPlacement
-      this.overlayMode = 'update-placement'
+   /*
+    updateContact (updatingContact) {
+      this.overlayContact = updatingContact
+      this.overlayMode = 'update-contact'
     },
     cancelOverlay () {
       this.overlayMode = false
-      this.overlayPlacement = false
+      this.overlayContact = false
     },
+    */
     resizeStuff () {
       if (!process.client) return
 
-      if (!this.placements.length) return setTimeout(() => this.resizeStuff(), 500)
+      if (!this.contacts.length) return setTimeout(() => this.resizeStuff(), 500)
       this.$bus.log('Resizing UI')
-      let placementsSection = document.getElementById('placements')
-      let placementsTable = document.getElementById('placements-table')
+      let contactsSection = document.getElementById('contacts')
+      let contactsTable = document.getElementById('contacts-table')
 
-      //console.log(placementsSection)
+      //console.log(contactsSection)
 
-      let scrollingHeight = window.innerHeight - placementsSection.getBoundingClientRect().top
-      this.tableWidth = `${ Math.min(placementsSection.getBoundingClientRect().width, placementsTable.getBoundingClientRect().width)}px`
-      placementsSection.style.height = `${scrollingHeight}px`
+      let scrollingHeight = window.innerHeight - contactsSection.getBoundingClientRect().top
+      this.tableWidth = `${ Math.min(contactsSection.getBoundingClientRect().width, contactsTable.getBoundingClientRect().width)}px`
+      contactsSection.style.height = `${scrollingHeight}px`
     }
   },
   watch: {
@@ -690,7 +619,7 @@ button {
   
 }
 
-#placements {
+#contacts {
   width: calc(100% + 20px);
   margin-left: -10px;
   margin-right: 0;
@@ -714,7 +643,7 @@ button {
     opacity: .5;
   }
 
-  #placements-table {
+  #contacts-table {
     display: table;
     table-layout: fixed;
     position: relative;

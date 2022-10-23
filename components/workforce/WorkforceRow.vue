@@ -1,41 +1,27 @@
 <template>
-<tbody class="placement-container" :class="[{internalStatus, mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate},rotationCommGroup]" :active="active" @click="toggleRow">
+<tbody class="placement-container" :class="[]" :active="active" @click="toggleRow">
 
-  <tr class="placement-row">
-      <td class="id">
-        <a class="icon" :href="sfLink(placement.Id, 'AVTRRT__Placement__c')" target="_blank" :title="placement.Name">
-          <Icon name="salesforce" />
-        </a>
-      </td>
-
-      <td class="email">
-        <a class="icon" :href="`mailto:${placement.AVTRRT__Contact_Candidate__r.Email}`" target="_blank" :title="placement.AVTRRT__Contact_Candidate__r.Email" v-if="placement.AVTRRT__Contact_Candidate__r.Email">
-          <Icon name="email" />
-        </a>
-      </td>
+  <tr class="contact-row">
 
       <td class="name ellipses">
-        <a :href="sfLink(placement.AVTRRT__Contact_Candidate__r.Id, 'Contact')" target="_blank" v-if="placement.AVTRRT__Contact_Candidate__r.FirstName != 'Open'">{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</a>
-        <span style="font-style: italic" v-else>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</span>
+        <a :href="sfLink(contact.Id, 'Contact')" target="_blank" v-if="contact.FirstName != 'Open'">{{contact.FirstName}} {{contact.LastName}}</a>
+        <span style="font-style: italic" v-else>{{contact.FirstName}} {{contact.LastName}}</span>
       </td>
       
       <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
-        <span>{{placement[field] || '&nbsp;'}}</span>
-      </td>      
+        <a v-if="field == 'Email'" :href="`mailto:${ contact[field] }`">{{contact[field]}}</a>
+        <span v-else>{{contact[field] || '&nbsp;'}}</span>
+      </td>
+
     </tr>
 
-    <tr class="placement-controls" :style="{width}" v-if="active">
-      <td :colspan="activeFields.length + 3">
+    <tr class="contact-controls" :style="{width}" v-if="active">
+      <td :colspan="activeFields.length + 1">
         
-          <PlacementControls 
-            ref="placement-controls"
-            v-if="type == 'placement'"
-            :placement="placement"
-          />
-          <OpenOrderControls 
-            ref="open-order-controls"
-            v-if="type == 'open-order'"
-            :placement="placement"
+          <ContactControls 
+            ref="contact-controls"
+            v-if="type == 'contact'"
+            :contact="contact"
           />
         
       </td>
@@ -50,17 +36,14 @@
 <script>
 import moment from 'moment'
 import Icon from '~/components/ui/Icons'
-import PlacementControls from '~/components/PlacementControls'
-import OpenOrderControls from '~/components/OpenOrderControls'
-//import SalesforceIcon from '~/components/ui/SalesforceIcon'
+import ContactControls from '~/components/ContactControls'
 
 
 export default {
-  props: ['placement','active','activeColumns','width'],
+  props: ['contact','active','activeColumns','width'],
   components: {
     Icon,
-    PlacementControls,
-    OpenOrderControls
+    ContactControls,
   },
   data () {
     return {
@@ -80,21 +63,9 @@ export default {
     this.resizeStuff()
   },
   computed: {
-    internalStatus () {
-      return !!this.placement.Internal_Status__c
-    },
-    rotationCommGroup () {
-      let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
-      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
-      if (/confirmation received/.test(lcRotComm)) return 'confirmed'
-      else if (/cancel|cancelled|missed/.test(lcRotComm)) return 'cancelled'
-      else if (/declined/.test(lcRotComm)) return 'declined'
-      else if (/sent/.test(lcRotComm)) return 'sent'
-      else if (openOrder) return 'open'
-      else return 'unknown'
-    },
+    
     type () {
-      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
+      let openOrder = this.contact.FirstName == 'Open'
 
       return openOrder ? 'open-order' : 'placement'
     },
@@ -120,23 +91,6 @@ export default {
     },
     sfLink (objectId, objectType) {
       return this.mode == 'classic' ? `https://thebullittgroup.my.salesforce.com/${objectId}` : `https://thebullittgroup.lightning.force.com/lightning/r/${objectType}/${objectId}/view`
-    },
-    payRateString (placement) {
-
-      let payRate = false
-      let adjustment = ''
-
-      if (placement.Compensation__r) {
-        payRate = Number(placement.Compensation__r.Default_Pay_Rate__c)
-        if (placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c) {
-          payRate += Number(placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c)
-          adjustment = ` (+${ placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c.toFixed(2) })`
-        }
-      } else if (placement.Pay_Rate__c) {
-        payRate = placement.Pay_Rate__c
-      }
-      
-      return payRate && '$' + payRate.toFixed(2) + adjustment || 'N/A'
     }
   },
   watch: {
@@ -216,7 +170,7 @@ export default {
 
 
 
-  .placement-row{
+  .contact-row{
 
     background: transparent;
     display: table-row;
@@ -246,7 +200,7 @@ export default {
         padding-right: 20px;
       }
       &:first-child {
-        padding-left: 20px;
+        //padding-left: 20px;
       }
       
 
