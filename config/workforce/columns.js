@@ -11,6 +11,12 @@ export default {
       width: 200
     },
     {
+      label: 'Last Activity',
+      field: 'LastModifiedDate',
+      toggle: true,
+      width: 100
+    },
+    {
       label: 'Job Title',
       field: 'AVTRRT__Job_Title__c',
       toggle: true,
@@ -18,8 +24,24 @@ export default {
     },
     
     {
-      label: 'Department (Job)',
-      field: 'Department_from_Job',
+      label: 'Status',
+      field: 'AVTRRT__Candidate_Status__c',
+      sortable: true,
+      toggle: true,
+      width: 160
+    },
+
+    {
+      label: 'Recruiter',
+      field: 'Recruiter',
+      sortable: true,
+      toggle: true,
+      width: 160
+    },
+
+    {
+      label: 'Handler',
+      field: 'Handler',
       sortable: true,
       toggle: true,
       width: 160
@@ -165,7 +187,7 @@ export default {
       field: 'VG_D_A_Clearance_Date__c',
       sortable: true,
       toggle: true,
-      width: 140
+      width: 200
     },
   ]
 }

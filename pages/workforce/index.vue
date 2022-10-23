@@ -28,16 +28,16 @@
             From
             <select v-model="params.range.startOrEndFrom">
               <option value="AVTRRT__Job__r.AVTRRT__Start_Date__c >=">Start Date</option>
-              <option value="Expected_End_Date__c >=">End Date</option>
+              <option value="LastModifiedDate >=">Last Modified</option>
             </select> <Datepicker class="inline" v-model="params.range.fromDate" name="from-date" format="yyyy-MM-dd" :use-utc="true" />
             to
             <select v-model="params.range.startOrEndTo">
               <option value="AVTRRT__Job__r.AVTRRT__Start_Date__c <=">Start Date</option>
-              <option value="Expected_End_Date__c <=">End Date</option>
+              <option value="LastModifiedDate <=">Last Modified</option>
             </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
             &nbsp;
             <select v-model="params.account">
-              <option :value="false">Select Client</option>
+              <option value="ALL">All Clients</option>
               <option value="BIM">Baffinland Iron Mines</option>
               <option value="ACDC">Arctic Canadian Diamond</option>
               <option value="VG">Victoria Gold</option>
@@ -133,17 +133,17 @@ class rangeObj  {
   constructor () {
 
     this.fromDate = ((date) => {
-      date.setDate(date.getDate() - 21)
+      date.setMonth(date.getMonth() - 6)
       return date
     })(new Date())
 
     this.toDate = ((date) => {
-      date.setMonth(date.getMonth() + 3)
+      //date.setMonth(date.getMonth() + 3)
       return date
     })(new Date())
 
-    this.startOrEndFrom = 'AVTRRT__Job__r.AVTRRT__Start_Date__c >='
-    this.startOrEndTo = 'AVTRRT__Job__r.AVTRRT__Start_Date__c <='
+    this.startOrEndFrom = 'LastModifiedDate >='
+    this.startOrEndTo = 'LastModifiedDate <='
   }
 }
 
@@ -188,7 +188,7 @@ export default {
       params: {
         range: new rangeObj(),
         filters: [],
-        account: false
+        account: 'ALL'
       },
       metadata: false,
       unfilteredContacts: [],
@@ -211,7 +211,7 @@ export default {
     workforceColumnsConfig () {
 
       
-      if (!this.params.account) return workforceColumnsConfig.common
+      if (this.params.account == 'ALL') return Object.keys(workforceColumnsConfig).reduce((acc, key) => [...acc, ...workforceColumnsConfig[key]], [])
       else return [...workforceColumnsConfig.common, ...workforceColumnsConfig[this.params.account]]
       
 

@@ -1,5 +1,5 @@
 <template>
-<tbody class="placement-container" :class="[]" :active="active" @click="toggleRow">
+<tbody class="contact-container" :class="[]" :active="active" @click="toggleRow">
 
   <tr class="contact-row">
 
@@ -10,6 +10,7 @@
       
       <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
         <a v-if="field == 'Email'" :href="`mailto:${ contact[field] }`">{{contact[field]}}</a>
+        <span v-else-if="field == 'LastModifiedDate'">{{moment.utc(contact[field]).format('YYYY-MM-DD')}}</span>
         <span v-else>{{contact[field] || '&nbsp;'}}</span>
       </td>
 
@@ -100,7 +101,7 @@ export default {
 </script>
 
 <style lang="scss">
-.placement-container{
+.contact-container{
 
   margin-left: 15px;
   font-size: .8rem;
@@ -262,7 +263,6 @@ export default {
 
   a {
     color: rgb(0,0,238);
-    pointer-events: none;
   }
   
   &[active] {
