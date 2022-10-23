@@ -6,7 +6,7 @@ export default [
   },
   {
     label: 'Location',
-    field: 'Client_Location__c',
+    field: 'Starting_Work_Location__c',
     values: []
   },
   /*
