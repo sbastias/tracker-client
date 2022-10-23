@@ -460,6 +460,9 @@ export default {
       })
     },
     createSocket () {
+
+      if (!process.client) return 
+      
       this.socket = this.$nuxtSocket({
         name: 'tracker',
         transports: ['websocket'],

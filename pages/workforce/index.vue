@@ -421,6 +421,7 @@ export default {
     },
   
     createSocket () {
+      if (!process.client) return 
       this.socket = this.$nuxtSocket({
         name: 'workforce',
         transports: ['websocket'],

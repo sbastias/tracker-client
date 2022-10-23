@@ -126,6 +126,7 @@ export default {
       }, 1000)
     },
     createSocket () {
+      if (!process.client) return 
       console.log('Connecting...')
       this.socket = this.$nuxtSocket({
         name: `payroll-${this.supplier}`,
@@ -187,7 +188,7 @@ export default {
     supplier: {
       handler (val) {
         console.log(val)
-        this.createSocket()
+        if (process.client) this.createSocket()
       },
       immediate: true
     }
