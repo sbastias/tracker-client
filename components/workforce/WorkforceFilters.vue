@@ -1,6 +1,6 @@
 <template>
 
-  <section id="filters" v-if="maximized">
+  <section id="workforce-filters" v-if="maximized">
 
     <div id="filters-flex" v-if="maximized">
         
@@ -44,20 +44,23 @@ export default {
 </script>
 
 <style lang="scss">
-#filters {
+#workforce-filters {
+  
   width: 100%;
 
   #filters-flex {
+    padding: 10px;
     width: 100%;
     display: flex;
     flex-direction: row;
     margin-top: 10px;
     background: #eee;
-    padding-bottom: 5px;
+    
 
     
     > div {
-      width: max-content;
+      //width: max-content;
+      flex: 1;
       overflow: hidden;
       margin-right: 5px;
       h5 {
