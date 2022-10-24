@@ -262,14 +262,16 @@ export default {
         if (this.sortedBy) {
           filteredContacts.sort((a,b) => {
 
-            let a1 = a.FirstName[0]
-            let b1 = b.FirstName[0]
+            let a1 = a.LastModifiedDate
+            let b1 = b.LastModifiedDate
 
             if (a[this.sortedBy] === b[this.sortedBy]) return  a1 - b1
-            else if (a[this.sortedBy] === null) return this.ascending ? -1 : 1
-            else if (b[this.sortedBy] === null) return this.ascending ? 1 : -1
-            else if (a[this.sortedBy] > b[this.sortedBy]) return this.ascending ? 1 : -1
+            else if (a[this.sortedBy] === null || a[this.sortedBy] == '') return this.ascending ? -1 : 1
+            else if (b[this.sortedBy] === null || b[this.sortedBy] == '') return this.ascending ? 1 : -1
+            else if (new Date(a[this.sortedBy]) > new Date(b[this.sortedBy])) return this.ascending ? 1 : -1
             else return this.ascending ? -1 : 1
+
+            
           })
         }
         
@@ -393,7 +395,14 @@ export default {
       
     },
     sortBy ($ev) {
+
+      
+
       let sortField = $ev.target.dataset.sort || false
+
+      console.log('Sorting by', sortField)
+
+
       if (!sortField) return
       if (this.sortedBy == sortField) {
         if (this.ascending) this.ascending = false

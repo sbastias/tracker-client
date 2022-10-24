@@ -15,8 +15,9 @@ export default {
   props: ['direction']
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .sort-icon {
+  pointer-events: none;
   //width: 6px;
   width: 6px;
   height: 100%;
@@ -26,12 +27,12 @@ export default {
   display: flex;
   align-items: center;
 
-polygon,
-polyline {
-  fill: #888;
-  &.active {
-    fill: #ff00d0;
+  polygon,
+  polyline {
+    fill: #888;
+    &.active {
+      fill: #ff00d0;
+    }
   }
-}
 }
 </style>

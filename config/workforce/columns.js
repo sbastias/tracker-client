@@ -17,6 +17,18 @@ export default {
       width: 100
     },
     {
+      label: 'Primary Occupation',
+      field: 'Primary_Occupation__c',
+      toggle: true,
+      width: 250
+    },
+    {
+      label: 'Department',
+      field: 'Department__c',
+      toggle: true,
+      width: 300
+    },
+    {
       label: 'Job Title',
       field: 'AVTRRT__Job_Title__c',
       toggle: true,
@@ -77,18 +89,7 @@ export default {
       width: 250
     },
     
-    {
-      label: 'Primary Occupation',
-      field: 'Primary_Occupation__c',
-      toggle: true,
-      width: 250
-    },
-    {
-      label: 'Department*',
-      field: 'Department__c',
-      toggle: true,
-      width: 300
-    },
+   
     {
       label: 'Criminal Check',
       field: 'Criminal_Check__c',
