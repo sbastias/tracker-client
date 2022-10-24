@@ -49,14 +49,14 @@ export default {
     
     {
       label: 'Inbound',
-      field: 'AVTRRT__Start_Date__c',
+      field: 'Start_Date',
       sortable: true,
       toggle: true,
       width: 90
     },
     {
       label: 'Outbound',
-      field: 'Expected_End_Date__c',
+      field: 'End_Date',
       sortable: true,
       toggle: true,
       width: 90
