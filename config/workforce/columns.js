@@ -40,7 +40,26 @@ export default {
       field: 'AVTRRT__Candidate_Status__c',
       sortable: true,
       toggle: true,
-      width: 160
+      width: 160,
+      editable: true
+    },
+
+    {
+      label: 'Last Update',
+      field: 'Last_Update_Date__c',
+      sortable: true,
+      toggle: true,
+      width: 105,
+      editable: true
+    },
+
+    {
+      label: 'Last Status',
+      field: 'Last_Update_Status__c',
+      sortable: true,
+      toggle: true,
+      width: 200,
+      editable: true
     },
 
     {
@@ -56,7 +75,8 @@ export default {
       field: 'Handler',
       sortable: true,
       toggle: true,
-      width: 160
+      width: 160,
+      editable: true
     },
     
     {

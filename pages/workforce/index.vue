@@ -99,7 +99,7 @@
           <WorkforceRow 
             v-for="(contact, idx) in contacts" 
             :key="contact.Id" :id="`contact-${idx}`"
-            :contact="contact"
+            :original-contact="contact"
             :active="activatedContact == contact"
             :active-columns="activeColumns"
             :width="tableWidth"
