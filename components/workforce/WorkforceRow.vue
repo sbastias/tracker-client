@@ -1,5 +1,5 @@
 <template>
-<tbody class="contact-container" :saving="saving" :active="active">
+<tbody class="contact-container" :saving="saving" :active="active" @click="highlighted = !highlighted" :class="{highlighted}">
 
   <tr class="contact-row">
 
@@ -18,13 +18,16 @@
         </div>
         <div v-else class="editable" :class="{editing: editing == column.field}">
           <div v-if="editing == column.field">
-            <input 
+            <select 
               v-if="column.field == 'Last_Update_Status__c'"
               id="editing-field"
               v-model="contact[column.field]"
               @keyup.esc="editing = false"
-              @keyup.enter="save"
-             />
+              @change="save"
+             >
+              <option v-for="(status, idx) in $bus.updateStatuses" :key="`update-status-opt-${idx}`" :value="status">{{status}}</option>
+             </select>
+
             <datepicker 
               v-if="column.field == 'Last_Update_Date__c'"
               id="editing-field"
@@ -81,6 +84,7 @@ export default {
   },
   data () {
     return {
+      highlighted: false,
       moment,
       mode: 'classic',
       editing: false,
@@ -191,6 +195,13 @@ export default {
   background-color: rgba(yellow, 0.2);
   &:hover {
     background-color: rgba(yellow, 0.4);
+  }
+
+  &.highlighted {
+    background-color: rgba(rgb(102, 255, 0), 0.2);
+    &:hover {
+      background-color: rgba(rgb(102, 255, 0), 0.4);
+    } 
   }
 
   &.internalStatus {

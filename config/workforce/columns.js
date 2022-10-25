@@ -23,6 +23,27 @@ export default {
       width: 250
     },
     {
+      label: 'Inbound',
+      field: 'Start_Date',
+      sortable: true,
+      toggle: true,
+      width: 90
+    },
+    {
+      label: 'Outbound',
+      field: 'End_Date',
+      sortable: true,
+      toggle: true,
+      width: 90
+    },
+    {
+      label: 'Location',
+      field: 'Starting_Work_Location__c',
+      sortable: true,
+      toggle: true,
+      width: 110
+    },
+    {
       label: 'Department',
       field: 'Department__c',
       toggle: true,
@@ -77,28 +98,6 @@ export default {
       toggle: true,
       width: 160,
       editable: true
-    },
-    
-    {
-      label: 'Inbound',
-      field: 'Start_Date',
-      sortable: true,
-      toggle: true,
-      width: 90
-    },
-    {
-      label: 'Outbound',
-      field: 'End_Date',
-      sortable: true,
-      toggle: true,
-      width: 90
-    },
-    {
-      label: 'Location',
-      field: 'Starting_Work_Location__c',
-      sortable: true,
-      toggle: true,
-      width: 110
     },
     
     {
