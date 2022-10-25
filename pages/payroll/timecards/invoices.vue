@@ -3,7 +3,7 @@
 
     <h1>Invoice Generator</h1>
 
-    <ol>
+    <ol id="invoice-steps">
 
       <li>
         Invoice By: 
@@ -14,76 +14,84 @@
       <template v-if="invoiceBy">
 
         <li>
-          Start WebConnector for {{supplier}}
+          Start WebConnector for {{supplier}} <input v-model="webconnector" type="checkbox" :value="true" />
         </li>
 
-        <template v-if="invoiceBy == 'date'">
-        
-        <li>
-          Load QuickBooks Data for Active Clients for the week of {{weekending}}
-          <div>
-            <button @click="loadActiveClients" :disabled="waitingForClients">Load Active Clients</button>
-          </div>
-          <div v-if="waitingForClients">
-            Request pending for QuickBooks...
-          </div>
+
+        <template v-if="webconnector">
+
+          <template v-if="invoiceBy == 'date'">
           
-        </li>
-        
-        <li v-if="activeClients">
-          <select v-model="clientToInvoice" :disabled="!activeClients">
+          <li>
+            Load QuickBooks Data for Active Clients for the week of {{weekending}}
+            <div style="margin: 15px 0">
+              <button @click="loadActiveClients" :disabled="waitingForClients">Load Active Clients</button>
+            </div>
+            <div v-if="waitingForClients">
+              Relevant clients from QB Webconnector pending...
+            </div>
             
-            <option value="">Select client to invoice</option>
-            <option v-for="client in activeClients" :key="client.ListID" :value="client.ListID">{{client.FullName}}</option>
+          </li>
+          
+          <li v-if="activeClients">
+            <select v-model="clientToInvoice" :disabled="!activeClients">
+              
+              <option :value="false">Select client to invoice</option>
+              <option v-for="client in activeClients" :key="client.ListID" :value="client">{{client.FullName}}</option>
 
-          </select>
+            </select>
+          </li>
+
+          
+          <li v-if="clientToInvoice">
+
+            Select Invoicing Date....
+
+            <client-only>
+              <Datepicker
+                  v-model="invoiceDate"
+                  :disabled-dates="{
+                    days: []
+                  }"
+                  format="yyyy-MM-dd"
+                  :use-utc="true" />
+            </client-only>
+
+          </li>
+
+          
+          
+        </template>
+
+        <template v-if="invoiceBy == 'number'">
+          
+          <li>
+            Enter Invoice Number
+            <div>
+              <input type="number" v-model="invoiceNumber">
+            </div>
+          </li>
+          
+        </template>
+
+        <li v-if="clientToInvoice && invoiceDate || invoiceNumber">
+          <button @click="generateInvoice" :disabled="waitingForInvoiceLink">Generate Invoice</button>
         </li>
 
-        
-        <li v-if="clientToInvoice">
+        <li v-if="waitingForInvoiceLink">Waiting for Invoice Link...</li>
 
-          <client-only>
-            <Datepicker
-                v-model="invoiceDate"
-                :disabled-dates="{
-                  days: []
-                }"
-                format="yyyy-MM-dd"
-                :use-utc="true" />
-          </client-only>
+        <li v-else-if="downloadLink">
 
+          <div v-if="downloadLink == 'NO_DATA'">No invoice data found for {{invoiceDate}}</div>
+          <a v-else :href="`https://starla.thebullittgroup.com${downloadLink}`">Click to download</a>
         </li>
 
-        
-        
+        <!--li v-else>Something went wrong...</li-->
+
       </template>
 
-      <template v-if="invoiceBy == 'number'">
-        
-        <li>
-          Enter Invoice Number
-          <div>
-            <input type="number" v-model="invoiceNumber">
-          </div>
-        </li>
-        
       </template>
 
-      <li v-if="clientToInvoice && invoiceDate || invoiceNumber">
-        <button @click="generateInvoice" :disabled="waitingForInvoiceLink">Generate Invoice</button>
-      </li>
-
-      <li v-if="waitingForWebConnector">Waiting for Web Connector...</li>
-
-      <li v-else-if="downloadLink">
-
-        <div v-if="downloadLink == 'NO_DATA'">No invoice data found for {{invoiceDate}}</div>
-        <a v-else :href="`https://starla.thebullittgroup.com${downloadLink}`">Click to download</a>
-      </li>
-
-      <!--li v-else>Something went wrong...</li-->
-
-    </template>
     </ol>
   </div>
 </template>
@@ -95,15 +103,15 @@ export default {
   props: ['weekending-raw','supplier'],
   data () {
     return {
-      clientToInvoice: '',
+      clientToInvoice: false,
       activeClients: false,
       waitingForClients: false,
       waitingForInvoiceLink: false,
-      waitingForWebConnector: false,
       invoiceBy: false,
       invoiceDate: '',
       invoiceNumber: '',
-      downloadLink: false
+      downloadLink: false,
+      webconnector: false
     }
   },
   computed: {
@@ -139,12 +147,11 @@ export default {
       })
       this.socket.on('generate-invoice-link', data => {
         this.waitingForInvoiceLink = false
-        this.waitingForWebConnector = false
 
         this.downloadLink = data.link
 
       })
-      this.socket.on('connect', (id) => console.log('Socket connected.', id))
+      this.socket.on('connect', () => console.log('Socket connected.'))
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
@@ -159,7 +166,7 @@ export default {
       .then(({data}) => {
 
         if (data == 'OK') this.waitingForClients = true
-        this.activeClients = data
+        //this.activeClients = data
       })
       
 
@@ -167,7 +174,8 @@ export default {
       
     },
     async generateInvoice () {
-      //this.waitingForInvoiceLink = true
+
+      this.waitingForInvoiceLink = true
       
 
       let invoiceData = {
@@ -182,16 +190,41 @@ export default {
       .then(({data}) => {
         console.log(data)
       })
+      
     }
   },
   watch: {
     supplier: {
       handler (val) {
         console.log(val)
+        this.webconnector = false
         if (process.client) this.createSocket()
       },
       immediate: true
+    },
+    clientToInvoice () {
+      this.downloadLink = false
     }
   }
 }
 </script>
+
+<style scoped lang="scss">
+[disabled] {
+  background: #ccc;
+  color: #eee;
+  cursor: not-allowed;
+}
+#invoice-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  li {
+    padding: 20px 0;
+    &:not(:first-child) {
+      border-top: 1px solid #ccc;
+    }
+  }
+
+}
+</style>
