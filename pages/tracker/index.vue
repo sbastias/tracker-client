@@ -389,7 +389,10 @@ export default {
           this.ascending = true
         }
       }
-      else this.sortedBy = sortField
+      else {
+        this.sortedBy = sortField
+        this.ascending = true
+      }
     },
     updateRow (update) {
 
@@ -462,9 +465,10 @@ export default {
     createSocket () {
 
       if (!process.client) return 
-      
+
       this.socket = this.$nuxtSocket({
-        name: 'tracker',
+        name: 'starla-staff',
+        channel: '/tracker',
         transports: ['websocket'],
         path: '/ws/'
       })

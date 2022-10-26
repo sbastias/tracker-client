@@ -67,7 +67,7 @@ export default {
   io: {
     sockets: [
       {
-        name: 'tracker',
+        name: 'starla-staff',
         url: process.env.NODE_ENV == 'development' && 'ws://localhost:8013' || 'https://tracker-server.thebullittgroup.com',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {

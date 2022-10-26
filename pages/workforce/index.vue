@@ -45,7 +45,7 @@
             <button 
               @click="loadData" 
               :disabled="!(this.params.account && this.params.range.startOrEndFrom && this.params.range.startOrEndFrom)">
-              Load Contacts
+              Load Staff
             </button>
           </div>
           
@@ -171,6 +171,19 @@ class filterObj {
   }
 }
 
+const DATE_FIELDS = [
+  'Start_Date',
+  'End_Date',
+  'LastModifiedDate',
+  'Last_Update_Date__c',
+  'Drug_and_Alcohol_Test_Date__c',
+  'Medical_Testing_Date__c',
+  'Medical_Follow_Up_Date__c',
+  'Fit_for_Site_Date__c',
+  'Medical_Expiry_Date__c',
+  'VG_D_A_Clearance_Date__c'
+]
+
 export default {
   head: {
     title: 'Workforce'
@@ -260,6 +273,7 @@ export default {
         }
 
         if (this.sortedBy) {
+
           filteredContacts.sort((a,b) => {
 
             let a1 = a.LastModifiedDate
@@ -268,7 +282,10 @@ export default {
             if (a[this.sortedBy] === b[this.sortedBy]) return  a1 - b1
             else if (a[this.sortedBy] === null || a[this.sortedBy] == '') return this.ascending ? -1 : 1
             else if (b[this.sortedBy] === null || b[this.sortedBy] == '') return this.ascending ? 1 : -1
-            else if (new Date(a[this.sortedBy]) > new Date(b[this.sortedBy])) return this.ascending ? 1 : -1
+
+            else if (DATE_FIELDS.indexOf(this.sortedBy) > -1 && (new Date(a[this.sortedBy]) > new Date(b[this.sortedBy]))) return this.ascending ? 1 : -1
+            else if (a[this.sortedBy] > b[this.sortedBy]) return this.ascending ? 1 : -1
+
             else return this.ascending ? -1 : 1
 
             
@@ -411,7 +428,10 @@ export default {
           this.ascending = true
         }
       }
-      else this.sortedBy = sortField
+      else {
+        this.sortedBy = sortField
+        this.ascending = true
+      }
     },
 
     updateContact (updatingContact) {
@@ -433,6 +453,7 @@ export default {
       if (!process.client) return 
       this.socket = this.$nuxtSocket({
         name: 'workforce',
+        channel: '/workforce',
         transports: ['websocket'],
         path: '/ws/'
       })
