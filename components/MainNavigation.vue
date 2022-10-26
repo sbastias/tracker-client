@@ -12,6 +12,11 @@
         <a :href="href" @click="navigate">Tracker</a>
       </n-link>
     </li>
+    <li v-show="hasPermissions('Workforce')">
+      <n-link custom to="/workforce" v-slot="{navigate, href}">
+        <a :href="href" @click="navigate">Workforce</a>
+      </n-link>
+    </li>
     <li v-show="hasPermissions('Payroll - Import') || hasPermissions('Payroll - Timecards')">
       <span>Payroll</span>
       <ul>

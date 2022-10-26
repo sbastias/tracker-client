@@ -458,7 +458,7 @@ export default {
         path: '/ws/'
       })
       
-      this.socket.on('updateContact', update => {
+      this.socket.on('updateRow', update => {
         this.$bus.log('Received UPDATE emission!', update)
         this.updateRow(update)
       })
@@ -473,7 +473,7 @@ export default {
 
     updateRow (update) {
 
-    if(!this.unfilteredContacts.length) return
+      if(!this.unfilteredContacts.length) return
 
       let current = this.unfilteredContacts.find(el => el.Id == update.Id)
       current = Object.assign(current, JSON.parse(JSON.stringify(update)))
