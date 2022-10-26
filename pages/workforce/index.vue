@@ -475,7 +475,14 @@ export default {
 
       if(!this.unfilteredContacts.length) return
 
-      let current = this.unfilteredContacts.find(el => el.Id == update.Id)
+
+      let current = this.unfilteredContacts.find(el => (update.AVTRRT__Stage__c && el.jobApplicantId || el.Id) == update.Id)
+
+      delete update.Id //IMPORTANT!!! after locating record to update, delete the Id from the update object to prevent overwriting contact ID!!!
+
+      if (update.Handler__c) update.Handler = this.$bus.users.find(el => el.Id == update.Handler__c).Name
+      if (update.AVTRRT__Recruiter__c) update.Recruiter = this.$bus.users.find(el => el.Id == update.AVTRRT__Recruiter__c).Name
+
       current = Object.assign(current, JSON.parse(JSON.stringify(update)))
       this.generateFilters()
 

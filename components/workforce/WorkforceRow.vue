@@ -55,8 +55,18 @@
             >
               <option v-for="(user, idx) in $bus.users" :key="`user-opt-${idx}`" :value="user.Id">{{user.FirstName}} {{user.LastName}}</option>
             </select>
+            <select 
+              v-if="column.field == 'AVTRRT__Stage__c'"
+              id="editing-field"
+              v-model="contact.AVTRRT__Stage__c"
+              @keyup.esc="editing = false"
+              @change="save"
+            >
+              <option v-for="(stage, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Job_Applicant__c').fields.find(el => el.fullName == 'AVTRRT__Stage__c').valueSet.valueSetDefinition.value" :key="`stage-opt-${idx}`" :value="stage.label">{{stage.fullName}}</option>
+            </select>
 
           </div>
+
           <div v-else :data-field="column.field" @click="edit">{{contact[column.field] || '&nbsp;'}}</div>
           
         </div>
@@ -111,6 +121,9 @@ export default {
   },
   methods: {
     edit ($ev) {
+
+      if ($ev.target.dataset.field == 'AVTRRT__Stage__c' && !this.contact.jobApplicantId) return alert('Cannot edit this field for Current Field Staffer')
+
       this.editing = $ev.target.dataset.field
       //console.log('Editing', this.editing, '...')
       this.$nextTick(() => document.getElementById('editing-field').focus())
@@ -121,8 +134,11 @@ export default {
 
       let fieldToSave = this.editing == 'Handler' && 'Handler__c' || this.editing
 
+      let Id = this.contact.Id
+      if (fieldToSave == 'AVTRRT__Stage__c') Id = this.contact.jobApplicantId
+
       await this.$axios.post(`/workforce/update`,{
-        Id: this.contact.Id,
+        Id,
         [fieldToSave]: this.contact[fieldToSave]
       })
       .then(({data}) => {

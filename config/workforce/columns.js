@@ -105,7 +105,8 @@ export default {
       field: 'AVTRRT__Stage__c',
       sortable: true,
       toggle: true,
-      width: 250
+      width: 250,
+      editable: true
     },
     
    
