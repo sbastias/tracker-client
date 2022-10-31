@@ -232,7 +232,9 @@ export default {
 
     this.$axios.defaults.signal = this.controller.signal
 
-    
+    document.querySelector('.right-side').addEventListener('scroll', ($ev) => {
+      console.log($ev.target.scrollTop)
+    })
 
     //this.getActivity()//also initiates polling...
     console.log(this.environment, '<< environment')

@@ -208,8 +208,8 @@ export default {
         this.$parent.$emit('cancel-overlay')
         this.edited = false
 
-        if (this.originalPlacement.Internal_Status__c != data.Internal_Status__c && data.Internal_Status__c == 'Cancel Rotation') {
-          await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Internal_Status__c: 'Cancel Rotation' })
+        if (this.originalPlacement.Internal_Status__c != data.Internal_Status__c && data.Internal_Status__c == 'Cancel and Replicate') {
+          await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Internal_Status__c: 'Cancel and Replicate' })
         }
         if (this.originalPlacement.Rotation_Communication__c != data.Rotation_Communication__c && data.Rotation_Communication__c == 'Rotation Declined') {
           await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Rotation_Communication__c: 'Rotation Declined' })
