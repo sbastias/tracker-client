@@ -696,11 +696,19 @@ button {
       position: sticky;
       top: 0;
       background: #ccc;
-      z-index: 1;
+      z-index: 3;
 
       > tr{
-        background: #ccc;
+        
          > th {
+
+          background: #ccc;
+
+          &:nth-child(1){position: sticky; z-index: 1; left: 0}
+          &:nth-child(2){position: sticky; z-index: 1; left: 160px}
+          &:nth-child(3){position: sticky; z-index: 1; left: calc(160px + 200px)}
+          &:nth-child(4){position: sticky; z-index: 1; left: calc(160px + 200px + 100px)}
+
           text-align: left;
           font-weight: normal;
           font-size: .7rem;  

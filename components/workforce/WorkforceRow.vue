@@ -193,6 +193,19 @@ export default {
 <style lang="scss">
 .contact-container{
 
+  tr{
+    background-color: inherit;
+  }
+  td:where(.name,.Email,.LastModifiedDate,.Primary_Occupation__c){
+    position: sticky;
+    background-color: inherit;
+    z-index: 2;
+  }
+  td.name{left: 0}
+  td.Email{left: 160px}
+  td.LastModifiedDate{left: calc(160px + 200px)}
+  td.Primary_Occupation__c{left: calc(160px + 200px + 100px)}
+
   &[saving] {
     cursor:wait;
     * {cursor: wait;}
@@ -207,21 +220,21 @@ export default {
   }
   
   //DEFAULT YELLOW
-  &:before {background-color: lightyellow;}
-  background-color: rgba(yellow, 0.2);
+  
+  background-color: #ffffcc;
   &:hover {
-    background-color: rgba(yellow, 0.4);
+    background-color: #ffff55;
   }
 
   &.highlighted {
-    background-color: rgba(rgb(102, 255, 0), 0.2);
+    background-color: #e0ffcc;
     &:hover {
-      background-color: rgba(rgb(102, 255, 0), 0.4);
+      background-color: #c2ff99;
     } 
   }
 
   &.internalStatus {
-    &:before {background-color: rgb(255, 122, 74);}
+    
     background-color: rgb(255, 122, 74);
     &:hover {
       background-color: rgb(255, 122, 74);
@@ -275,7 +288,7 @@ export default {
 
   .contact-row{
 
-    background: transparent;
+    
     display: table-row;
     table-layout: fixed;
     position: relative;
