@@ -14,6 +14,11 @@ export default [
     field: 'AVTRRT__Candidate_Status__c',
     values: []
   },
+  {
+    label: 'Recruiter',
+    field: 'Recruiter',
+    values: []
+  },
   /*
   {
     label: 'Rotation Communication',
