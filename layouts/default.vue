@@ -7,7 +7,7 @@
         <Logo />
         <h1>Starla</h1>
       </div>
-      <div><a @click="logout">Logout</a></div>
+      <div><a @click="logout">Logout {{$store.state.firstname}}</a></div>
       <div id="nav-container" v-show="accessToken">
         <MainNavigation />
       </div>
@@ -108,7 +108,7 @@ header {
   display: grid;
   width: 100%;
   background: white;
-  grid-template-columns: auto min-content;
+  grid-template-columns: auto max-content;
   
 
   > div {
@@ -154,4 +154,6 @@ a {
   }
 
 }
+
+.inline {display: inline-block}
 </style>

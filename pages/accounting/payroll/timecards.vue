@@ -1,6 +1,6 @@
 <template>
   <section id="timecard-entry-ui">
-
+    
     <div v-if="importingData" :key="importingData ? 'importing' : 'formatting'">
       <div class="loading-container">
         <Loader :message="`Importing Salesforce Data for ${moment.utc(weekending).format('MMMM Do')} weekending...`" />
@@ -15,7 +15,7 @@
 
       <div id="action-button-bar">
         <button @click="refreshResult">Refresh Results</button>
-        <button @click="autoFill">Auto-fill</button>
+        <button @click="autoFill" v-show="!externalUser">Auto-fill</button>
       </div>
 
       <div v-if="autofillingData">
@@ -92,7 +92,7 @@ import Loader from '~/components/ui/Loader'
 import moment from 'moment'
 
 export default {
-  props: ['weekending-raw','supplier'],
+  props: ['weekending-raw','supplier','externalUser'],
   components: {Timecard, TimecardFilters, Loader, MaxMin},
   data () {
     return {
@@ -197,7 +197,9 @@ export default {
         await this.$axios
           .post(`/payroll/salesforce/import/weekending`, {
             Weekending: this.weekending,
-            supplier: this.supplier
+            supplier: this.supplier,
+            client: this.externalUser && this.externalUser.Account.Id,
+            departments: this.externalUser && this.externalUser.Reporting_Departments__c,
           })
           .then(async ({ data }) => {
             this.importingData = false

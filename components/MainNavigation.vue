@@ -18,15 +18,15 @@
       </n-link>
     </li>
     <li v-show="hasPermissions('Payroll - Import') || hasPermissions('Payroll - Timecards')">
-      <span>Payroll</span>
+      <span>Accounting</span>
       <ul>
         <li v-show="hasPermissions('Payroll - Timecards')">
-          <n-link custom to="/payroll/timecards" v-slot="{navigate, href}">
-            <a :href="href" @click="navigate">Timecards Management</a>
+          <n-link custom to="/accounting/payroll" v-slot="{navigate, href}">
+            <a :href="href" @click="navigate">Payroll</a>
           </n-link>
         </li>
         <li v-show="hasPermissions('Payroll - Import')">
-          <n-link custom to="/payroll/import" v-slot="{navigate, href}">
+          <n-link custom to="/accounting/import" v-slot="{navigate, href}">
             <a :href="href" @click="navigate">Newbie Import</a>
           </n-link>
         </li>

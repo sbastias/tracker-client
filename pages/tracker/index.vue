@@ -776,7 +776,7 @@ button {
 
 
 
-.inline {display: inline-block}
+
 
 .column-toggle {
   display: inline-block;

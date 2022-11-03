@@ -68,16 +68,26 @@ export default {
       this.loggingIn = true
       return await this.$axios.post('/login', this.loginData)
       .then(({data}) => {
-        console.log(data)
+        //console.log(data)
         this.$store.commit('STORE_TOKEN', data.accessToken)
-        this.$store.commit('STORE_PERMISSIONS', data.starlaPermissions)
         this.$store.commit('STORE_EMAIL', this.loginData.username)
+
+        if (data.user) {
+          this.$store.commit('STORE_USER', data.user)
+          this.$store.commit('STORE_FIRSTNAME', data.user.FirstName)
+          this.$store.commit('STORE_PERMISSIONS', data.user.Starla_Permissions__c)
+        } else {
+          this.$store.commit('STORE_PERMISSIONS', data.Starla_Permissions__c)
+          this.$store.commit('STORE_FIRSTNAME', data.FirstName)
+        }
+
         this.$router.push('/')
         console.log(this.$store.state.accessToken, '<< accessToken')
       })
       .catch(e => {
-        alert('Login failed! ' + e.message)
         console.log(e)
+        console.log(JSON.stringify(e, null, '\t'))
+        alert('Login failed! ' + e.response.data)
       })
       .finally(() => {
         this.loggingIn = false

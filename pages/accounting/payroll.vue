@@ -3,7 +3,8 @@
 
     <div class="header-controls" ref="header-controls">
 
-      <h2>Timecards Management</h2>
+      <h2 v-if="!externalUser">Payroll Manager</h2>
+      <h2 v-else>Payroll Data for {{externalUser.Account.Name}}</h2>
 
       <div class="timecard-params">
 
@@ -71,20 +72,26 @@
         <div v-show="weekendingOrDay && supplier">
           <nav id="section-tabs">
             <ul>
-              <n-link :to="{name: 'payroll-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
-                <li @click="navigate" :class="{isExactActive}">Timecard Entries</li>
+
+              <n-link :to="{name: 'accounting-payroll-timecards'}" v-slot="{navigate, isExactActive}" custom>
+                <li @click="navigate" :class="{isExactActive}">Timecards</li>
               </n-link>
-              <n-link :to="{name: 'payroll-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom>
+
+              
+              
+              <n-link :to="{name: 'accounting-payroll-qb-import'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
                 <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
               </n-link>
-              <n-link :to="{name: 'payroll-timecards-invoices'}" v-slot="{navigate, isExactActive}" custom>
+              <n-link :to="{name: 'accounting-payroll-invoices'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
                 <li @click="navigate" :class="{ isExactActive }">Generate Invoices</li>
               </n-link>
+
+              
               
             </ul>
           </nav>
 
-          <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" />
+          <n-child keep-alive :weekending-raw="weekendingOrDay" :supplier="supplier" :external-user="externalUser" />
 
         </div>
       
@@ -147,7 +154,7 @@ export default {
     
   },
   computed: {
-    ...mapGetters(['storedWeekending','storedSupplier']),
+    ...mapGetters(['storedWeekending','storedSupplier','externalUser']),
     /*
     lastSaturday () {
 

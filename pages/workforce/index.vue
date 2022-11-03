@@ -64,7 +64,7 @@
 
       <div v-if="!!contacts">
 
-        <section class="search-bar tracker">
+        <section class="search-bar workforce">
           <div class="search-field-container">
             <input type="text" v-model="textSearch" class="search-field" />
           </div>
@@ -586,7 +586,7 @@ button {
 .search-bar {
   display: grid;
 
-  &.tracker{
+  &.workforce{
     grid-template-columns: auto max-content max-content;
   }
   &.timecards{
@@ -744,7 +744,7 @@ button {
 
 
 
-.inline {display: inline-block}
+
 
 .column-toggle {
   display: inline-block;
@@ -760,10 +760,4 @@ button {
 
 
 
-#tracker-header{
-  display: grid;
-  width: 100%;
-  grid-template-columns: auto max-content;
-  align-items: center;
-}
 </style>
