@@ -182,7 +182,7 @@ export default {
         supplier: this.supplier,
         invoiceBy: this.invoiceBy,
         invoiceNumber: this.invoiceNumber,
-        invoiceDate: moment.utc(this.invoiceDate).format('YYYY-MM-DD'),
+        invoiceDate: moment.utc(this.invoiceDate || new Date()).format('YYYY-MM-DD'),
         clientToInvoice: this.clientToInvoice
       }
 
