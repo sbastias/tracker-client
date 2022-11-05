@@ -63,7 +63,7 @@
           <span v-for="(column, idx) in toggleableColumns" :key="`toggle-col-${idx}`" @click="column.toggle = !column.toggle" class="column-toggle" :class="{active: !!column.toggle}">{{column.label}}</span>
         </section>
 
-        <TrackerFilters v-show="!!placements && showFilters" :filters="params.filters" :maximized="showFilters" />
+        <TrackerFilters v-show="!!placements && showFilters" :filters="filters" :maximized="showFilters" />
 
       </div>
       
@@ -119,6 +119,7 @@ import trackerFiltersConfig from '~/config/tracker/filters'
 import TrackerFilters from '~/components/tracker/TrackerFilters'
 import moment from 'moment'
 import MaxMin from '~/components/ui/MaxMin'
+import { mapGetters } from 'vuex'
 
 class rangeObj  {
   constructor () {
@@ -184,6 +185,7 @@ export default {
         range: new rangeObj(),
         filters: []
       },
+      filters: [],
       metadata: false,
       unfilteredPlacements: [],
       textSearch: '',
@@ -202,11 +204,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['externalUser']),
     activeColumns () {
       return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
     },
     toggleableColumns () {
-      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
+      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (!!el.internal ? !this.externalUser : true))
     },
     placements () {
 
@@ -243,7 +246,7 @@ export default {
         } else filteredPlacements = this.unfilteredPlacements
 
         
-        for (let filter of this.params.filters) {
+        for (let filter of this.filters) {
           let activeFilters = Object.keys(filter.values).filter(key => !!filter.values[key])
           filteredPlacements = filteredPlacements.filter(el => activeFilters.indexOf(el[filter.field] || 'None') > -1)  
         }
@@ -275,6 +278,12 @@ export default {
     this.$bus.$on('refetch', this.$fetch)
     this.$bus.$on('resize', this.resizeStuff)
 
+    if (this.externalUser) {
+      this.params.filters.push(`AVTRRT__Employer__c = '${this.externalUser.Account.Id}'`)
+      this.params.filters.push(`Department__c IN ('${ this.externalUser.Reporting_Departments__c.split(';').join(`','`) }')`)
+      
+    }
+
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
   },
   beforeDestroy () {
@@ -301,9 +310,9 @@ export default {
     
     generateFilters () {
       
-      this.params.filters = trackerFiltersConfig.map(el => new filterObj(el.label, el.field))
+      this.filters = trackerFiltersConfig.map(el => new filterObj(el.label, el.field))
 
-      for(let filter of this.params.filters) {
+      for (let filter of this.filters) {
 
         filter.values = {}
 
@@ -330,7 +339,7 @@ export default {
         }
       }
 
-      this.$bus.log(this.params.filters, '<< generated filter values')
+      this.$bus.log(this.filters, '<< generated filter values')
       
 
     },

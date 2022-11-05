@@ -56,8 +56,13 @@ export default {
       this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
 
       if (location.hostname.indexOf('localhost') > -1) {
-        this.loginData.username = 'serge@yorksearchgroup.com'
-        this.loginData.password = 'YORK1232020@@@'
+        if (!location.search) {
+          this.loginData.username = 'serge@yorksearchgroup.com'
+          this.loginData.password = 'YORK1232020@@@'
+        } else if (location.search.match(/drew/)) {
+          this.loginData.username = 'drew.blais@baffinland.com'
+          this.loginData.password = 'testpass'
+        }
       }
 
       if (location.search.substring(1) == 'expired') this.expired = true

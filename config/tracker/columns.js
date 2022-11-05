@@ -33,6 +33,7 @@ export default [
   {
     label: 'Pay Rate',
     field: 'candidateCompensation',
+    internal: true,
     toggle: false,
     width: 80
   },

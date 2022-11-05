@@ -1,5 +1,5 @@
 <template>
-  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !row.folder || row.folder.doNotSync}">
+  <li class="time-tracking-item" :id="row.Id" :class="{'do-not-sync': !row.folder || row.folder.doNotSync, externalUser}">
 
 <div class="row" :title="payRate">
   <div class="candidate-name">
@@ -68,11 +68,13 @@
         </li>
       </ul>
 
-      <span v-if="row.folder">
-        <a :href="`https://thebullittgroup.my.salesforce.com/${row.folder.Id}`" target="_blank">Open Folder</a>&nbsp;
-        <label class="sync-to-qb" @click="toggleSync">Sync to QB <input type="checkbox" :checked="!row.folder.doNotSync" readonly /> </label>
+      <span v-show="!externalUser">
+        <span v-if="row.folder">
+          <a :href="`https://thebullittgroup.my.salesforce.com/${row.folder.Id}`" target="_blank">Open Folder</a>&nbsp;
+          <label class="sync-to-qb" @click="toggleSync">Sync to QB <input type="checkbox" :checked="!row.folder.doNotSync" readonly /> </label>
+        </span>
+        <span v-else>No Folder</span>
       </span>
-      <span v-else>No Folder</span>
     </div>
 
     <div class="week" :style="{display: billingType == 'NonBillable' && !row.shownonbillable && 'none' || 'block'}" v-for="billingType of ['Billable','NonBillable']" :key="billingType" :class="{'non-billable': billingType == 'NonBillable'}">
@@ -93,9 +95,9 @@
             <label><span>{{moment.utc(dow).format('MM/DD ddd')}}</span></label>
 
             <div>
-              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}" />
+              <input type="number" :disabled="row.saving || externalUser" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}" />
               <div v-if="dailyTrack.id" class="notes-cta" @click="toggleNote" :title="dailyTrack.defaultNotes">
-                <NotesIcon :custom="dailyTrack.customNotes" />
+                <NotesIcon :custom="dailyTrack.customNotes" v-show="!externalUser" />
               </div>
               <div class="notes" v-show="!!activeNoteId && activeNoteId == dailyTrack.id">
                 <input type="text" class="notes-input" v-model="dailyTrack.notes" @input="startSaveTimer">
@@ -122,7 +124,7 @@
   <div class="placement-notes">
     <div class="heading">Additional Notes</div>
     <textarea v-model="row.Additional_Notes__c" @input="startSaveTimer"></textarea>
-    <div class="totals-rows">
+    <div class="totals-rows" v-show="!externalUser">
       <div>
         Pay Rate: ${{ payRate }} OT Rate: ${{ OTRate }}
       </div>
@@ -150,6 +152,7 @@
 
 <script>
 import moment from 'moment'
+import {mapGetters} from 'vuex'
 import NotesIcon from '~/components/NotesIcon'
 
 export default {
@@ -174,7 +177,7 @@ export default {
     this.syncToQB = this.row.folder && !this.row.folder.doNotSync
   },
   computed: {
-    
+    ...mapGetters(['externalUser']),
     payRate () {
 
       return Number(this.row.Compensation__r && this.row.Compensation__r.Default_Pay_Rate__c || this.row.AVTRRT__Pay_Rate__c || 0).toFixed(2)
