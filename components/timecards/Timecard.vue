@@ -349,6 +349,13 @@ export default {
 
 transition: .3s ease-out;
 
+&.externalUser {
+  a {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
 &.do-not-sync{
   background: #eee;
   transform: translateX(10px);
