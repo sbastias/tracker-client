@@ -122,9 +122,12 @@
     </div>
   </div>
   <div class="placement-notes">
+
     <div class="heading">Additional Notes</div>
+
     <textarea v-model="row.Additional_Notes__c" @input="startSaveTimer"></textarea>
-    <div class="totals-rows" v-show="!externalUser">
+
+    <div class="totals-rows internal" v-if="!externalUser">
       <div>
         Pay Rate: ${{ payRate }} OT Rate: ${{ OTRate }}
       </div>
@@ -137,6 +140,17 @@
         <b>TOTAL: ${{totals.total.amount}}({{totals.total.hours}}) </b>
       </div>
     </div>
+    <div class="totals-rows external" v-else>
+      <div>
+        Reg: {{totals.Regular.hours}} hrs&nbsp;&nbsp;&nbsp;
+        OT: {{totals.OT.hours}} hrs&nbsp;&nbsp;&nbsp;
+        SB: {{totals['Stand By'].hours}} hrs
+      </div>
+      <div>
+        <b>TOTAL: {{totals.total.hours}} hrs </b>
+      </div>
+    </div>
+    
   </div>
 </div>
 

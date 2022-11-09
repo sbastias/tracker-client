@@ -41,27 +41,29 @@
     padding: 40px 0;
     text-align: center;
 
-    button {
-      appearance: none;
-      display: inline-block;
-      border: none;
-      padding: 18px 25px;
-      border-radius: 10px;
-      cursor: pointer;
+  }
+}
 
-      &[disabled] {
-        background: #ccc;
-        color: #888;
-        cursor: not-allowed;
-      }
-      &:not([disabled]) {
-        background: #990000;
-        color: white;
+button {
+  appearance: none;
+  display: inline-block;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
 
-        &:hover{
-          background: #bb0000;
-        }
-      }
+  &[disabled] {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+  }
+  &:not([disabled]) {
+    background: #f99d1c;
+    color: white;
+
+    &:hover{
+      background: darken(#f99d1c, 10%);
     }
   }
 }

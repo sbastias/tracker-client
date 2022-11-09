@@ -77,6 +77,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/scss/forms.scss';
+
 [v-cloak] {
   display: none;
 }

@@ -3,11 +3,15 @@
 
     <div id="tally-summary">
       <div v-if="startingTally">Records to create: {{ startingTally.toCreate.length }} ... Records to update: {{ startingTally.toUpdate.length }} ... Records to delete: {{ startingTally.toDelete.length }} ...</div>
-      <button @click="queueQBQueries">Import to QB</button>
+      <button @click="getCurrentCompanyFileData">Refresh Company File Data</button>
+      <button @click="compareSFtoQB">Compare Current Salesforce/Quickbooks Data</button>
+      <button @click="generateModificationRequests" :disabled="totalMods == 0">Queue Modification Requests for WebConnector</button>
+      <button @click="queueQBTimeTrackingQueries">Prepare Time Trackings for Quickbooks</button>
+      <button @click="approveQBTimeTrackingQueries" :disabled="!activityId">Approve for WebConnector</button>
       <template v-if="local">
         
-          <button @click="revertTimecards">Revert Timecards</button>
-          <button @click="reconcileTimecards">Reconcile Timecards</button>
+          <button @click="revertTimecards">Revert Timecards (SF QB Data Clear)</button>
+          <button @click="reconcileTimecards">Reconcile Timecards (QB ->  SF)</button>
           <button @click="doNotSyncAll">Do Not Sync ALL Payroll Folders</button>
 
       </template>
@@ -17,7 +21,12 @@
     
     <div id="timecard-console-container">
 
-      <TimecardConsole v-show="weekending" />
+      <TimecardConsole 
+      v-show="weekending" 
+      @update-activity-id="updateActivityId"
+      :billrate-mods="billrateMods"
+      :payrate-mods="payrateMods"
+      />
       
     </div>
   
@@ -35,10 +44,16 @@ export default {
   },  
   data () {
     return {
-      local: process.client && location.href.indexOf('localhost:3000') > -1
+      local: process.client && location.href.indexOf('localhost:3000') > -1,
+      activityId: false,
+      payrateMods: [],
+      billrateMods: []
     }
   },
   computed: {
+    totalMods () {
+      return this.billrateMods.length + this.payrateMods.length
+    },
     weekending () {
       return this.weekendingRaw && this.weekendingRaw.toISOString().substring(0,10)
     }
@@ -62,6 +77,39 @@ export default {
   
   },
   methods: {
+    async getCurrentCompanyFileData () {
+      await this.$axios.post(`/payroll/quickbooks/retrieve/data`, {supplier: this.supplier})
+      .then(({data}) => {
+        console.log(data)
+      })
+      .catch(e => {
+        console.log(e)
+        alert('Error!')
+      })
+    },
+    updateActivityId (id) {
+      console.log(id, '<< updated activity ID')
+      this.activityId = id
+    },
+
+
+    async compareSFtoQB () {
+      await this.$axios.post(`/payroll/salesforce/quickbooks/compare`, {supplier: this.supplier, weekending: this.weekending})
+      .then(({data}) => {
+        console.log(data)
+      })
+      .catch(e => {
+        console.log(e)
+        alert('Error!')
+      })
+    },
+    updateActivityId (id) {
+      console.log(id, '<< updated activity ID')
+      this.activityId = id
+    },
+    async generateModificationRequests () {
+      alert('TODO')
+    },
     resizeMain () {
     
       let topBoundary = document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height
@@ -95,9 +143,19 @@ export default {
       .then(({data}) => console.log(data))
       .catch(e => alert('not reverted!'))
     },
-    async queueQBQueries () {
-      await this.$axios.post(`/payroll/quickbooks/update`, {weekendingOrDay: this.weekending, period: this.$parent.period, supplier: this.supplier})
+    async queueQBTimeTrackingQueries () {
+      await this.$axios.post(`/payroll/quickbooks/timetrackings/queue`, {weekendingOrDay: this.weekending, period: this.$parent.period, supplier: this.supplier})
       .then(async ({data}) => console.log(data))
+      .catch(e => {
+        console.log(e)
+        alert('Error!')
+      })
+    },
+    async approveQBTimeTrackingQueries () {
+      return await this.$axios.post(`/payroll/quickbooks/timetrackings/approve`, {activityId: this.activityId})
+      .then(({data}) => {
+        console.log(data)
+      })
       .catch(e => {
         console.log(e)
         alert('Error!')
@@ -108,7 +166,11 @@ export default {
 </script>
 
 <style lang="scss">
+
   #tally-summary {
     padding-bottom: 20px;
+    button {
+      margin: 5px 0;
+    }
   }
 </style>

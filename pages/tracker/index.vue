@@ -600,18 +600,7 @@ export default {
   margin: auto;
 }
 
-button {
-  border: none;
-  border-radius: 5px;
-  background: #f99d1c;
-  height: auto;
-  padding: 4px 10px;
-  color: white;
-  cursor: pointer;
-  &:hover {
-    background: #db8000;
-  }
-}
+
 
 #date-range-new-order {
   display: grid;
