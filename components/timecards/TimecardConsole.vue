@@ -31,7 +31,7 @@
               <li v-for="(inconsist, idx) in line.content.inconsistencies.payRates" :key="`inconsist-${idx}`">
                 <div v-html="inconsist.message"></div>
                 <div v-if="inconsist.type == 'MISMATCHED_PAYRATE'">
-                  <label :for="`mod-payrate-${idx}`"><input :value="inconsist.id" :id="`mod-payrate-${idx}`" type="checkbox" v-model="$parent.payrateMods" /> Activate QB Pay Rate Modification</label>
+                  <label :for="`mod-payrate-${idx}`"><input :value="{id: inconsist.id, rate: inconsist.rate, paytype: inconsist.paytype}" :id="`mod-payrate-${idx}`" type="checkbox" v-model="$parent.payrateMods" /> Activate QB Pay Rate Modification</label>
                 </div>
               </li>
             </ul>
@@ -39,7 +39,7 @@
               <li v-for="(inconsist, idx) in line.content.inconsistencies.billRates" :key="`inconsist-${idx}`">
                 <div v-html="inconsist.message"></div>
                 <div v-if="inconsist.type == 'MISMATCHED_BILLRATE'">
-                  <label :for="`mod-billrate-${idx}`"><input :value="inconsist.id" :id="`mod-billrate-${idx}`" type="checkbox" v-model="$parent.billrateMods" /> Activate QB Bill Rate Modification</label>
+                  <label :for="`mod-billrate-${idx}`"><input :value="{id: inconsist.id, rate: inconsist.rate, paytype: inconsist.paytype}" :id="`mod-billrate-${idx}`" type="checkbox" v-model="$parent.billrateMods" /> Activate QB Bill Rate Modification</label>
                 </div>
               </li>
             </ul>
@@ -141,6 +141,18 @@ export default {
         this.$bus.log('Received UPDATE emission!', update)
         this.statusStack.push(update)
         if (update.content.activityId) this.$emit('update-activity-id', update.content.activityId)
+        if (update.content.status == 'success' && update.content.type) {
+          switch (update.content.type) {
+            case 'PAYRATE_MOD':
+              let successfulPayRateMod = this.$parent.payrateMods.find(el => el.id == update.content.id)
+              this.$parent.payrateMods.splice(this.$parent.payrateMods.indexOf(successfulPayRateMod), 1)
+              
+            case 'BILLRATE_MOD':
+              let successfulBillRateMod = this.$parent.billrateMods.find(el => el.id == update.content.id)
+              this.$parent.billrateMods.splice(this.$parent.billrateMods.indexOf(successfulBillRateMod), 1)
+              break
+          }
+        }
       })
       //this.socket.on('reconnection', () => alert('Reconnected!'))
       this.socket.on('disconnect', reason => {

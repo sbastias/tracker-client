@@ -108,7 +108,19 @@ export default {
       this.activityId = id
     },
     async generateModificationRequests () {
-      alert('TODO')
+      
+      await this.$axios.post(`/payroll/quickbooks/modifications/execute`, {
+        supplier: this.supplier, 
+        payrateMods: this.payrateMods, 
+        billrateMods: this.billrateMods
+      })
+      .then(({data}) => {
+        console.log(data)
+      })
+      .catch(e => {
+        console.log(e)
+        alert('Error!')
+      })
     },
     resizeMain () {
     
