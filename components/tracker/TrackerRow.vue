@@ -255,6 +255,7 @@ export default {
         background-color: pink;
         background-image: none;
       }
+      text-decoration: line-through;
     }
     &.cancelled {
       &:before {background-color: red;}
