@@ -5,7 +5,7 @@
       <h3>Extending Placement</h3>
     </div>
 
-    <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
+    <div><input class="title-input" type="text" v-model="placement.AVTRRT__Job_Title__c" /></div>
     <h5>{{placement.AVTRRT__Employer__r.Name}}</h5>
     <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
     <h5 v-if="placement.candidateCompensation">Placement Rate: ${{placement.candidateCompensation}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+${{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c.toFixed(2)}})</span></h5>

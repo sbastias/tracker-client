@@ -5,7 +5,8 @@
       <h3>Editing {{openOrder && 'Order' || 'Placement'}}</h3>
     </div>
 
-    <h4>{{placement.AVTRRT__Job_Title__c}}</h4>
+    
+    <div><input class="title-input" type="text" v-model="placement.AVTRRT__Job_Title__c" /></div>
     <h5>{{placement.AVTRRT__Employer__r.Name}} <span v-if="placement.Supplier__c">({{placement.Supplier__c}})</span></h5>
     <h5>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</h5>
     <h5 v-if="placement.candidateCompensation">Placement Rate: ${{placement.candidateCompensation}} <span v-if="placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c">(+${{placement.AVTRRT__Contact_Candidate__r.Pay_Rate_Adjustment__c.toFixed(2)}})</span></h5>
@@ -83,6 +84,7 @@ WFR Number
         <div class="form-cell">
           <label>Rotation Communication</label>
           <select v-model="placement.Rotation_Communication__c">
+            <option value="">None</option>
             <option v-for="(comm, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Rotation_Communication__c').valueSet.valueSetDefinition.value" :key="`comm-option-${idx}`" :value="comm.label">{{comm.fullName}}</option>
           </select>
         </div>
@@ -239,7 +241,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~/assets/scss/forms.scss';
+//@import '~/assets/scss/forms.scss';
+
 .form {
   margin-top: 20px;
 
