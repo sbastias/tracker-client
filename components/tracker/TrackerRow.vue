@@ -20,7 +20,14 @@
       </td>
       
       <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
-        <span>{{placement[field] || '&nbsp;'}}</span>
+        <div v-if="!active && field == 'Rotation_Communication__c'" @click.stop="editRotComm">
+          <span v-if="!editingRotComm" style="pointer-events: none;">{{placement.Rotation_Communication__c || '&nbsp;'}}</span>
+          <select v-else v-model="placement.Rotation_Communication__c" style="width: 100%" @change="saveRotComm" @keyup.esc="deactivate" @blur="deactivate">
+            <option value="">None</option>
+            <option v-for="(comm, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Rotation_Communication__c').valueSet.valueSetDefinition.value" :key="`comm-option-${idx}`" :value="comm.label">{{comm.fullName}}</option>
+          </select>
+        </div>
+        <span v-else>{{placement[field] || '&nbsp;'}}</span>
       </td>      
     </tr>
 
@@ -67,7 +74,8 @@ export default {
       moment,
       mode: 'classic',
       editing: false,
-      edited: false
+      edited: false,
+      editingRotComm: false
     }
   },
   created () {
@@ -103,6 +111,52 @@ export default {
     }
   },
   methods: {
+    deactivate () {
+      
+        
+        //this.activeInput.removeEventListener('blur', this.deactivate)
+        this.activeInput = false
+        this.$nextTick(() => this.editingRotComm = false)
+        
+    },
+    editRotComm ($ev) {
+      if (this.editingRotComm) return
+      this.editingRotComm = true
+      this.$nextTick(() => {
+        console.log($ev.target)
+        this.activeInput = $ev.target.querySelector('select')
+        this.activeInput.focus()
+        //this.activeInput.addEventListener('blur', this.deactivate)
+        
+      })
+    },
+    async saveRotComm () {
+      
+      let update = {
+        Id: this.placement.Id,
+        Rotation_Communication__c: this.placement.Rotation_Communication__c
+      }
+
+      await this.$axios.post(`/tracker/update`, update)
+      .then(async ({data}) => {
+        this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
+        this.$emit('update-row', data)
+        
+        this.deactivate()
+
+        if (data.Rotation_Communication__c == 'Rotation Declined') {
+          await this.$axios.post(`/tracker/handle/decline`, {Id: data.Id, Rotation_Communication__c: 'Rotation Declined' })
+        }
+      })
+      .catch(e => {
+        console.log(e)
+        let {message, stack} = e.response.data
+        this.$bus.$emit('toaster',{status: 'error', message})
+        console.log(stack)
+      })
+
+      
+    },
     resizeStuff () {
       
     },

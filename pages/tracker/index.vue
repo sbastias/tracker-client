@@ -95,6 +95,7 @@
             @assign="assignStaffer"
             @hire="hireStaffer"
             @reopen="removeStaffer"
+            @update-row="doRowUpdate"
             
           />
           
