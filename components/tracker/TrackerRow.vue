@@ -255,7 +255,7 @@ export default {
         background-color: pink;
         background-image: none;
       }
-      text-decoration: line-through;
+      text-decoration: line-through!important;
     }
     &.cancelled {
       &:before {background-color: red;}
@@ -263,7 +263,7 @@ export default {
       &:hover {
         background-color: rgba(red, .4);
       }
-      text-decoration: line-through;
+      text-decoration: line-through!important;
       span {opacity: .5;}
     }
   }
