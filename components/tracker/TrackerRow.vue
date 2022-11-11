@@ -223,6 +223,9 @@ export default {
     &:hover {
       background-color: rgb(255, 122, 74);
     }
+    &:where(.cancelled,.declined){
+      text-decoration: line-through;
+    }
   }
   &:not(.internalStatus) {
     &.confirmed {
