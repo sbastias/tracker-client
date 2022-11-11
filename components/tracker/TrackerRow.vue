@@ -92,7 +92,7 @@ export default {
       return !!this.placement.Internal_Status__c
     },
     rotationCommGroup () {
-      let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
+      let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase() || ''
       let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
       if (lcRotComm.search(/confirmation received/) > -1) return 'confirmed'
       else if (lcRotComm.search(/cancel|cancelled|missed/) > -1) return 'cancelled'

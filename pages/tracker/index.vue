@@ -33,7 +33,7 @@
             <option value="AVTRRT__Start_Date__c <=">Start Date</option>
             <option value="AVTRRT__End_Date__c <=">End Date</option>
           </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
-          <button @click="loadData">Load Placements</button>
+          <button @click="loadData">Load Schedules</button>
         </div>
         
         <div>
