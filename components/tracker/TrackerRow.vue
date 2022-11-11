@@ -94,10 +94,10 @@ export default {
     rotationCommGroup () {
       let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase()
       let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
-      if (/confirmation received/.test(lcRotComm)) return 'confirmed'
-      else if (/cancel|cancelled|missed/.test(lcRotComm)) return 'cancelled'
-      else if (/declined/.test(lcRotComm)) return 'declined'
-      else if (/sent/.test(lcRotComm)) return 'sent'
+      if (lcRotComm.search(/confirmation received/) > -1) return 'confirmed'
+      else if (lcRotComm.search(/cancel|cancelled|missed/) > -1) return 'cancelled'
+      else if (lcRotComm.search(/declined/) > -1) return 'declined'
+      else if (lcRotComm.search(/sent/) > -1) return 'sent'
       else if (openOrder) return 'open'
       else return 'unknown'
     },
