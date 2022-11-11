@@ -75,6 +75,7 @@ WFR Number
         <div class="form-cell">
           <label>Rotation Communication</label>
           <select v-model="placement.Rotation_Communication__c">
+            <option value="">None</option>
             <option v-for="(comm, idx) in $bus.metadata.find(el => el.fullName == 'AVTRRT__Placement__c').fields.find(el => el.fullName == 'Rotation_Communication__c').valueSet.valueSetDefinition.value" :key="`comm-option-${idx}`" :value="comm.label">{{comm.fullName}}</option>
           </select>
         </div>
