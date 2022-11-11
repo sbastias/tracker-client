@@ -67,7 +67,7 @@
 
       </div>
       
-      <div class="loading-container" v-if="loadingData"><Loader message="Loading Placements..." /></div>
+      <div class="loading-container" v-if="loadingData"><Loader message="Loading Schedules..." /></div>
       
 
       <section id="placements" ref="placements" :class="{disabled: loadingData}">
