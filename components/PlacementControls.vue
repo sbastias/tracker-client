@@ -1,5 +1,6 @@
 <template>
   <div id="placement-controls">
+    <button @click.stop="$parent.$emit('documents', placement.AVTRRT__Contact_Candidate__r.Document_Folder__c)">View Documents</button>
     <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
     <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
     <button @click.stop="$parent.$emit('reopen', placement)">Remove Staffer</button>

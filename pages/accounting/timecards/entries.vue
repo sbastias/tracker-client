@@ -3,7 +3,7 @@
     
     <div v-if="importingData" :key="importingData ? 'importing' : 'formatting'">
       <div class="loading-container">
-        <Loader :message="`Importing Salesforce Data for ${moment.utc(weekending).format('MMMM Do')} weekending...`" />
+        <Loader :message="`Importing Timecard Data for ${moment.utc(weekending).format('MMMM Do')} weekending...`" />
       </div>
     </div>
 

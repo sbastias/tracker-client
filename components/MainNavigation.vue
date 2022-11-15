@@ -21,8 +21,8 @@
       <span>Accounting</span>
       <ul>
         <li v-show="hasPermissions('Payroll - Timecards')">
-          <n-link custom to="/accounting/payroll" v-slot="{navigate, href}">
-            <a :href="href" @click="navigate">Payroll</a>
+          <n-link custom to="/accounting/timecards" v-slot="{navigate, href}">
+            <a :href="href" @click="navigate">Timecards</a>
           </n-link>
         </li>
         <li v-show="hasPermissions('Payroll - Import')">
@@ -104,7 +104,7 @@ nav {
       &:hover {
         > ul{
           display: block;
-          transform: translateX(0);
+          //transform: translateX(0);
           opacity: 1;
           pointer-events: all;
           
@@ -115,7 +115,7 @@ nav {
         display: block;
         top: 100%;
         bottom: auto;
-        transform: translateX(-20px);
+        //transform: translateX(-20px);
         opacity: 0;
         height: auto;
         position: absolute;

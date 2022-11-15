@@ -10,6 +10,7 @@
         <CancelX @cancel="cancelOverlay" class="overlay-cancel" />
         <component :is='mode' 
           :original-placement="placement" 
+          :document-folder-id="documentFolderId"
           @edited="flagEdited"
           v-show="!subsection"
           @subsection="activateSubsection"
@@ -38,9 +39,10 @@ import AddPlacement from '~/components/tracker/overlays/add-placement'
 import AssignStaffer from '~/components/tracker/overlays/assign-staffer'
 import HireStaffer from '~/components/tracker/overlays/hire-staffer'
 import NewApplicant from '~/components/tracker/overlays/new-applicant'
+import ViewDocuments from '~/components/tracker/overlays/view-documents'
 import CancelX from '~/components/ui/CancelX'
 export default {
-  props: ['mode','placement'],
+  props: ['mode','placement','document-folder-id'],
   data () {
     return {
       edited: false,
@@ -55,6 +57,7 @@ export default {
     AssignStaffer,
     HireStaffer,
     NewApplicant,
+    ViewDocuments,
     CancelX
   },
   methods: {
@@ -83,7 +86,7 @@ export default {
       this.parentId = false
       this.subsection = false
     }
-  }
+  },
 }
 </script>
 

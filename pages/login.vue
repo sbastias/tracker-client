@@ -92,7 +92,7 @@ export default {
       .catch(e => {
         console.log(e)
         console.log(JSON.stringify(e, null, '\t'))
-        alert('Login failed! ' + e.response.data)
+        alert('Login failed! ' + JSON.stringify(e.response.data))
       })
       .finally(() => {
         this.loggingIn = false

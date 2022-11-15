@@ -3,8 +3,8 @@
 
     <div class="header-controls" ref="header-controls">
 
-      <h2 v-if="!externalUser">Payroll Manager</h2>
-      <h2 v-else>Payroll Data for {{externalUser.Account.Name}}</h2>
+      <h2 v-if="!externalUser">Timecards Management</h2>
+      <h2 v-else>Timecards for {{externalUser.Account.Name}}</h2>
 
       <div class="timecard-params">
 
@@ -73,16 +73,20 @@
           <nav id="section-tabs">
             <ul>
 
-              <n-link :to="{name: 'accounting-payroll-timecards'}" v-slot="{navigate, isExactActive}" custom>
+              <n-link :to="{name: 'accounting-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
                 <li @click="navigate" :class="{isExactActive}">Timecards</li>
+              </n-link>
+
+              <n-link :to="{name: 'accounting-timecards-projects'}" v-slot="{navigate, isExactActive}" custom v-show="externalUser">
+                <li @click="navigate" :class="{isExactActive}">Projects</li>
               </n-link>
 
               
               
-              <n-link :to="{name: 'accounting-payroll-qb-import'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
+              <n-link :to="{name: 'accounting-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
                 <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
               </n-link>
-              <n-link :to="{name: 'accounting-payroll-invoices'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
+              <n-link :to="{name: 'accounting-timecards-invoices'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
                 <li @click="navigate" :class="{ isExactActive }">Generate Invoices</li>
               </n-link>
 
@@ -131,8 +135,9 @@ export default {
   },
   created() {
 
-    this.supplier = this.storedSupplier || ''
-    this.weekendingOrDay = this.storedWeekending && new Date(this.storedWeekending) || ''
+    //this.supplier = this.storedSupplier || ''
+    
+    
 
     if (process.client) {
       this.$bus.$on('resize', this.resizeMain)
@@ -145,6 +150,8 @@ export default {
     }
   },
   mounted() {
+    this.weekendingOrDay = this.storedWeekending && new Date(this.storedWeekending) || this.getLastWeekending()
+    this.supplier = this.storedSupplier || 'YORK'
     //alert(this.$axios.defaults.baseURL)
     console.log(process.env.NODE_ENV)
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
@@ -185,6 +192,17 @@ export default {
     }
   },
   methods: {
+    getLastWeekending () {
+
+      if (!this.externalUser) return new Date()
+
+      let day = new Date()
+      let dow = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+
+      while (dow[day.getDay()] != this.externalUser.Account.Weekending__c) day.setDate(day.getDate()-1)
+      
+      return day
+    },
     clearFields () {
       this.weekendingOrDay = ''
       this.supplier = false
@@ -213,19 +231,31 @@ export default {
   },
   watch: {
     
-    weekendingOrDay(val) {
-      this.folder = ''
-      this.folders = false
-      this.dataRows = false
+    weekendingOrDay: {
+      handler (val) {
+        this.folder = ''
+        this.folders = false
+        this.dataRows = false
 
-      if (val !== '') {
-        this.weekendingOrDay.setUTCHours(12)
-        this.$store.commit('STORE_WEEKENDING', val)
-      }
+        if (val !== '') {
+
+          this.weekendingOrDay.setUTCHours(12)
+          this.$store.commit('STORE_WEEKENDING', val)
+
+          if (this.supplier && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards-entries'})
+        }
+
+      },
+      immediate: true
       
     },
-    supplier (val) {
-      this.$store.commit('STORE_SUPPLIER', val)
+    supplier:{
+      handler (val) {
+        if (val) this.$store.commit('STORE_SUPPLIER', val)
+
+        if (this.weekendingOrDay && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards-entries'})
+      },
+      immediate: true
     },
     period() {
       this.weekendingOrDay = ''

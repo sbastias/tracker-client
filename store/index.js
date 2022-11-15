@@ -24,6 +24,9 @@ export const mutations = {
   STORE_WEEKENDING: (state, weekending) => {
     state.weekending = weekending
   },
+  STORE_WEEKDAY: (state, weekday) => {
+    state.weekday = weekday
+  },
   STORE_SUPPLIER: (state, supplier) => {
     state.supplier = supplier
   },
@@ -36,6 +39,7 @@ export const mutations = {
     state.firstname = ''
     state.permissions = []
     state.weekending = false
+    state.weekday = false
     state.supplier = ''
     state.user = false
   }

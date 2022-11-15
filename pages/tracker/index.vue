@@ -4,7 +4,8 @@
     <TrackerOverlay 
       v-if="overlayMode"
       :mode="overlayMode" 
-      :placement="overlayPlacement"  
+      :placement="overlayPlacement"
+      :document-folder-id="documentFolderId"  
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
@@ -90,6 +91,7 @@
             :active-columns="activeColumns"
             :width="tableWidth"
             @toggle-row="toggleRow" 
+            @documents="viewDocuments"
             @update="updatePlacement"
             @extend="extendPlacement"
             @assign="assignStaffer"
@@ -194,6 +196,7 @@ export default {
       moment,
       overlayMode: false,
       overlayPlacement: false,
+      documentFolderId: false,
       loadingData: false,
       sortedBy: false,
       ascending: true,
@@ -557,6 +560,10 @@ export default {
     updatePlacement (updatingPlacement) {
       this.overlayPlacement = updatingPlacement
       this.overlayMode = 'update-placement'
+    },
+    viewDocuments (documentFolderId) {
+      this.documentFolderId = documentFolderId
+      this.overlayMode = 'view-documents'
     },
     cancelOverlay () {
       this.overlayMode = false

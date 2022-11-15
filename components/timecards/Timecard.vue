@@ -68,10 +68,12 @@
         </li>
       </ul>
 
-      <span v-show="!externalUser">
+      <span>
         <span v-if="row.folder">
-          <a :href="`https://thebullittgroup.my.salesforce.com/${row.folder.Id}`" target="_blank">Open Folder</a>&nbsp;
-          <label class="sync-to-qb" @click="toggleSync">Sync to QB <input type="checkbox" :checked="!row.folder.doNotSync" readonly /> </label>
+          <a :href="`https://thebullittgroup.my.salesforce.com/${row.folder.Id}`" target="_blank"  v-show="!externalUser">Open Folder</a>&nbsp;
+          <label class="sync-to-qb" @click="toggleSync">
+            <span v-if="externalUser">Approved</span><span v-else>Sync to QB</span> <input type="checkbox" :checked="!row.folder.doNotSync" readonly />
+          </label>
         </span>
         <span v-else>No Folder</span>
       </span>
@@ -95,7 +97,7 @@
             <label><span>{{moment.utc(dow).format('MM/DD ddd')}}</span></label>
 
             <div>
-              <input type="number" :disabled="row.saving || externalUser" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}" />
+              <input type="number" :disabled="row.saving" v-model="dailyTrack.hours" @input="hourChange($event, dailyTrack)" :class="{imported: !!dailyTrack.qb}" />
               <div v-if="dailyTrack.id" class="notes-cta" @click="toggleNote" :title="dailyTrack.defaultNotes">
                 <NotesIcon :custom="dailyTrack.customNotes" v-show="!externalUser" />
               </div>
@@ -309,7 +311,7 @@ export default {
             timeTracking.notes = timeTrack.notes
             timeTracking.customNotes = timeTrack.customNotes
 
-            if (timeTrack.qb) {
+            if (timeTrack.qb && this.tally) {
               let updateIdx = this.tally.toUpdate.map(el => el.Id).indexOf(timeTrack.id)
               let deleteIdx = this.tally.toDelete.map(el => el.Id).indexOf(timeTrack.id)
 
