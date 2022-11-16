@@ -63,7 +63,7 @@ import OpenOrderControls from '~/components/OpenOrderControls'
 
 
 export default {
-  props: ['placement','active','activeColumns','is-external-user','width'],
+  props: ['placement','active','activeColumns','width'],
   components: {
     Icon,
     PlacementControls,
@@ -88,6 +88,7 @@ export default {
     this.resizeStuff()
   },
   computed: {
+    isExternalUser () { return !!this.$parent.externalUser },
     internalStatus () {
       return !!this.placement.Internal_Status__c
     },

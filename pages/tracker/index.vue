@@ -90,7 +90,6 @@
             :active="activatedPlacement == placement"
             :active-columns="activeColumns"
             :width="tableWidth"
-            :is-external-user="!!externalUser"
             @toggle-row="toggleRow" 
             @documents="viewDocuments"
             @update="updatePlacement"
