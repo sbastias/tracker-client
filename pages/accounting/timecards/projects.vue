@@ -87,15 +87,38 @@ h2 {
 }
 #projects-table {
   
+  font-size: .8em;
+  
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  
   th {
     text-align: left;
+
+    background: #eee;
+
+    &:nth-child(1) {width: max-content;}
+    &:nth-child(2) {width: 300px;}
+    &:nth-child(3) {width: max-content;}
+    &:nth-child(4) {width: auto;}
+    &:nth-child(5) {width: auto;}
+    &:nth-child(6) {width: auto;}
+
+    &:not(:last-child) {border-right: 1px solid #ccc;}
+    border-collapse: collapse;
+
   }
   th, td {
-    padding: 3px 15px 3px 0;
+    padding: 8px 20px 8px 10px;
+    
   }
   td{
+    border: 1px solid #ddd;
+    border-collapse: separate;
     &.currency{
       text-align: right;
+      padding-left: 20px;
+      padding-right: 10px;
       > span:before{
         content: '$';
       }

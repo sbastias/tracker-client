@@ -41,7 +41,7 @@
           />
           <OpenOrderControls 
             ref="open-order-controls"
-            v-if="type == 'open-order'"
+            v-if="type == 'open-order' && !isExternalUser"
             :placement="placement"
           />
         
@@ -63,7 +63,7 @@ import OpenOrderControls from '~/components/OpenOrderControls'
 
 
 export default {
-  props: ['placement','active','activeColumns','width'],
+  props: ['placement','active','activeColumns','is-external-user','width'],
   components: {
     Icon,
     PlacementControls,

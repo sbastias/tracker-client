@@ -526,7 +526,7 @@ background: #fff;
       .weekly-container {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
-        grid-gap: 5px;
+        grid-gap: 0px;
       }
 
       .daily-container {
@@ -553,6 +553,7 @@ background: #fff;
             font-size: 20px;
             background: #eeeeee;
             border: 1px solid #888;
+            &:not(:last-child) {border-right: none;}
             text-align: right;
 
             &.notes-input {

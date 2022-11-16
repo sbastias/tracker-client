@@ -43,7 +43,7 @@
         </div>
 
         <div>
-          <button style="height: auto" v-show="$bus.accounts" @click="addPlacement">Add New Order</button>
+          <button style="height: auto" v-show="$bus.accounts && !externalUser" @click="addPlacement">Add New Order</button>
         </div>
         
       </section>
@@ -90,6 +90,7 @@
             :active="activatedPlacement == placement"
             :active-columns="activeColumns"
             :width="tableWidth"
+            :is-external-user="!!externalUser"
             @toggle-row="toggleRow" 
             @documents="viewDocuments"
             @update="updatePlacement"

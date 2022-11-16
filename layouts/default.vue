@@ -70,7 +70,7 @@ export default {
       this.$nextTick(() => {
         this.$store.commit('LOGOUT')
         delete this.$axios.defaults.headers.common['Authorization']
-        return this.$nextTick(() => location.reload())
+        location.href = '/'
       })
     },
   }

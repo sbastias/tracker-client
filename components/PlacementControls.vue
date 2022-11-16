@@ -1,19 +1,17 @@
 <template>
   <div id="placement-controls">
     <button @click.stop="$parent.$emit('documents', placement.AVTRRT__Contact_Candidate__r.Document_Folder__c)">View Documents</button>
-    <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
-    <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
-    <button @click.stop="$parent.$emit('reopen', placement)">Remove Staffer</button>
+    <template v-if="!$parent.isExternalUser">
+      <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
+      <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
+      <button @click.stop="$parent.$emit('reopen', placement)">Remove Staffer</button>
+    </template>
   </div>
 </template>
 
 
 
 <script>
-import moment from 'moment'
-import Icon from '~/components/ui/Icons'
-//import SalesforceIcon from '~/components/ui/SalesforceIcon'
-
 
 export default {
   props: ['placement'],

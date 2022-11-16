@@ -111,7 +111,6 @@
 import Loader from '~/components/ui/Loader'
 import moment from 'moment'
 import { mapGetters } from 'vuex'
-import path from 'path'
 
 export default {
   components: {
@@ -150,7 +149,7 @@ export default {
     }
   },
   mounted() {
-    this.weekendingOrDay = this.storedWeekending && new Date(this.storedWeekending) || this.getLastWeekending()
+    this.weekendingOrDay = !!this.storedWeekending && new Date(this.storedWeekending) || this.getLastWeekending()
     this.supplier = this.storedSupplier || 'YORK'
     //alert(this.$axios.defaults.baseURL)
     console.log(process.env.NODE_ENV)
@@ -194,12 +193,16 @@ export default {
   methods: {
     getLastWeekending () {
 
+      console.log('Getting most recent weekending!')
+
       if (!this.externalUser) return new Date()
+
+      console.log('External user!')
 
       let day = new Date()
       let dow = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
-      while (dow[day.getDay()] != this.externalUser.Account.Weekending__c) day.setDate(day.getDate()-1)
+      while (dow[day.getUTCDay()] != this.externalUser.Account.Weekending__c) day.setUTCDate(day.getUTCDate()-1)
       
       return day
     },
