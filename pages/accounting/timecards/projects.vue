@@ -25,9 +25,9 @@
             <td>{{project.PO__c}}</td>
             <td>{{project.Description__c}}</td>
             <td>{{project.Department__c}}</td>
-            <td class="currency"><span>{{project.Budget__c}}</span></td>
-            <td class="currency"><span>{{project.Total_Charged__c || 0}}</span></td>
-            <td class="currency"><span>{{project.Balance__c}}</span></td>
+            <td class="currency"><span>{{project.Budget__c.toFixed(2)}}</span></td>
+            <td class="currency"><span>{{(project.Total_Charged__c || 0).toFixed(2)}}</span></td>
+            <td class="currency"><span>{{project.Balance__c.toFixed(2)}}</span></td>
           </tr>
         </tbody>
       </table>

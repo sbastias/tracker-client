@@ -1,5 +1,5 @@
 <template>
-<tbody class="placement-container" :class="[{internalStatus, mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate},rotationCommGroup]" :active="active" @click="toggleRow">
+<tbody class="placement-container" :class="[{internalStatus, mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate, external: isExternalUser},rotationCommGroup]" :active="active" @click="toggleRow">
 
   <tr class="placement-row">
       <td class="id">
@@ -374,24 +374,29 @@ export default {
 
     .placement-row td {padding-top: 10px;}
 
-    a{pointer-events: all;}
-    color: white;
+    
+    
     &:hover {
       background-color: #666!important;
     }
     background-color: #666!important;
+
     animation: none;
-    a {color: lightblue}
+
+    * {color: white;}
+
+
+    &:not(.external) {
+      a {
+        pointer-events: all;
+        color: lightblue;
+      }
+    }
+
+
     
   }
 
-
-    
-    
-    
-  
-
-  
 
 }
 
