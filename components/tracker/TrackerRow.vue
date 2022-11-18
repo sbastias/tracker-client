@@ -57,8 +57,8 @@
 <script>
 import moment from 'moment'
 import Icon from '~/components/ui/Icons'
-import PlacementControls from '~/components/PlacementControls'
-import OpenOrderControls from '~/components/OpenOrderControls'
+import PlacementControls from '~/components/tracker/PlacementControls'
+import OpenOrderControls from '~/components/tracker/OpenOrderControls'
 //import SalesforceIcon from '~/components/ui/SalesforceIcon'
 
 

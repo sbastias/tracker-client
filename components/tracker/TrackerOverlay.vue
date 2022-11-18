@@ -10,7 +10,6 @@
         <CancelX @cancel="cancelOverlay" class="overlay-cancel" />
         <component :is='mode' 
           :original-placement="placement" 
-          :document-folder-id="documentFolderId"
           @edited="flagEdited"
           v-show="!subsection"
           @subsection="activateSubsection"

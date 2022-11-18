@@ -15,7 +15,7 @@
           <a @click="downloadFile" :data-id="doc.file.ContentDocumentId" :data-filename="doc.Name">{{doc.Name}}</a>
         </li>
       </ul>
-      <span v-else>No Documents Found!</span>
+      <span v-else>Sorry, we don't have documents for {{originalPlacement.AVTRRT__Contact_Candidate__r.FirstName}}. Please contact our office if you require more information.</span>
     </div>
 
   </div>
@@ -25,7 +25,7 @@
 import Loader from '~/components/ui/Loader'
 import { mapGetters } from 'vuex'
 export default {
-  props: ['document-folder-id'],
+  props: ['original-placement'],
   components: {
     Loader
   },
@@ -45,7 +45,7 @@ export default {
     async loadDocuments () {
       console.log('Loading Documents...')
       this.loadingDocuments = true
-      await this.$axios.get(`/tracker/documents/load/${this.documentFolderId}`)
+      await this.$axios.get(`/tracker/documents/load/${this.originalPlacement.AVTRRT__Contact_Candidate__r.Document_Folder__c}`)
       .then(({data}) => {
         return this.documents = data
       })

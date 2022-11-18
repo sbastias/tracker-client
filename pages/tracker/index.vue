@@ -5,7 +5,6 @@
       v-if="overlayMode"
       :mode="overlayMode" 
       :placement="overlayPlacement"
-      :document-folder-id="documentFolderId"  
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
@@ -113,7 +112,6 @@
 
 <script>
 import TrackerRow from '~/components/tracker/TrackerRow'
-import PlacementControls from '~/components/PlacementControls'
 import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
@@ -128,12 +126,14 @@ class rangeObj  {
   constructor () {
 
     this.fromDate = ((date) => {
-      date.setDate(date.getDate() - 21)
+      date.setUTCDate(date.getUTCDate() - 21)
+      date.setUTCFullYear(date.getUTCFullYear() - 2)
       return date
     })(new Date())
 
     this.toDate = ((date) => {
-      date.setMonth(date.getMonth() + 3)
+      date.setUTCMonth(date.getUTCMonth() + 3)
+      date.setUTCFullYear(date.getUTCFullYear() - 2)
       return date
     })(new Date())
 
@@ -174,7 +174,6 @@ export default {
   },
   components: {
     TrackerRow,
-    PlacementControls,
     TrackerOverlay,
     TrackerFilters,
     Loader,
@@ -561,8 +560,8 @@ export default {
       this.overlayPlacement = updatingPlacement
       this.overlayMode = 'update-placement'
     },
-    viewDocuments (documentFolderId) {
-      this.documentFolderId = documentFolderId
+    viewDocuments (documentPlacement) {
+      this.overlayPlacement = documentPlacement
       this.overlayMode = 'view-documents'
     },
     cancelOverlay () {
