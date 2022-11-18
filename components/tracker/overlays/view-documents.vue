@@ -9,12 +9,13 @@
       <Loader message="Loading Documents..." />
     </div>
 
-    <div v-show="documents.length > 0">
-      <ul>
+    <div v-show="!!documents">
+      <ul v-if="documents.length > 0">
         <li v-for="(doc, idx) in documents" :key="`doc-${idx}`">
           <a @click="downloadFile" :data-id="doc.file.ContentDocumentId" :data-filename="doc.Name">{{doc.Name}}</a>
         </li>
       </ul>
+      <span v-else>No Documents Found!</span>
     </div>
 
   </div>
@@ -30,7 +31,7 @@ export default {
   },
   data () {
     return {
-      documents: [],
+      documents: false,
       loadingDocuments: false
     }
   },
