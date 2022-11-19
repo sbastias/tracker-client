@@ -127,13 +127,13 @@ class rangeObj  {
 
     this.fromDate = ((date) => {
       date.setUTCDate(date.getUTCDate() - 21)
-      date.setUTCFullYear(date.getUTCFullYear() - 2)
+      //date.setUTCFullYear(date.getUTCFullYear() - 2)
       return date
     })(new Date())
 
     this.toDate = ((date) => {
       date.setUTCMonth(date.getUTCMonth() + 3)
-      date.setUTCFullYear(date.getUTCFullYear() - 2)
+      //date.setUTCFullYear(date.getUTCFullYear() - 2)
       return date
     })(new Date())
 
