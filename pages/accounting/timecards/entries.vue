@@ -223,7 +223,7 @@ export default {
 
           })
           .catch(e => {
-            alert((e.response && e.response.data) || e.message)
+            this.$bus.$emit('toaster', {message: (e.response && e.response.data) || e.message, status: 'error'})
             this.importingData = false
             return false
           })
