@@ -254,7 +254,7 @@ export default {
       &:before {background-color: rgba(255, 68, 68, .5);}
       background-color: rgba(255, 68, 68, .5);
       background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
-      animation: declinedAlert 1s linear infinite;
+      //animation: declinedAlert 1s linear infinite;
       &:hover{
         background-color: pink;
         background-image: none;
@@ -381,7 +381,7 @@ export default {
     }
     background-color: #666!important;
 
-    animation: none;
+    //animation: none;
 
     * {color: white;}
 
