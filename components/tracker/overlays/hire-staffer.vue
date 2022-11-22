@@ -200,9 +200,8 @@ export default {
       await this.$axios.post(`/tracker/order/hire`, hire)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'NEW Staffer assigned to Order - Offer Sent!'})
-        this.$parent.$emit('update-row', data)
-        //this.$parent.$emit('re-sort')
-        this.$parent.$emit('cancel-overlay')
+        this.$parent.$parent.updateRow(data)
+        this.$parent.$parent.cancelOverlay()
         
       })
       .catch(e => {
@@ -221,7 +220,7 @@ export default {
       
     },
     async newApplicant () {
-      this.$emit('subsection', 'new-applicant', this.stafferId)
+      this.$parent.activateSubsection('new-applicant', this.stafferId)
     }
   },
   watch: {

@@ -194,6 +194,7 @@ export default {
       delete update.AVTRRT__Employer__r
       delete update.Compensation__r
       delete update.Name
+      delete update.rotationCommGroup
       delete update.CreatedDate
       delete update.LastModifiedDate
       delete update.candidateCompensation
@@ -206,8 +207,8 @@ export default {
       await this.$axios.post(`/tracker/update`, update)
       .then(async ({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
-        this.$parent.$emit('update-row', data)
-        this.$parent.$emit('cancel-overlay')
+        this.$parent.$parent.updateRow(data)
+        this.$parent.$parent.cancelOverlay()
         this.edited = false
 
         if (this.originalPlacement.Internal_Status__c != data.Internal_Status__c && data.Internal_Status__c == 'Cancel and Replicate') {
@@ -234,7 +235,7 @@ export default {
       }
     },
     edited (val) {
-      this.$emit('edited', val)
+      this.$parent.flagEdited(val)
     }
   }
 }

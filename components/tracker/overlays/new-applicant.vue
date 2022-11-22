@@ -115,7 +115,7 @@ export default {
         applicantData.Id = data.id
 
         this.$bus.$emit('assign-applicant-to-staffer', applicantData)
-        this.$emit('deactivate')
+        this.$parent.deactivateSubsection()
       })
       .catch(e => {
         let {message, stack} = e.response.data

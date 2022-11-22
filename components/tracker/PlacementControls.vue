@@ -1,10 +1,10 @@
 <template>
   <div id="placement-controls">
-    <button @click.stop="$parent.$emit('documents', placement)">View Documents</button>
+    <button @click.stop="$parent.$parent.viewDocuments()">View Documents</button>
     <template v-if="!$parent.isExternalUser">
-      <button @click.stop="$parent.$emit('update', placement)">Edit this Placement</button>
-      <button @click.stop="$parent.$emit('extend', placement)">Extend this Placement</button>
-      <button @click.stop="$parent.$emit('reopen', placement)">Remove Staffer</button>
+      <button @click.stop="$parent.$parent.updatePlacement()">Edit this Placement</button>
+      <button @click.stop="$parent.$parent.extendPlacement()">Extend this Placement</button>
+      <button @click.stop="$parent.$parent.removeStaffer()">Remove Staffer</button>
     </template>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
   },
   data () {
     return {
-      
+      documentFolderId: false
     }
   },
   created () {

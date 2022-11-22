@@ -5,7 +5,6 @@
       v-if="overlayMode"
       :mode="overlayMode" 
       :placement="overlayPlacement"
-      @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
       @prepend-row="doRowPrepend"
@@ -89,13 +88,12 @@
             :active="activatedPlacement == placement"
             :active-columns="activeColumns"
             :width="tableWidth"
-            @toggle-row="toggleRow" 
-            @documents="viewDocuments"
-            @update="updatePlacement"
-            @extend="extendPlacement"
+            
+            
+            
             @assign="assignStaffer"
             @hire="hireStaffer"
-            @reopen="removeStaffer"
+            
             @update-row="doRowUpdate"
             
           />
@@ -191,7 +189,7 @@ export default {
       metadata: false,
       unfilteredPlacements: [],
       textSearch: '',
-      activatedPlacement: false,
+      activatedPlacementId: false,
       moment,
       overlayMode: false,
       overlayPlacement: false,
@@ -203,7 +201,9 @@ export default {
       //offsetLeft: 0,
       emitErrors: {},
       showFilters: true,
-      showColumns: true
+      showColumns: true,
+      placements: false,
+      toggleableColumns: []
     }
   },
   computed: {
@@ -211,11 +211,49 @@ export default {
     activeColumns () {
       return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
     },
-    toggleableColumns () {
-      return this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (!!el.internal ? !this.externalUser : true))
-    },
-    placements () {
+    
+    activatedPlacement () {
+      if (!this.activatedPlacementId) return false
+      return this.placements.find(el => el.Id == this.activatedPlacementId)
+    }
+  },
+  created () {
+    this.$bus.$on('refetch', this.$fetch)
+    this.$bus.$on('resize', this.resizeStuff)
 
+    if (this.externalUser) {
+      this.params.filters.push(`AVTRRT__Employer__c = '${this.externalUser.Account.Id}'`)
+      this.params.filters.push(`Department__c IN ('${ this.externalUser.Reporting_Departments__c.split(';').join(`','`) }')`) 
+    }
+
+    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
+
+    
+  },
+  beforeDestroy () {
+    this.$bus.$off('refetch')
+  },
+  mounted () {
+    //this.resizeStuff()
+    if (process.client) {
+      
+      document.querySelector('#placements-table').style.width = `${ this.trackerColumnsConfig.reduce((acc, el) => acc += el.width, 0) }px`
+
+      this.createSocket()
+
+      this.toggleableColumns = this.trackerColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (!!el.internal ? !this.externalUser : true))
+
+      /*
+      this.$refs.placements.addEventListener('scroll', e => {
+        console.log('scrolling...', this.$refs.placements.scrollLeft)
+        //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.placements.scrollLeft }px)`
+        this.offsetLeft = `${ this.$refs.placements.scrollLeft }px`
+      })
+      */
+    }
+  },
+  methods: {
+    organizePlacementsData () {
       //console.log('...updating computed placements')
       let filteredPlacements = false
 
@@ -274,42 +312,11 @@ export default {
 
       //console.log(filteredPlacements)
       
-      return filteredPlacements
-    }
-  },
-  created () {
-    this.$bus.$on('refetch', this.$fetch)
-    this.$bus.$on('resize', this.resizeStuff)
+      this.placements = filteredPlacements
 
-    if (this.externalUser) {
-      this.params.filters.push(`AVTRRT__Employer__c = '${this.externalUser.Account.Id}'`)
-      this.params.filters.push(`Department__c IN ('${ this.externalUser.Reporting_Departments__c.split(';').join(`','`) }')`)
       
-    }
-
-    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
-  },
-  beforeDestroy () {
-    this.$bus.$off('refetch')
-  },
-  mounted () {
-    //this.resizeStuff()
-    if (process.client) {
-      
-      document.querySelector('#placements-table').style.width = `${ this.trackerColumnsConfig.reduce((acc, el) => acc += el.width, 0) }px`
-
-      this.createSocket()
-
-      /*
-      this.$refs.placements.addEventListener('scroll', e => {
-        console.log('scrolling...', this.$refs.placements.scrollLeft)
-        //this.offsetLeft = `translateZ(0) translateX(${ this.$refs.placements.scrollLeft }px)`
-        this.offsetLeft = `${ this.$refs.placements.scrollLeft }px`
-      })
-      */
-    }
-  },
-  methods: {
+    
+    },
     
     generateFilters () {
       
@@ -374,6 +381,11 @@ export default {
         this.$bus.accounts = data.accounts
         this.$bus.users = data.users
         this.$bus.metadata = data.metadata
+        try {
+          this.organizePlacementsData()
+        } catch (e) {
+          throw e
+        }
         try {
           this.generateFilters()
         } catch (e) {
@@ -522,22 +534,22 @@ export default {
         }
       }, 1000)
     },
-    toggleRow (placement) {
-      if (this.activatedPlacement == placement) this.activatedPlacement = false
-      else this.activatedPlacement = placement
+    toggleRow (placementId) {
+      if (this.activatedPlacementId == placementId) this.activatedPlacementId = false
+      else this.activatedPlacementId = placementId
     },
-    assignStaffer (openOrder) {
-      this.overlayPlacement = openOrder
+    assignStaffer () {
+      this.overlayPlacement = this.activatedPlacement
       this.overlayMode = 'assign-staffer'  
     },
-    hireStaffer (openOrder) {
-      this.overlayPlacement = openOrder
+    hireStaffer () {
+      this.overlayPlacement = this.activatedPlacement
       this.overlayMode = 'hire-staffer'  
     },
-    async removeStaffer (placement) {
+    async removeStaffer () {
       if (confirm('Are you sure you want to remove staffer and re-open this order?')) {
 
-        await this.$axios.post('/tracker/order/reopen', placement)
+        await this.$axios.post('/tracker/order/reopen', this.activatedPlacement)
         .then(({data}) => {
           this.doRowUpdate(data)
         })
@@ -552,16 +564,16 @@ export default {
       this.overlayPlacement = false
       this.overlayMode = 'add-placement'  
     },
-    extendPlacement (extendingPlacement) {
-      this.overlayPlacement = extendingPlacement
+    extendPlacement () {
+      this.overlayPlacement = this.activatedPlacement
       this.overlayMode = 'extend-placement'
     },
-    updatePlacement (updatingPlacement) {
-      this.overlayPlacement = updatingPlacement
+    updatePlacement () {
+      this.overlayPlacement = this.activatedPlacement
       this.overlayMode = 'update-placement'
     },
-    viewDocuments (documentPlacement) {
-      this.overlayPlacement = documentPlacement
+    viewDocuments () {
+      this.overlayPlacement = this.activatedPlacement
       this.overlayMode = 'view-documents'
     },
     cancelOverlay () {
@@ -584,6 +596,14 @@ export default {
     }
   },
   watch: {
+    filters: {
+      handler (val) {
+        console.log('Filters changed')
+        this.organizePlacementsData()
+      },
+      deep: true
+      
+    },
     showFilters () {this.$nextTick(() => this.resizeStuff())},
     showColumns () {this.$nextTick(() => this.resizeStuff())},
     '$bus.fullscreen' (val) {

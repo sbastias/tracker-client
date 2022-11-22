@@ -1,8 +1,8 @@
 <template>
   <div id="open-order-controls">
-    <button @click.stop="$parent.$emit('update', placement)">Edit this Order</button>
-    <button @click.stop="$parent.$emit('assign', placement)">Assign Existing Staffer</button>
-    <button @click.stop="$parent.$emit('hire', placement)">Assign NEW Hire</button>
+    <button @click.stop="$parent.$parent.updatePlacement()">Edit this Order</button>
+    <button @click.stop="$parent.$parent.assignStaffer()">Assign Existing Staffer</button>
+    <button @click.stop="$parent.$parent.hireStaffer()">Assign NEW Hire</button>
   </div>
 </template>
 

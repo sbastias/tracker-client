@@ -1,5 +1,5 @@
 <template>
-<tbody class="placement-container" :class="[{internalStatus, mismatchedRates: placement.candidateCompensation != placement.jobApplicantPayRate, external: isExternalUser},rotationCommGroup]" :active="active" @click="toggleRow">
+<tbody class="placement-container" :class="[{internalStatus: attributes.internalStatus, external: attributes.isExternalUser}, attributes.rotationCommGroup]" :active="active" @click="toggleRow">
 
   <tr class="placement-row">
       <td class="id">
@@ -75,33 +75,35 @@ export default {
       mode: 'classic',
       editing: false,
       edited: false,
-      editingRotComm: false
+      editingRotComm: false,
+      attributes: {
+        rotationCommGroup: false,
+        isExternalUser: false,
+        internalStatus: false
+      }
+      
     }
   },
   created () {
-    this.$bus.$on('resize', this.resizeStuff)
+    //this.$bus.$on('resize', this.resizeStuff)
   },
   beforeDestroy () {
-    this.$bus.$off('resize')
+    //this.$bus.$off('resize')
   },
   mounted () {
-    this.resizeStuff()
+    //this.resizeStuff()
+
+    this.attributes.isExternalUser = !!this.$parent.externalUser
+    this.attributes.internalStatus = !!this.placement.Internal_Status__c
+    this.attributes.rotationCommGroup = this.placement.rotationCommGroup
+
+    Object.freeze(this.attributes)
+
+    
   },
   computed: {
-    isExternalUser () { return !!this.$parent.externalUser },
-    internalStatus () {
-      return !!this.placement.Internal_Status__c
-    },
-    rotationCommGroup () {
-      let lcRotComm = this.placement.Rotation_Communication__c && this.placement.Rotation_Communication__c.toLowerCase() || ''
-      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
-      if (lcRotComm.search(/confirmation received/) > -1) return 'confirmed'
-      else if (lcRotComm.search(/cancel|cancelled|missed/) > -1) return 'cancelled'
-      else if (lcRotComm.search(/declined/) > -1) return 'declined'
-      else if (lcRotComm.search(/sent/) > -1) return 'sent'
-      else if (openOrder) return 'open'
-      else return 'unknown'
-    },
+    
+    
     type () {
       let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
 
@@ -141,7 +143,7 @@ export default {
       await this.$axios.post(`/tracker/update`, update)
       .then(async ({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Updated!'})
-        this.$emit('update-row', data)
+        this.$parent.updateRow(data)
         
         this.deactivate()
 
@@ -165,7 +167,7 @@ export default {
       this.$emit(this.active ? 'deactivate' : 'activate', this.placement)
     },
     toggleRow () {
-      this.$emit('toggle-row', this.placement)
+      this.$parent.toggleRow(this.placement.Id)
     },
     update () {
       this.$emit('update', this.placement)
@@ -207,9 +209,7 @@ export default {
   font-size: .8rem;
   cursor:pointer;
   
-  &.mismatchedRates {
-    //font-weight: bold;
-  }
+  
   
   //DEFAULT YELLOW
   &:before {background-color: lightyellow;}
@@ -218,6 +218,48 @@ export default {
     background-color: rgba(yellow, 0.4);
   }
 
+
+  &.confirmed {
+    &:before {background-color: green;}
+    background-color: rgba(rgb(74, 193, 5),0.2);
+    &:hover {
+      background-color: rgba(rgb(74, 193, 5),0.4);
+    }
+  }
+  &.sent {
+    &:before {background-color: orange;}
+    background-color: rgba(orange, 0.2);
+    &:hover {
+      background-color: rgba(orange, 0.4);
+    }
+  } 
+  &.open {
+    &:before {background-color: lightyellow;}
+    background-color: rgba(yellow, 0.2);
+    &:hover {
+      background-color: rgba(yellow, 0.4);
+    }
+  } 
+  &.declined {
+    &:before {background-color: rgba(255, 68, 68, .5);}
+    background-color: rgba(255, 68, 68, .5);
+    //background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
+    //animation: declinedAlert 1s linear infinite;
+    &:hover{
+      background-color: pink;
+      background-image: none;
+    }
+    text-decoration: line-through!important;
+  }
+  &.cancelled {
+    &:before {background-color: red;}
+    background-color: rgba(red, .2);
+    &:hover {
+      background-color: rgba(red, .4);
+    }
+    text-decoration: line-through!important;
+    span {opacity: .5;}
+  }
   &.internalStatus {
     &:before {background-color: rgb(255, 122, 74);}
     background-color: rgb(255, 122, 74);
@@ -228,49 +270,7 @@ export default {
       text-decoration: line-through;
     }
   }
-  &:not(.internalStatus) {
-    &.confirmed {
-      &:before {background-color: green;}
-      background-color: rgba(rgb(74, 193, 5),0.2);
-      &:hover {
-        background-color: rgba(rgb(74, 193, 5),0.4);
-      }
-    }
-    &.sent {
-      &:before {background-color: orange;}
-      background-color: rgba(orange, 0.2);
-      &:hover {
-        background-color: rgba(orange, 0.4);
-      }
-    } 
-    &.open {
-      &:before {background-color: lightyellow;}
-      background-color: rgba(yellow, 0.2);
-      &:hover {
-        background-color: rgba(yellow, 0.4);
-      }
-    } 
-    &.declined {
-      &:before {background-color: rgba(255, 68, 68, .5);}
-      background-color: rgba(255, 68, 68, .5);
-      background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
-      animation: declinedAlert 1s linear infinite;
-      &:hover{
-        background-color: pink;
-        background-image: none;
-      }
-      text-decoration: line-through!important;
-    }
-    &.cancelled {
-      &:before {background-color: red;}
-      background-color: rgba(red, .2);
-      &:hover {
-        background-color: rgba(red, .4);
-      }
-      text-decoration: line-through!important;
-      span {opacity: .5;}
-    }
-  }
+  
 
 
 
@@ -381,7 +381,7 @@ export default {
     }
     background-color: #666!important;
 
-    animation: none;
+    //animation: none;
 
     * {color: white;}
 

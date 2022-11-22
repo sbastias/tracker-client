@@ -165,8 +165,8 @@ export default {
       await this.$axios.post(`/tracker/extend`, ext)
       .then(({data}) => {
         this.$bus.$emit('toaster',{status: 'success', message: 'Placement Extension Created!'})
-        this.$parent.$emit('insert-row', data)
-        this.$parent.$emit('cancel-overlay')
+        this.$parent.$parent.insertRow(data)
+        this.$parent.$parent.cancelOverlay()
         this.edited = false
       })
       .catch(e => {
@@ -186,7 +186,7 @@ export default {
       }
     },
     edited (val) {
-      this.$emit('edited', val)
+      this.$parent.flagEdited(val)
     }
   }
 }

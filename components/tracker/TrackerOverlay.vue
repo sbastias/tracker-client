@@ -7,18 +7,15 @@
     <div class="overlay-content-container">
 
       <div class="overlay-content">
-        <CancelX @cancel="cancelOverlay" class="overlay-cancel" />
+        <CancelX @cancel="$parent.cancelOverlay()" class="overlay-cancel" />
         <component :is='mode' 
           :original-placement="placement" 
-          @edited="flagEdited"
           v-show="!subsection"
-          @subsection="activateSubsection"
         />
         <component :is='subsection' 
           v-show="subsection"
           :placement="placement"
           :parent-id="parentId"
-          @deactivate="deactivateSubsection"
          />
 
       </div>
