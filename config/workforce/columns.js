@@ -50,6 +50,12 @@ export default {
       width: 300
     },
     {
+      label: 'Notes & Comments',
+      field: 'AVTRRT__Notes_and_Comments__c',
+      toggle: true,
+      width: 300
+    },
+    {
       label: 'Job Title',
       field: 'AVTRRT__Job_Title__c',
       toggle: true,
@@ -107,6 +113,20 @@ export default {
       toggle: true,
       width: 250,
       editable: true
+    },
+
+    {
+      label: 'City',
+      field: 'MailingCity',
+      toggle: true,
+      width: 150,
+    },
+
+    {
+      label: 'Cognibox',
+      field: 'Cognibox_Training__c',
+      toggle: true,
+      width: 300
     },
     
    

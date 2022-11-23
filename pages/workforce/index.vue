@@ -254,7 +254,9 @@ export default {
           filteredContacts = this.unfilteredContacts.filter(el => [
               el.FirstName || '', 
               el.LastName || '',
-              el.AVTRRT__Job_Title__c || ''
+              el.AVTRRT__Job_Title__c || '',
+              el.AVTRRT__Notes_and_Comments__c || '',
+              el.Cognibox_Training__c || ''
             ].join('||').match(searchRegex))
           //filteredContacts = this.unfilteredContacts.filter(el => el.searchableText.toLowerCase().indexOf(this.textSearch.toLowerCase()) > -1)
         
