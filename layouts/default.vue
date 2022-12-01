@@ -52,7 +52,7 @@ export default {
     this.$axios.defaults.headers.common['Authorization'] = `Bearer ${this.$store.state.accessToken}`
     this.$axios.defaults.headers.common['X-Requestor-Email'] = `${this.$store.state.email}`
 
-    return await this.$axios.get(`/check-token`)
+    return await this.$axios.get(`/auth/check-token`)
     .then(({data}) => data || this.$router.push('/login?expired'))
     .catch(() => this.$router.push('/login?invalid'))
     //console.log(this.$axios.defaults.headers.common['Authorization'])

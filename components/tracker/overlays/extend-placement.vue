@@ -156,6 +156,7 @@ export default {
       delete ext.jobApplicantPayRate
       delete ext.AVTRRT__Job_Applicant__r
       delete ext.searchableText
+      delete ext.Prospects__r
 
       ext.AVTRRT__Extension__c = true
       ext.Checkbox1__c = true

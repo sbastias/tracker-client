@@ -14,8 +14,9 @@
             <th>PO No.</th>
             <th>Description</th>
             <th>Department</th>
+            <th>Estimated Cost</th>
             <th>Budget</th>
-            <th>Charged</th>
+            <th>Current Charges</th>
             <th>Balance</th>
           </tr>
         </thead>
@@ -25,9 +26,34 @@
             <td>{{project.PO__c}}</td>
             <td>{{project.Description__c}}</td>
             <td>{{project.Department__c}}</td>
+            <td v-if="project.Estimates__r" class="currency"><a @click="project.showEstimates = !project.showEstimates">{{(project.Tax_Included__c || 0).toFixed(2)}}</a></td>
+            <td v-else style="text-align: right">N/A</td>
             <td class="currency"><span>{{(project.Budget__c || 0).toFixed(2)}}</span></td>
             <td class="currency"><span>{{(project.Total_Charged__c || 0).toFixed(2)}}</span></td>
             <td class="currency"><span>{{(project.Balance__c || 0).toFixed(2)}}</span></td>
+          </tr>
+          <tr v-show="project.showEstimates">
+            <td colspan="7" bgcolor="#eeeeee">
+
+              <div style="text-align: center; margin: 10px;">
+                <b>Breakdown of Estimated Cost for {{project.Description__c}}</b>
+              </div>
+
+              <table class="estimates-table" v-if="project.Estimates__r">
+                <tr>
+                  <th>Position</th>
+                  <th>Hours</th>
+                  <th>Charge</th>
+                </tr>
+                <tr v-for="(row, idx2) in project.Estimates__r.records" :key="`estimate-${idx}-row-${idx2}`">
+                  <td style="width: 300px;">{{row.Name}}</td>
+                  <td style="max-width: 8ch;">{{row.Hours__c}}</td>
+                  <td class="currency"><span>{{(row.Estimated_Charge__c || 0).toFixed(2)}}</span></td>
+                </tr>
+              </table>
+
+              <div v-else>No estimate data available</div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -71,6 +97,10 @@ export default {
       })
       .then(({data}) => {
         this.projects = data
+        this.projects.map(project => {
+          this.$set(project, 'showEstimates', false)
+          return project
+        })
       })
       .catch(e => {
         console.log(e)
@@ -123,6 +153,17 @@ h2 {
       > span:before{
         content: '$';
       }
+    }
+  }
+
+  .estimates-table {
+    border-collapse: collapse;
+    margin: auto;
+    th {
+      background: #dddddd;
+    }
+    td {
+      background: #ffffff;
     }
   }
 }

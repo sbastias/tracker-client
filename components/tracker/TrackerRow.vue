@@ -19,7 +19,7 @@
         <span style="font-style: italic" v-else>{{placement.AVTRRT__Contact_Candidate__r.FirstName}} {{placement.AVTRRT__Contact_Candidate__r.LastName}}</span>
       </td>
       
-      <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field">
+      <td class="ellipses" v-for="(field, idx) in activeFields" :key="`field-column-${idx}`" :class="field" :title="placement[field]">
         <div v-if="!active && field == 'Rotation_Communication__c'" @click.stop="editRotComm">
           <span v-if="!editingRotComm" style="pointer-events: none;">{{placement.Rotation_Communication__c || '&nbsp;'}}</span>
           <select v-else v-model="placement.Rotation_Communication__c" style="width: 100%" @change="saveRotComm" @keyup.esc="deactivate" @blur="deactivate">
@@ -31,22 +31,39 @@
       </td>      
     </tr>
 
-    <tr class="placement-controls" :style="{width}" v-if="active">
-      <td :colspan="activeFields.length + 3">
-        
-          <PlacementControls 
-            ref="placement-controls"
-            v-if="type == 'placement'"
-            :placement="placement"
-          />
-          <OpenOrderControls 
-            ref="open-order-controls"
-            v-if="type == 'open-order' && !isExternalUser"
-            :placement="placement"
-          />
-        
-      </td>
-    </tr>
+    <template v-if="active">
+
+      <tr class="prospects" :style="{width}" v-if="isOpenOrder">
+        <td :colspan="activeFields.length + 3">
+          <div>
+            <div><b>{{placement.Prospects__r.records.length}} Prospects</b></div>
+            <div v-if="placement.Prospects__r.records.length > 0">
+              <span v-for="(prospect, idx) of placement.Prospects__r.records" :key="`prospect-${idx}`" class="prospect-doc-link">
+                <a @click.stop="$emit('prospect-documents', prospect)">{{prospect.Name}}</a></span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <tr class="placement-controls" :style="{width}">
+        <td :colspan="activeFields.length + 3">
+          
+            <PlacementControls 
+              ref="placement-controls"
+              v-if="!isOpenOrder"
+              :placement="placement"
+            />
+            <OpenOrderControls 
+              ref="open-order-controls"
+              v-if="isOpenOrder && !isExternalUser"
+              :placement="placement"
+            />
+          
+        </td>
+      </tr>
+
+    </template>
+
     
 </tbody>
 
@@ -88,6 +105,7 @@ export default {
     this.resizeStuff()
   },
   computed: {
+    isOpenOrder () {return this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'},
     isExternalUser () { return !!this.$parent.externalUser },
     internalStatus () {
       return !!this.placement.Internal_Status__c
@@ -102,11 +120,7 @@ export default {
       else if (openOrder) return 'open'
       else return 'unknown'
     },
-    type () {
-      let openOrder = this.placement.AVTRRT__Contact_Candidate__r.FirstName == 'Open'
-
-      return openOrder ? 'open-order' : 'placement'
-    },
+    
     activeFields () {
       return this.activeColumns.map(el => el.field).filter(el => !!el)
     }
@@ -332,6 +346,15 @@ export default {
   }
   
 
+  .prospects {
+    margin-top: -1px;
+    display: table;
+    background: inherit;
+    > td > div {
+      padding: 15px;
+    }
+  }
+
   .placement-controls {
     
     display: table;
@@ -408,5 +431,9 @@ export default {
   }
 }
 
+.prospect-doc-link:not(:last-child):after{
+  content: ', ';
+  display: inline;
+}
 
 </style>

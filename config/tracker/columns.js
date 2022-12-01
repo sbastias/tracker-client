@@ -131,5 +131,11 @@ export default [
     toggle: true,
     width: 150
   },
+  {
+    label: 'Prospects',
+    field: 'Prospects__r',
+    toggle: true,
+    width: 400
+  },
   
 ]

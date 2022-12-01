@@ -1,10 +1,13 @@
 <template>
 <div id="login-screen">
 
-
+  <OTP :username="loginData.username" v-if="loginData.otp" @confirm-login="confirmLogin" />
 
   <div id="login-container">
-    <div v-if="expired" expired>Session expired. Please login again.</div>
+    <div v-show="error" error>
+      {{error}}
+    </div>
+
   <Logo orientation="vertical" />
   <h1 id="title">Starla</h1>
   <form>
@@ -14,7 +17,7 @@
         <label for="email">Salesforce User</label>
       </div>
     </div>
-    <div class="form-row" style="margin-bottom: 15px;">
+    <div class="form-row" style="margin-bottom: 15px;" v-show="isInternal">
       <div class="form-cell">
         <input type="password" v-model="loginData.password" :class="{filled: !!loginData.password}" v-if="masked">
         <input type="text" v-model="loginData.password" :class="{filled: !!loginData.password}" v-else>
@@ -24,7 +27,8 @@
     </div>
     <div class="form-row">
       <div class="form-cell">
-        <button @click.prevent="doLogin" :disabled="loggingIn"><span v-if="loggingIn">Please wait...</span><span v-else>Login!</span></button>
+        <button v-if="isInternal" @click.prevent="doLogin" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Login!</span></button>
+        <button v-else @click.prevent="sendOTP" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Get One-Time Passcode</span></button>
       </div>
     </div>
   </form>
@@ -34,20 +38,30 @@
 
 <script>
 import Logo from '~/components/Logo'
+import OTP from '~/components/OTP'
+
+
 export default {
   layout: 'login',
   components: {
-    Logo
+    Logo,
+    OTP
   },
   data () {
     return {
       loginData: {
         username: '',
-        password: ''
+        password: '',
+        otp: false
       },
-      loggingIn: false,
-      expired: false,
+      doingSomething: false,
+      error: false,
       masked: true
+    }
+  },
+  computed: {
+    isInternal () {
+      return this.loginData.username && this.loginData.username.search(/(thebullittgroup|yorksearchgroup|qajaqnorthern)\.com/) > -1
     }
   },
   created () {
@@ -65,38 +79,56 @@ export default {
         }
       }
 
-      if (location.search.substring(1) == 'expired') this.expired = true
+      if (location.search.substring(1) == 'expired') this.error = {flag: 'EXPIRED', message: 'Session expired. Please login again.'}
     }
   },
   methods: {
+    async sendOTP () {
+      this.error = false
+      this.doingSomething = true
+
+      await this.$axios.post(`/auth/otp/generate`, this.loginData)
+      .then(({data}) => {
+        console.log(data)
+        this.loginData.otp = true
+      })
+      .catch(e => {
+        console.log(e)
+        this.error = e.response.data.message
+      })
+      .finally(() => this.doingSomething = false)
+    },
     async doLogin () {
-      this.loggingIn = true
-      return await this.$axios.post('/login', this.loginData)
+      this.error = false
+      this.doingSomething = true
+      return await this.$axios.post('/auth/login', this.loginData)
       .then(({data}) => {
         //console.log(data)
-        this.$store.commit('STORE_TOKEN', data.accessToken)
-        this.$store.commit('STORE_EMAIL', this.loginData.username)
-
-        if (data.user) {
-          this.$store.commit('STORE_USER', data.user)
-          this.$store.commit('STORE_FIRSTNAME', data.user.FirstName)
-          this.$store.commit('STORE_PERMISSIONS', data.user.Starla_Permissions__c)
-        } else {
-          this.$store.commit('STORE_PERMISSIONS', data.Starla_Permissions__c)
-          this.$store.commit('STORE_FIRSTNAME', data.FirstName)
-        }
-
-        this.$router.push('/')
-        console.log(this.$store.state.accessToken, '<< accessToken')
+        this.confirmLogin(data)
       })
       .catch(e => {
         console.log(e)
         console.log(JSON.stringify(e, null, '\t'))
-        alert('Login failed! ' + JSON.stringify(e.response.data))
+        this.error = e.response.data
       })
-      .finally(() => {
-        this.loggingIn = false
-      })
+      .finally(() => this.doingSomething = false)
+    },
+    confirmLogin (data) {
+
+      this.$store.commit('STORE_TOKEN', data.accessToken)
+      this.$store.commit('STORE_EMAIL', this.loginData.username)
+
+      if (data.user) {
+        this.$store.commit('STORE_USER', data.user)
+        this.$store.commit('STORE_FIRSTNAME', data.user.FirstName)
+        this.$store.commit('STORE_PERMISSIONS', data.user.Starla_Permissions__c)
+      } else {
+        this.$store.commit('STORE_PERMISSIONS', data.Starla_Permissions__c)
+        this.$store.commit('STORE_FIRSTNAME', data.FirstName)
+      }
+
+      this.$router.push('/')
+      console.log(this.$store.state.accessToken, '<< accessToken')
     }
   }
 }
@@ -186,7 +218,7 @@ export default {
   }
 }
 
-[expired] {
+[error] {
   text-align: center;
   color: #cc0000;
   margin-bottom: 15px;

@@ -5,6 +5,7 @@
       v-if="overlayMode"
       :mode="overlayMode" 
       :placement="overlayPlacement"
+      :prospect="overlayProspect"
       @cancel-overlay="cancelOverlay"
       @update-row="doRowUpdate"
       @insert-row="doRowInsert"
@@ -91,6 +92,7 @@
             :width="tableWidth"
             @toggle-row="toggleRow" 
             @documents="viewDocuments"
+            @prospect-documents="viewProspectDocuments"
             @update="updatePlacement"
             @extend="extendPlacement"
             @assign="assignStaffer"
@@ -562,6 +564,10 @@ export default {
     },
     viewDocuments (documentPlacement) {
       this.overlayPlacement = documentPlacement
+      this.overlayMode = 'view-documents'
+    },
+    viewProspectDocuments (documentProspect) {
+      this.overlayProspect = documentProspect
       this.overlayMode = 'view-documents'
     },
     cancelOverlay () {

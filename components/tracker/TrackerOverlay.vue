@@ -10,6 +10,7 @@
         <CancelX @cancel="cancelOverlay" class="overlay-cancel" />
         <component :is='mode' 
           :original-placement="placement" 
+          :prospect="prospect"
           @edited="flagEdited"
           v-show="!subsection"
           @subsection="activateSubsection"
@@ -41,7 +42,7 @@ import NewApplicant from '~/components/tracker/overlays/new-applicant'
 import ViewDocuments from '~/components/tracker/overlays/view-documents'
 import CancelX from '~/components/ui/CancelX'
 export default {
-  props: ['mode','placement','document-folder-id'],
+  props: ['mode','placement','prospect'],
   data () {
     return {
       edited: false,
@@ -137,8 +138,8 @@ export default {
       position: relative;
 
       .overlay-heading {
-        padding-bottom: 20px;
-        margin-bottom: 30px;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
         border-bottom: 2px solid #ccc;
       }
     }

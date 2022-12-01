@@ -25,7 +25,7 @@ WFR Number
 
 -->
 
-    <div class="form">
+    <div class="form" v-if="!assignProspect">
 
       <div class="form-row">
 
@@ -144,23 +144,66 @@ WFR Number
           <textarea v-model="placement.Additional_Notes__c" />
         </div>
 
+        <div class="form-cell" id="prospect-list-container" v-if="openOrder">
+          <label>Prospects</label>
+          <ul v-if="placement.Prospects__r.records.length">
+            <li v-for="(prospect,idx) in placement.Prospects__r.records" :key="`prospect-${idx}`">
+              <span>{{prospect.Name}}</span><span style="display: inline-block; width: 12px; position: relative;" :data-id="prospect.Id" @click="deleteProspect"></span>
+            </li>
+          </ul>
+          <span v-else>No prospects</span>
+          <div style="margin-top: 8px; font-size: .9em;"><a @click="assignProspect = true">Assign New Prospect</a></div>
+        </div>
+
       </div>
+
 
       <div class="form-controls">
         <button @click="updatePlacement" :disabled="!edited">Save Changes</button>
       </div>
 
     </div>
+
+    <div class="form" v-if="assignProspect" id="assign-prospect">
+        
+      <div id="new-prospect-row" class="form-row">
+        <div class="form-cell">
+          <label for="new-prospect">Select New Prospect</label>
+          <select id="new-prospect" v-model="newProspect">
+            <option value=""></option>
+            <option v-for="(prospect, idx) in staffers" :key="`prospect-opt-${idx}`" :value="prospect.Id">{{prospect.FirstName}} {{prospect.LastName}}</option>
+          </select>
+        </div>
+        <div class="form-cell"><button @click="addProspect" :disabled="assigningProspect">Add New Prospect</button></div>
+        <div class="form-cell"><button @click="assignProspect = false" :disabled="assigningProspect">Cancel</button></div>
+      </div>
+
+    </div>
+
   </div>
 </template>
 
 <script>
+import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['original-placement'],
+  components: {CancelX},
   data () {
     return {
       placement: {},
-      edited: false
+      edited: false,
+      staffers: [],
+      loadingStaffers: false,
+      assignProspect: false,
+      assigningProspect: false,
+      newProspect: false,
+      testProspects: [
+        {Name: 'Test Test'},
+        {Name: 'Test Test'},
+        {Name: 'Test Test'},
+        {Name: 'Test Test'},
+        {Name: 'Test Test'},
+      ]
     }
   },
   computed: {
@@ -174,8 +217,59 @@ export default {
   mounted () {
     //this.$bus.log(this.$bus.metadata)
     console.log(JSON.stringify(this.placement))
+    
+  },
+  async fetch () {
+    return await this.$axios.get(`/tracker/staffers/load`)
+    .then(({data}) => {
+      console.log(data)
+      this.staffers = data
+      this.loadingStaffers = false
+    })
+    .catch(e => {
+      let {message, stack} = e.response.data
+      this.$bus.$emit('toaster',{status: 'error', message})
+      console.log(stack)
+    })
   },
   methods: {
+    async addProspect () {
+
+      this.assigningProspect = true
+
+      let data = {
+        prospectId: this.newProspect,
+        placementId: this.placement.Id
+      }
+
+      return await this.$axios.post(`/tracker/assign/prospect`, data)
+      .then(({data}) => {
+        this.$parent.$parent.placements.find(el => el.Id == this.placement.Id).Prospects__r.records.push(data)
+        this.assignProspect = false
+      })
+      .catch(e => {
+        console.log(e)
+        this.$bus.$emit('toaster', {status: 'error', message: e.meesage})
+      })
+      .finally(() => {
+        this.assigningProspect = false
+      })
+
+    },
+    async deleteProspect ($ev) {
+
+      return await this.$axios.delete(`/tracker/delete/prospect/${$ev.target.dataset.id}`)
+      .then(({data}) => {
+        let prospects = this.$parent.$parent.placements.find(el => el.Id == this.placement.Id).Prospects__r.records
+        let deletedIdx = prospects.indexOf(prospects.find(el => el.Id == data.id))
+        prospects.splice(deletedIdx, 1)
+      })
+      .catch(e => {
+        console.log(e)
+        this.$bus.$emit('toaster', {status: 'error', message: e.meesage})
+      })
+
+    },
     updateStartDate (val) {
       this.placement.AVTRRT__Start_Date__c = val.toISOString().substring(0,10)
     },
@@ -200,6 +294,7 @@ export default {
       delete update.jobApplicantPayRate
       delete update.searchableText
       delete update.AVTRRT__Job_Applicant__r
+      delete update.Prospects__r
 
       this.$bus.log(JSON.stringify(update, null, '\t'))
 
@@ -250,7 +345,43 @@ export default {
   .form-row:nth-child(2){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(3){grid-template-columns: 3fr 1fr 1fr;}
   .form-row:nth-child(4){grid-template-columns: 1fr 1fr 1fr;}
-  .form-row:nth-child(5){grid-template-columns: 1fr 1fr;}
+  .form-row:nth-child(5){grid-template-columns: 1fr 1fr 1fr;}
+
+  
+
+  #prospect-list-container {
+    ul {
+      overflow: scroll;
+      max-height: 50px;
+      padding-left: 15px;
+      li{
+        display: grid;
+        grid-template-columns: auto max-content;
+        > span:last-child {
+          cursor: pointer;
+          background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgLz48L3N2Zz4=');
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: center;
+          &:hover {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgZmlsbD0iIzk5MDAwMCIgLz48L3N2Zz4=');
+          }
+        }
+      }
+    }
+    
+  }
 }
+
+#new-prospect-row {
+  margin: 30px 0;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: auto max-content max-content;
+    align-items: center;
+    select {
+      width: 100%;
+    }
+  }
 </style>
 
