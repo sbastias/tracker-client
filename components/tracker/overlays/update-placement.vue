@@ -148,7 +148,10 @@ WFR Number
           <label>Prospects</label>
           <ul v-if="placement.Prospects__r.records.length">
             <li v-for="(prospect,idx) in placement.Prospects__r.records" :key="`prospect-${idx}`">
-              <span>{{prospect.Name}}</span><span style="display: inline-block; width: 12px; position: relative;" :data-id="prospect.Id" @click="deleteProspect"></span>
+              <span>{{prospect.Name}}</span>
+              <span>
+                <span :data-id="prospect.Id" @click="deleteProspect"></span>
+              </span>
             </li>
           </ul>
           <span v-else>No prospects</span>
@@ -220,7 +223,7 @@ export default {
     
   },
   async fetch () {
-    return await this.$axios.get(`/tracker/staffers/load`)
+    return await this.$axios.get(`/tracker/prospects/load`)
     .then(({data}) => {
       console.log(data)
       this.staffers = data
@@ -358,13 +361,25 @@ export default {
         display: grid;
         grid-template-columns: auto max-content;
         > span:last-child {
-          cursor: pointer;
-          background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgLz48L3N2Zz4=');
-          background-size: contain;
-          background-repeat: no-repeat;
-          background-position: center;
-          &:hover {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgZmlsbD0iIzk5MDAwMCIgLz48L3N2Zz4=');
+
+          padding-right: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          height: 100%;
+
+          > span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgLz48L3N2Zz4=');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+            &:hover {
+              background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDMuNjEgMjAzLjYxIj48cGF0aCBkPSJNMTk2LjM4LDE2MS40OWwtNTkuNjktNTkuNjksNTkuNjktNTkuNjljOS42NC05LjY0LDkuNjQtMjUuMjYsMC0zNC44OWgwYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwbC01OS42OSw1OS42OUw0Mi4xMiw3LjIzYy05LjY0LTkuNjQtMjUuMjYtOS42NC0zNC44OSwwaDBjLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODlsNTkuNjksNTkuNjlMNy4yMywxNjEuNDljLTkuNjQsOS42NC05LjY0LDI1LjI2LDAsMzQuODloMGM5LjY0LDkuNjQsMjUuMjYsOS42NCwzNC44OSwwbDU5LjY5LTU5LjY5LDU5LjY5LDU5LjY5YzkuNjQsOS42NCwyNS4yNiw5LjY0LDM0Ljg5LDBoMGM5LjY0LTkuNjQsOS42NC0yNS4yNiwwLTM0Ljg5WiIgZmlsbD0iIzk5MDAwMCIgLz48L3N2Zz4=');
+            }
           }
         }
       }
