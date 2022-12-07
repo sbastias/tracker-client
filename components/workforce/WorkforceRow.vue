@@ -1,5 +1,5 @@
 <template>
-<tbody class="contact-container" :saving="saving" :active="active" @click="highlighted = !highlighted" :class="{highlighted}">
+<tbody class="contact-container" :saving="saving" :active="active" @click="highlighted = !highlighted" :class="{highlighted, hasPending: contact.hasPending}">
 
   <tr class="contact-row">
 
@@ -233,54 +233,9 @@ export default {
     } 
   }
 
-  &.internalStatus {
-    
-    background-color: rgb(255, 122, 74);
-    &:hover {
-      background-color: rgb(255, 122, 74);
-    }
-  }
-  &:not(.internalStatus) {
-    &.confirmed {
-      &:before {background-color: green;}
-      background-color: rgba(rgb(74, 193, 5),0.2);
-      &:hover {
-        background-color: rgba(rgb(74, 193, 5),0.4);
-      }
-    }
-    &.sent {
-      &:before {background-color: orange;}
-      background-color: rgba(orange, 0.2);
-      &:hover {
-        background-color: rgba(orange, 0.4);
-      }
-    } 
-    &.open {
-      &:before {background-color: lightyellow;}
-      background-color: rgba(yellow, 0.2);
-      &:hover {
-        background-color: rgba(yellow, 0.4);
-      }
-    } 
-    &.declined {
-      &:before {background-color: rgba(255, 68, 68, .5);}
-      background-color: rgba(255, 68, 68, .5);
-      background-image: repeating-linear-gradient(60deg, red 1px, transparent 2px, transparent 9px, red 1px);
-      animation: declinedAlert 1s linear infinite;
-      &:hover{
-        background-color: pink;
-        background-image: none;
-      }
-    }
-    &.cancelled {
-      &:before {background-color: red;}
-      background-color: rgba(red, .2);
-      &:hover {
-        background-color: rgba(red, .4);
-      }
-      text-decoration: line-through;
-      span {opacity: .5;}
-    }
+  &.hasPending {
+    background: url(~/assets/img/flashing-blue.gif);
+    background-size: cover;
   }
 
 
