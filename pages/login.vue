@@ -13,7 +13,7 @@
   <form>
     <div class="form-row">
       <div class="form-cell">
-        <input type="email" v-model="loginData.username" :class="{filled: !!loginData.username}">
+        <input type="email" v-model="loginData.username" :class="{filled: !!loginData.username}" title="Enter your company email address">
         <label for="email">Email Address</label>
       </div>
     </div>
@@ -28,7 +28,7 @@
     <div class="form-row">
       <div class="form-cell">
         <button v-if="isInternal" @click.prevent="doLogin" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Login!</span></button>
-        <button v-else @click.prevent="sendOTP" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Get One-Time Passcode</span></button>
+        <button v-else @click.prevent="sendOTP" :disabled="doingSomething" title="Click to get your One Time Passcode sent to your email"><span v-if="doingSomething">Please wait...</span><span v-else>Get One-Time Passcode</span></button>
       </div>
     </div>
   </form>

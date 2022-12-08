@@ -1,5 +1,5 @@
 <template>
-  <div id="timecard-filters-container">
+  <div id="timecard-filters-container" :class="{external: this.$parent.externalUser}">
     <div class="filters" style="padding-top: 10px;">
 
       <ul v-for="_type in types" :key="`filters-${_type}`" :id="`${ _type }-filters`">
@@ -109,6 +109,10 @@ export default {
     }
   }
 
+}
+
+&.external {
+  .filters ul#synced-filters:before {content: 'Approved'}
 }
 }
 </style>

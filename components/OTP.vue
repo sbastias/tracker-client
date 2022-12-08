@@ -2,7 +2,7 @@
 <div id="otp-overlay">
 
   <div style="position: absolute; top: -10000px">
-    <input v-model="otpData.code" id="digits-input" @input="numOnly" />
+    <input v-model="otpData.code" id="digits-input" @input="numOnly" @blur="(focused = false)" />
   </div>
 
   <div id="otp-form">
@@ -14,8 +14,8 @@
       <h2 style="margin-bottom: 15px;">We've emailed your passcode!</h2>
       <p>Check your email for the 6-digit code and enter it below to authenticate.</p>
 
-      <div id="otp-digits">
-        <div v-for="(digit, idx) in Array(6)" :key="`digit-${idx}`" @click="enterDigits" :class="{active: idx == otpData.code.length}">
+      <div id="otp-digits" :class="{focused}">
+        <div v-for="(digit, idx) in Array(6)" :key="`digit-${idx}`" @click="enterDigits" :class="{active: idx == otpData.code.length && focused}">
           {{otpData.code[idx] || ''}}
         </div>
       </div>
@@ -42,6 +42,7 @@ export default {
   components: {Loader},
   data () {
     return {
+      focused: false,
       otpData: {
         username: false,
         code: ''
@@ -55,6 +56,9 @@ export default {
   beforeDestroy () {
     this.otpData.username = false
   },
+  mounted () {
+    this.enterDigits()
+  },
   methods: {
     numOnly () {
       if(!/^\d+$/.test(this.otpData.code)) {
@@ -64,6 +68,7 @@ export default {
     },
     enterDigits () {
       document.getElementById('digits-input').focus()
+      this.focused = true
     },
     
     async checkOTP () {
