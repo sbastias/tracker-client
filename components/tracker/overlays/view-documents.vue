@@ -24,6 +24,8 @@
 <script>
 import Loader from '~/components/ui/Loader'
 import { mapGetters } from 'vuex'
+
+
 export default {
   props: ['original-placement','prospect'],
   components: {
@@ -75,6 +77,8 @@ export default {
 
         console.log('contentDocument:', contentDocument)
 
+        if (contentDocument.FileExtension === null) contentDocument.FileExtension = 'jpg'
+
         let downloadFilename =  [$ev.target.dataset.filename, contentDocument.FileExtension].join('.')
 
         return this.$axios({
@@ -83,7 +87,9 @@ export default {
           responseType: 'blob', // important
           headers: {Authorization: `Bearer ${this.accessToken}`}
         }).then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
+          let fileData = new Blob([response.data])
+          
+          const url = window.URL.createObjectURL(fileData);
           const link = document.createElement('a');
           link.href = url;
           link.setAttribute('download', downloadFilename); //or any other extension

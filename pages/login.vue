@@ -14,7 +14,7 @@
     <div class="form-row">
       <div class="form-cell">
         <input type="email" v-model="loginData.username" :class="{filled: !!loginData.username}">
-        <label for="email">Salesforce User</label>
+        <label for="email">Email Address</label>
       </div>
     </div>
     <div class="form-row" style="margin-bottom: 15px;" v-show="isInternal">

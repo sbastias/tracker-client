@@ -15,7 +15,7 @@
       <p>Check your email for the 6-digit code and enter it below to authenticate.</p>
 
       <div id="otp-digits">
-        <div v-for="(digit, idx) in Array(6)" :key="`digit-${idx}`" @click="enterDigits">
+        <div v-for="(digit, idx) in Array(6)" :key="`digit-${idx}`" @click="enterDigits" :class="{active: idx == otpData.code.length}">
           {{otpData.code[idx] || ''}}
         </div>
       </div>
@@ -135,17 +135,40 @@ export default {
 
       overflow: hidden;
       border: 1px solid #ccc;
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       height: 60px;
       font-size: 30px;
       text-align: center;
       line-height: 60px;
       font-weight: bold;
 
+      &.active {
+        border-width: 3px;
+        border-color: rgb(72, 164, 255);
+        &:before {
+          content: '';
+          position: relative;
+          height: 50%;
+          width: 0;
+          border: 1px solid #333;
+          animation: cursor-blink 1s infinite steps(1);
+        }
+      }
+
     }
   }
 }
 
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 
 
 </style>
