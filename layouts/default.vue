@@ -1,13 +1,14 @@
 <template>
   <div v-show="loggedin">
     <LoggingOut v-if="loggingout" />
+    <ToolTip />
     <Toaster />
     <header v-show="!$bus.fullscreen">
       <div>
         <Logo />
         <h1>Starla</h1>
       </div>
-      <div><a @click="logout">Logout {{$store.state.firstname}}</a></div>
+      <div><a @click="logout" tool-tip="Click here to logout">Logout {{$store.state.firstname}}</a></div>
       <div id="nav-container" v-show="accessToken">
         <MainNavigation />
       </div>
@@ -22,6 +23,7 @@ import LoggingOut from '~/components/ui/LoggingOut'
 import Logo from '~/components/Logo'
 import Toaster from '~/components/ui/Toaster'
 import MainNavigation from '~/components/MainNavigation'
+import ToolTip from '~/components/ui/ToolTip'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -29,7 +31,8 @@ export default {
     Logo, 
     Toaster,
     MainNavigation,
-    LoggingOut
+    LoggingOut,
+    ToolTip
   },
   data (){
     return {
@@ -45,6 +48,8 @@ export default {
     //console.log(this.$store.state.accessToken, '<< accessToken')
     //console.log('DEFAULT CREATED')
 
+    
+
     if (!this.$store.state.accessToken) return this.$router.push('/login')
 
     this.loggedin = true
@@ -57,14 +62,35 @@ export default {
     .catch(() => this.$router.push('/login?invalid'))
     //console.log(this.$axios.defaults.headers.common['Authorization'])
 
+    
+
   },
+  
   mounted () {
+
+    this.$router.afterEach((to, from) => {
+      //console.log(to, from)
+
+      this.$bus.activateToolTips()
+    })
+
+    this.$router.beforeResolve((to, from, next) => {
+      //console.log(to, from)
+
+      this.$bus.deactivateToolTips()
+      
+      next()
+      
+    })
+
+    this.$bus.activateToolTips()
 
     //console.log(this.$store.state.accessToken, '<< accessToken')
     //alert(JSON.stringify(this.$axios.defaults.headers))
 
   },
   methods: {
+    
     logout () {
       this.loggingout = true
       this.$nextTick(() => {
@@ -159,4 +185,8 @@ a {
 }
 
 .inline {display: inline-block}
+
+[tool-tip] > * {
+  pointer-events: none;
+}
 </style>

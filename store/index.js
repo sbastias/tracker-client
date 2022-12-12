@@ -3,6 +3,7 @@ export const state = () => ({
   email: '',
   permissions: [],
   weekending: false,
+  dateRange: false,
   supplier: '',
   user: false,
   firstname: ''
@@ -23,6 +24,9 @@ export const mutations = {
   },
   STORE_WEEKENDING: (state, weekending) => {
     state.weekending = weekending
+  },
+  STORE_DATERANGE: (state, dateRange) => {
+    state.dateRange = dateRange
   },
   STORE_WEEKDAY: (state, weekday) => {
     state.weekday = weekday
@@ -54,5 +58,6 @@ export const getters = {
   accessToken: (state) => state.accessToken,
   externalUser: (state) => state.user,
   storedWeekending: (state) => state.weekending,
+  storedDateRange: (state) => state.dateRange,
   storedSupplier: (state) => state.supplier,
 }

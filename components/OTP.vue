@@ -55,11 +55,16 @@ export default {
   },
   beforeDestroy () {
     this.otpData.username = false
+    window.removeEventListener('focus', this.doFocus)
   },
   mounted () {
     this.enterDigits()
+    window.addEventListener('focus', this.doFocus)
   },
   methods: {
+    doFocus () {
+      this.focused = true
+    },
     numOnly () {
       if(!/^\d+$/.test(this.otpData.code)) {
         //console.log('not number')

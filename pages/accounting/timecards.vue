@@ -73,16 +73,9 @@
           <nav id="section-tabs">
             <ul>
 
-              <n-link :to="{name: 'accounting-timecards-entries'}" v-slot="{navigate, isExactActive}" custom>
+              <n-link :to="{name: 'accounting-timecards'}" v-slot="{navigate, isExactActive}" custom>
                 <li @click="navigate" :class="{isExactActive}">Timecards</li>
-              </n-link>
-
-              <n-link :to="{name: 'accounting-timecards-projects'}" v-slot="{navigate, isExactActive}" custom v-show="externalUser">
-                <li @click="navigate" :class="{isExactActive}">Projects</li>
-              </n-link>
-
-              
-              
+              </n-link>  
               <n-link :to="{name: 'accounting-timecards-qb-import'}" v-slot="{navigate, isExactActive}" custom v-show="!externalUser">
                 <li @click="navigate" :class="{ isExactActive }">Quickbooks Import</li>
               </n-link>
@@ -245,7 +238,7 @@ export default {
           this.weekendingOrDay.setUTCHours(12)
           this.$store.commit('STORE_WEEKENDING', val)
 
-          if (this.supplier && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards-entries'})
+          if (this.supplier && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards'})
         }
 
       },
@@ -256,7 +249,7 @@ export default {
       handler (val) {
         if (val) this.$store.commit('STORE_SUPPLIER', val)
 
-        if (this.weekendingOrDay && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards-entries'})
+        //if (this.weekendingOrDay && this.$route.name == 'accounting-timecards') this.$router.push({name: 'accounting-timecards'})
       },
       immediate: true
     },

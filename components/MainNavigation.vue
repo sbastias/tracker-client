@@ -24,6 +24,11 @@
           <n-link custom to="/accounting/timecards" v-slot="{navigate, href}">
             <a :href="href" @click="navigate">Timecards</a>
           </n-link>
+          </li>
+          <li>
+          <n-link custom to="/accounting/projects" v-slot="{navigate, href}">
+            <a :href="href" @click="navigate">Projects</a>
+          </n-link>
         </li>
         <li v-show="hasPermissions('Payroll - Import')">
           <n-link custom to="/accounting/import" v-slot="{navigate, href}">

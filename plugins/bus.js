@@ -47,6 +47,35 @@ export default ({store}) => {
       }
     },
     methods: {
+      activateToolTips () {
+        let toolTipEls = document.querySelectorAll('[tool-tip]')
+        //console.log(toolTipEls, '<< toolTips')
+        Array.from(toolTipEls).forEach(el => {
+          el.addEventListener('mouseover', this.$bus.showToolTip)
+          el.addEventListener('mousemove', this.$bus.showToolTip)
+          el.addEventListener('mouseout', this.$bus.hideToolTip)
+          el.addEventListener('click', this.$bus.hideToolTip)
+        })
+      },
+      deactivateToolTips() {
+        let toolTipEls = document.querySelectorAll('[tool-tip]')
+        //console.log(toolTips)
+        Array.from(toolTipEls).forEach(el => {
+          //console.log(el)
+          el.removeEventListener('mouseover', this.$bus.showToolTip)
+          el.removeEventListener('mousemove', this.$bus.showToolTip)
+          el.removeEventListener('mouseout', this.$bus.hideToolTip)
+          el.removeEventListener('click', this.$bus.hideToolTip)
+        })
+      },
+      showToolTip ($ev) {
+        $ev.stopPropagation()
+        this.$emit('tool-tip',  $ev)
+      },
+      hideToolTip ($ev) {
+        $ev.stopPropagation()
+        this.$emit('tool-tip',  null)
+      },
       toggleFullscreen () {
         this.fullscreen = !this.fullscreen
       },

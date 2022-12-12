@@ -1,5 +1,5 @@
 <template>
-  <div id="logo" class="logo" :class="orientation">
+  <div id="logo" class="logo" :class="orientation" tool-tip="This ia a really long logo tool-tip!">
     <div id="tbg-logo">
       <svg
       
