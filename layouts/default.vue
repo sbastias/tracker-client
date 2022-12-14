@@ -6,15 +6,22 @@
     <header v-show="!$bus.fullscreen">
       
       <div>
-        <StarlaLogo width="250px" />
-      </div>
-      
-      <div style="display: flex; align-items: center;">
-        <a style="display: inline-block;white-space: nowrap;align-self: center;" @click="logout" tool-tip="Click here to logout">Logout {{$store.state.firstname}}</a>
+        <div>
+          <StarlaLogo width="250px" />
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <a style="display: inline-block;white-space: nowrap;align-self: center;" @click="logout" tool-tip="Click here to logout">Logout {{$store.state.firstname}}</a>
+        </div>
       </div>
 
+
       <div id="nav-container" v-show="accessToken">
+
         <MainNavigation />
+
+        <p>Starla helps you manage your Contractor Workforce</p>
+
       </div>
 
     </header>
@@ -138,22 +145,40 @@ html {
 
 
 header {
-  display: grid;
-  width: 100%;
-  background: white;
-  grid-template-columns: auto min-content;
-  align-content: center;
+  
+  padding: 10px 20px;
   
 
   > div {
     
     
-    padding: 10px 20px;
+    //padding: 10px 20px;
 
-    
+    &:first-child {
+
+      display: grid;
+      width: 100%;
+      background: white;
+      grid-template-columns: auto min-content;
+      align-content: center;
+      margin-bottom: 10px;
+
+    }
 
     &#nav-container {
       grid-column: 1/3;
+      display: flex;
+      background-image: linear-gradient(to right, #eee, #eee 50%, #ddd 80%);
+      justify-content: space-between;
+      align-items: center;
+      p {
+        padding: 0 20px;
+        color: #333;
+        font-style: italic;
+        font-weight: 600;
+        white-space: nowrap;
+        font-size: .9rem
+      }
     }
   }
 

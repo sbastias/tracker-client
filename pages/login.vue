@@ -11,6 +11,8 @@
   <div style="display: flex; justify-content: center;margin-bottom: 50px;">
     <StarlaLogo width="300px" />
   </div>
+
+  <p style="font-size: 1.2em; text-align: center;margin: 0 0 50px; color: #666">Starla helps you manage your Contractor Workforce</p>
   
   <form>
     <div class="form-row">

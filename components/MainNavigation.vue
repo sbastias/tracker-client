@@ -56,18 +56,18 @@ export default {
 
 nav {
   
-  background: #eee;
+  
   width: 100%;
   padding: 0 20px;
   font-size: .9rem;
   position: relative;
   > ul {
-    display: block;
+    display: inline-block;
     list-style: none;
     margin: 0;
     padding: 0;
     font-size: 0;
-    
+    background: #eee;
     left: 0;
     top: 0;
     z-index: 2;
