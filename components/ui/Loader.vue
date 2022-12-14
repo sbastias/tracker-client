@@ -1,11 +1,12 @@
 <template>
   <span class="loader">
-    <span class="loader-arcs">
+    <!--span class="loader-arcs">
       <span class="loader-arc"></span>
       <span class="loader-arc"></span>
       <span class="loader-arc"></span>
       <span class="loader-arc"></span>
-    </span>
+    </span-->
+    <span class="loader-circ"></span>
     <span class="loader-message" v-if="message">
       {{message}}
     </span>
@@ -23,6 +24,22 @@ export default {
   display: flex;
   align-items: center;
 
+  .loader-circ {
+    height: 20px;
+    width: 20px;
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    border: 2px solid #61cae6;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation-timing-function: linear;
+    animation-name: spin;
+    animation-iteration-count: infinite;
+    animation-duration: .7s;
+  }
+
+
   .loader-arcs {
     height: 20px;
     width: 20px;
@@ -34,7 +51,7 @@ export default {
       height: inherit;
       width: inherit;
       display: inline-block;
-      border: 2px solid #990000;
+      border: 2px solid #61cae6;
       border-right-color: transparent;
       border-bottom-color: transparent;
       border-left-color: transparent;

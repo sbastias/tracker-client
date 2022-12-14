@@ -89,7 +89,7 @@ nav {
       &:hover {
         > a,
         > span {
-          background: #990000;
+          background: #61cae6;
           color: white;
           cursor: pointer;
         }
@@ -136,7 +136,7 @@ nav {
         > li {
           display: block;
           white-space: nowrap;
-          background: #990000;
+          background: #61cae6;
           color: white;
           width: 100%;
           height: auto;
@@ -144,7 +144,7 @@ nav {
           
 
           &:hover{
-            background: #700202;
+            background: darken(#61cae6, 20%);
             cursor: pointer;
           }
           

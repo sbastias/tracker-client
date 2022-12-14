@@ -59,11 +59,11 @@ button {
     cursor: not-allowed;
   }
   &:not([disabled]) {
-    background: #f99d1c;
+    background: #61cae6;
     color: white;
 
     &:hover{
-      background: darken(#f99d1c, 10%);
+      background: darken(#61cae6, 20%);
     }
   }
 }

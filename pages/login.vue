@@ -8,8 +8,10 @@
       {{error}}
     </div>
 
-  <Logo orientation="vertical" />
-  <h1 id="title">Starla</h1>
+  <div style="display: flex; justify-content: center;margin-bottom: 50px;">
+    <StarlaLogo width="300px" />
+  </div>
+  
   <form>
     <div class="form-row">
       <div class="form-cell">
@@ -26,9 +28,11 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="form-cell">
-        <button v-if="isInternal" @click.prevent="doLogin" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Login!</span></button>
-        <button v-else @click.prevent="sendOTP" :disabled="doingSomething" tool-tip="Click to get your One Time Passcode sent to your email"><span v-if="doingSomething">Please wait...</span><span v-else>Get One-Time Passcode</span></button>
+      <div class="form-cell" v-if="isInternal">
+        <button id="login-button" @click.prevent="doLogin" :disabled="doingSomething"><span v-if="doingSomething">Please wait...</span><span v-else>Login!</span></button>
+      </div>
+      <div class="form-cell" v-else>
+        <button id="otp-button" @click.prevent="sendOTP" :disabled="doingSomething" tool-tip="Click to get your One Time Passcode sent to your email"><span v-if="doingSomething">Please wait...</span><span v-else>Get One-Time Passcode</span></button>
       </div>
     </div>
   </form>
@@ -37,14 +41,14 @@
 </template>
 
 <script>
-import Logo from '~/components/Logo'
+import StarlaLogo from '~/components/StarlaLogo'
 import OTP from '~/components/OTP'
 
 
 export default {
   layout: 'login',
   components: {
-    Logo,
+    StarlaLogo,
     OTP
   },
   data () {
@@ -201,7 +205,7 @@ export default {
       }
       button {
         width: 100%;
-        background-color: #811818;
+        background-color: #61cae6;
         color: white;
         appearance: none;
         border: none;
@@ -213,7 +217,7 @@ export default {
         }
         cursor: pointer;
         &:hover {
-          background-color: #b50909;
+          background-color: darken(#61cae6, 20%);
         }
         &[disabled] {
           background-color: #ccc;

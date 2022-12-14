@@ -286,7 +286,6 @@ export default {
     if (this.externalUser) {
       this.params.filters.push(`AVTRRT__Employer__c = '${this.externalUser.Account.Id}'`)
       this.params.filters.push(`Department__c IN ('${ this.externalUser.Reporting_Departments__c.split(';').join(`','`) }')`)
-      
     }
 
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker

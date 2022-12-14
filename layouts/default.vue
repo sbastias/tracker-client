@@ -4,11 +4,15 @@
     <ToolTip />
     <Toaster />
     <header v-show="!$bus.fullscreen">
+      
       <div>
-        <Logo />
-        <h1>Starla</h1>
+        <StarlaLogo width="250px" />
       </div>
-      <div><a @click="logout" tool-tip="Click here to logout">Logout {{$store.state.firstname}}</a></div>
+      
+      <div style="display: flex; align-items: center;">
+        <a style="display: inline-block;white-space: nowrap;align-self: center;" @click="logout" tool-tip="Click here to logout">Logout {{$store.state.firstname}}</a>
+      </div>
+
       <div id="nav-container" v-show="accessToken">
         <MainNavigation />
       </div>
@@ -20,7 +24,7 @@
 
 <script>
 import LoggingOut from '~/components/ui/LoggingOut'
-import Logo from '~/components/Logo'
+import StarlaLogo from '~/components/StarlaLogo'
 import Toaster from '~/components/ui/Toaster'
 import MainNavigation from '~/components/MainNavigation'
 import ToolTip from '~/components/ui/ToolTip'
@@ -28,7 +32,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    Logo, 
+    StarlaLogo, 
     Toaster,
     MainNavigation,
     LoggingOut,
@@ -137,25 +141,16 @@ header {
   display: grid;
   width: 100%;
   background: white;
-  grid-template-columns: auto max-content;
+  grid-template-columns: auto min-content;
+  align-content: center;
   
 
   > div {
-    display: flex;
-    align-items: center;
+    
+    
     padding: 10px 20px;
 
-    h1 {
-
-      display: inline-block;
-      
-      font-weight: 600;
-      margin-left: 10px;
-      font-size: 1.8rem;
-      line-height: 1.3rem;
-      vertical-align: middle;
-      color: #811818;
-    }
+    
 
     &#nav-container {
       grid-column: 1/3;
@@ -168,8 +163,9 @@ header {
 a {
   cursor: pointer;
 
+  color: #61cae6;
   &:hover {
-    color: #990000;
+    color: darken(#61cae6, 25%);
   }
 }
 

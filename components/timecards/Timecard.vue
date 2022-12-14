@@ -119,7 +119,7 @@
         
       </div>
 
-      <div v-if="billingType == 'Billable'"><a @click="row.shownonbillable = !row.shownonbillable">{{row.shownonbillable && 'Hide' || 'Show'}} Non-Billable</a></div>
+      <div v-if="(billingType == 'Billable' && !externalUser)"><a @click="row.shownonbillable = !row.shownonbillable">{{row.shownonbillable && 'Hide' || 'Show'}} Non-Billable</a></div>
 
     </div>
   </div>

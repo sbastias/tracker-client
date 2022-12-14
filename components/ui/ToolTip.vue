@@ -37,6 +37,8 @@ export default {
 
       this.content = target.getAttribute('tool-tip')
 
+      if (!this.content) return this.show = false
+
       let thisWidth = this.$refs['tool-tip'].getBoundingClientRect().width
 
       let offsetX = clientX - thisWidth / 2 // centered content
