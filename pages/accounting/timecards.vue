@@ -29,7 +29,7 @@
               class="inline" 
               v-model="weekendingOrDay"
               :disabled-dates="{
-                days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
+                //days: period == 'weekending' ? [0, 1, 2, 4, 5] : []
               }"
               format="yyyy-MM-dd"
               :use-utc="true"

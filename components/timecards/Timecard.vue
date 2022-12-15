@@ -261,6 +261,8 @@ export default {
     async toggleSync (ev) {
       ev.preventDefault()
 
+      if(this.row.folder.doNotSync == false && this.externalUser) return this.$bus.$emit('toaster', {status: 'error', message: 'Sorry, you cannot unapprove a timecard after it has been approved.'})
+
       return await this.$axios.post(`/payroll/folder/update-sync`, this.row.folder)
       .then(({data}) => this.row.folder.doNotSync = data.doNotSync)
       .catch(e => {
