@@ -44,7 +44,7 @@
               <option value="LastModifiedDate <=">Last Modified</option>
             </select> <Datepicker class="inline" v-model="params.range.toDate" name="to-date" format="yyyy-MM-dd" :use-utc="true" />
             &nbsp;
-            <select v-model="params.account">
+            <select v-model="params.account" v-show="!externalUser">
               <option value="ALL">All Clients</option>
               <option value="BIM">Baffinland Iron Mines</option>
               <option value="ACDC">Arctic Canadian Diamond</option>
@@ -212,7 +212,7 @@ export default {
       params: {
         range: new rangeObj(),
         filters: [],
-        account: 'ALL'
+        account: ''
       },
       metadata: false,
       unfilteredContacts: [],
@@ -324,6 +324,8 @@ export default {
     this.$bus.$on('resize', this.resizeStuff)
 
     this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].tracker
+
+    this.params.account = this.externalUser && this.externalUser.Account.Shortcode__c || 'ALL'
   },
   beforeDestroy () {
     this.$bus.$off('refetch')
