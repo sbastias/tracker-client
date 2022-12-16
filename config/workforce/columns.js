@@ -175,14 +175,16 @@ export default {
       sortable: true,
       toggle: true,
       width: 120,
-      orderIdx: 230
+      orderIdx: 230,
+      exclude: ['BIM']
     },
     {
       label: 'Drug/Alcohol Result',
       field: 'Drug_and_Alcohol_Result__c',
       toggle: true,
       width: 200,
-      orderIdx: 240
+      orderIdx: 240,
+      exclude: ['BIM']
     },
     {
       label: 'Med. Testing',
