@@ -11,6 +11,14 @@
       @prepend-row="doRowPrepend"
     /-->
 
+    <Overlay 
+      v-if="overlayMode"
+      :mode="overlayMode" 
+      :prospect="overlayProspect"
+      @cancel-overlay="cancelOverlay"
+      
+    />
+
     <div v-show="!$bus.fullscreen">
       <h1>Workforce</h1>      
     </div>
@@ -89,7 +97,7 @@
         <table id="contacts-table" v-show="contacts.length" cellspacing="0">
           <thead>
             <tr>
-              <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="{sortable: col.sortable, sorted: sortedBy == col.field}" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
+              <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="[{sortable: col.sortable, sorted: sortedBy == col.field}]" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
                 {{col.label}}
                 <Sort v-if="col.sortable" :direction="sortedBy == col.field && (ascending && 'asc' || 'desc')" />
               </th>
@@ -103,9 +111,10 @@
             :active="activatedContact == contact"
             :active-columns="activeColumns"
             :width="tableWidth"
+            :client="externalUser && externalUser.Account.Shortcode__c"
             @toggle-row="toggleRow" 
             @update="updateContact"
-            
+            @documents="viewProspectDocuments"
           />
           
         </table>
@@ -119,6 +128,7 @@
 </template>
 
 <script>
+import Overlay from '~/components/overlay'
 import WorkforceRow from '~/components/workforce/WorkforceRow'
 import WorkforceFilters from '~/components/workforce/WorkforceFilters'
 //import TrackerOverlay from '~/components/tracker/TrackerOverlay'
@@ -128,6 +138,7 @@ import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
 import moment from 'moment'
 import MaxMin from '~/components/ui/MaxMin'
+import { mapGetters } from 'vuex'
 
 class rangeObj  {
   constructor () {
@@ -189,9 +200,9 @@ export default {
     title: 'Workforce'
   },
   components: {
+    Overlay,
     WorkforceRow,
     WorkforceFilters,
-    //TrackerOverlay,
     Loader,
     Sort,
     MaxMin
@@ -208,8 +219,10 @@ export default {
       textSearch: '',
       activatedContact: false,
       moment,
-      //overlayMode: false,
-      //overlayContact: false,
+      overlayMode: false,
+      overlayPlacement: false,
+      overlayProspect: false,
+      documentFolderId: false,
       loadingData: false,
       sortedBy: false,
       ascending: true,
@@ -221,16 +234,19 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['externalUser']),
     workforceColumnsConfig () {
 
-      
-      if (this.params.account == 'ALL') return Object.keys(workforceColumnsConfig).reduce((acc, key) => [...acc, ...workforceColumnsConfig[key]], [])
+      if (!!this.externalUser) return [...workforceColumnsConfig.common, ...workforceColumnsConfig[this.externalUser.Account.Shortcode__c]].filter(el => !el.exclude || el.exclude.indexOf(this.externalUser.Account.Shortcode__c) == -1)
+      else if (this.params.account == 'ALL') return Object.keys(workforceColumnsConfig).reduce((acc, key) => [...acc, ...workforceColumnsConfig[key]], [])
       else return [...workforceColumnsConfig.common, ...workforceColumnsConfig[this.params.account]]
       
 
     },
     activeColumns () {
-      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle)
+      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
+
+      return columns
     },
     toggleableColumns () {
       return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
@@ -332,7 +348,16 @@ export default {
     }
   },
   methods: {
-    
+    viewProspectDocuments (documentContact) {
+      //console.log(documentContact)
+      //return
+      this.overlayProspect = {Candidate__r: documentContact}
+      this.overlayMode = 'view-documents'
+    },
+    cancelOverlay () {
+      this.overlayMode = false
+      this.overlayPlacement = false
+    },
     generateFilters () {
       
       this.params.filters = workforceFiltersConfig.map(el => new filterObj(el.label, el.field))
@@ -686,7 +711,7 @@ export default {
       position: sticky;
       top: 0;
       background: #ccc;
-      z-index: 3;
+      z-index: 10;
 
       > tr{
         
@@ -695,9 +720,10 @@ export default {
           background: #ccc;
 
           &:nth-child(1){position: sticky; z-index: 1; left: 0}
-          &:nth-child(2){position: sticky; z-index: 1; left: 160px}
-          &:nth-child(3){position: sticky; z-index: 1; left: calc(160px + 200px)}
-          &:nth-child(4){position: sticky; z-index: 1; left: calc(160px + 200px + 100px)}
+          &:nth-child(2){position: sticky; z-index: 1; left: 25px}
+          &:nth-child(3){position: sticky; z-index: 1; left: 165px}
+          &:nth-child(4){position: sticky; z-index: 1; left: calc(165px + 200px)}
+          &:nth-child(5){position: sticky; z-index: 1; left: calc(165px + 200px + 100px)}
 
           text-align: left;
           font-weight: normal;

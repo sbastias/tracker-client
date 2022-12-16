@@ -24,6 +24,14 @@
     c0-5.5,4.5-10,10.1-10C17,8,19.9,9.5,21.7,11.9"/>
   </svg>
 
+  <svg v-if="name == 'documents'" id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.79 25.06">
+    <rect x="9.34" y="11.57" width="7.46" height="1.28" />
+    <rect x="9.34" y="14.57" width="7.46" height="1.28" />
+    <rect x="9.34" y="17.57" width="7.46" height="1.28" />
+    <path d="M16.66,5.84V2.92h-3.13V0H0V19.23H3.13v2.92h3.13v2.92h13.53V5.84h-3.13ZM3.13,18.23H1V1H12.53v1.92H3.13v15.31Zm3.13,0v2.92h-2.13V3.92H15.66v1.92H6.27v12.39Zm12.53,5.84H7.27V6.84h11.53V24.06Z" />
+  </svg>
+
+
 </div>
 </template>
 

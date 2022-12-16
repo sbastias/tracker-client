@@ -1,7 +1,13 @@
 <template>
-<tbody class="contact-container" :saving="saving" :active="active" @click="highlighted = !highlighted" :class="{highlighted, hasPending: contact.hasPending}">
+<tbody class="contact-container" :saving="saving" :active="active" :class="{highlighted, hasPending: contact.hasPending}">
 
   <tr class="contact-row">
+
+      <td class="documents">
+        <div @click="$emit('documents', contact)" style="height: 100%;">
+          <Icon name="documents" />
+        </div>
+      </td>
 
       <td class="name ellipses">
         <div>
@@ -10,7 +16,7 @@
         </div>
       </td>
       
-      <td class="ellipses" v-for="(column, idx) in activeColumns.slice(1)" :key="`field-column-${idx}`" :class="[column.field]" :title="contact[column.field]">
+      <td class="ellipses" v-for="(column, idx) in activeColumns.slice(2)" :key="`field-column-${idx}`" :class="[column.field]" :title="contact[column.field]">
         <div v-if="!column.editable">
           <a v-if="column.field == 'Email'" :href="`mailto:${ contact[column.field] }`">{{contact[column.field]}}</a>
           <div v-else-if="column.field == 'LastModifiedDate'">{{moment.utc(contact[column.field]).format('YYYY-MM-DD')}}</div>
@@ -193,18 +199,22 @@ export default {
 <style lang="scss">
 .contact-container{
 
+  margin-left: 15px;
+  font-size: .8rem;
+
   tr{
-    background-color: inherit;
+    background: inherit;
   }
-  td:where(.name,.Email,.LastModifiedDate,.Primary_Occupation__c){
+  td:where(.documents,.name,.Email,.LastModifiedDate,.Primary_Occupation__c){
     position: sticky;
-    background-color: inherit;
-    z-index: 2;
+    background: inherit;
+    z-index: 3!important;
   }
-  td.name{left: 0}
-  td.Email{left: 160px}
-  td.LastModifiedDate{left: calc(160px + 200px)}
-  td.Primary_Occupation__c{left: calc(160px + 200px + 100px)}
+  td.documents{left: 0}
+  td.name{left: 25px}
+  td.Email{left: 165px}
+  td.LastModifiedDate{left: calc(165px + 200px)}
+  td.Primary_Occupation__c{left: calc(165px + 200px + 100px)}
 
   &[saving] {
     cursor:wait;
@@ -212,12 +222,7 @@ export default {
     opacity: .5;
   }
 
-  margin-left: 15px;
-  font-size: .8rem;
-  
-  &.mismatchedRates {
-    //font-weight: bold;
-  }
+
   
   //DEFAULT YELLOW
   

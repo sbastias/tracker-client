@@ -1,7 +1,7 @@
 <template>
   <div class="container">
 
-    <TrackerOverlay 
+    <Overlay 
       v-if="overlayMode"
       :mode="overlayMode" 
       :placement="overlayPlacement"
@@ -113,8 +113,8 @@
 </template>
 
 <script>
+import Overlay from '~/components/overlay'
 import TrackerRow from '~/components/tracker/TrackerRow'
-import TrackerOverlay from '~/components/tracker/TrackerOverlay'
 import Loader from '~/components/ui/Loader'
 import Sort from '~/components/ui/Sort'
 import trackerColumnsConfig from '~/config/tracker/columns'
@@ -175,8 +175,8 @@ export default {
     title: 'Tracker'
   },
   components: {
+    Overlay,
     TrackerRow,
-    TrackerOverlay,
     TrackerFilters,
     Loader,
     Sort,

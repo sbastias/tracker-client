@@ -33,13 +33,13 @@
 </template>
 
 <script>
-import ExtendPlacement from '~/components/tracker/overlays/extend-placement'
-import UpdatePlacement from '~/components/tracker/overlays/update-placement'
-import AddPlacement from '~/components/tracker/overlays/add-placement'
-import AssignStaffer from '~/components/tracker/overlays/assign-staffer'
-import HireStaffer from '~/components/tracker/overlays/hire-staffer'
-import NewApplicant from '~/components/tracker/overlays/new-applicant'
-import ViewDocuments from '~/components/tracker/overlays/view-documents'
+import ExtendPlacement from './overlays/extend-placement'
+import UpdatePlacement from './overlays/update-placement'
+import AddPlacement from './overlays/add-placement'
+import AssignStaffer from './overlays/assign-staffer'
+import HireStaffer from './overlays/hire-staffer'
+import NewApplicant from './overlays/new-applicant'
+import ViewDocuments from './overlays/view-documents'
 import CancelX from '~/components/ui/CancelX'
 export default {
   props: ['mode','placement','prospect'],

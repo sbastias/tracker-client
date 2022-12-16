@@ -4,7 +4,7 @@
       <div id="toaster-body" v-if="visible" :class="options.status">
         <span v-if="options.status == 'success'"><b>Success!</b></span>
         <span v-if="options.status == 'error'"><b>Error!</b></span>
-        {{options.message}}
+        <span v-html="options.message"></span>
         <div id="toaster-error-x-container" v-if="options.status == 'error'">
           <CancelX @cancel="deactivateToaster" :on-red="true" />
         </div>
@@ -98,6 +98,10 @@ export default {
     &.error {
       background-color: rgba(200,0,0, 0.7);
       border: 1px solid red;
+
+      a {
+        color: #f2c524;
+      }
     }
   }
 }
