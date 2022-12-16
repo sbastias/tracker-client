@@ -96,7 +96,7 @@
 
         <table id="contacts-table" v-show="contacts.length" cellspacing="0">
           <thead>
-            <tr>
+            <tr :class="{externalUser}">
               <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="[{sortable: col.sortable, sorted: sortedBy == col.field}]" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
                 {{col.label}}
                 <Sort v-if="col.sortable" :direction="sortedBy == col.field && (ascending && 'asc' || 'desc')" />
@@ -721,11 +721,12 @@ export default {
 
           background: #ccc;
 
+
           &:nth-child(1){position: sticky; z-index: 1; left: 0}
           &:nth-child(2){position: sticky; z-index: 1; left: 25px}
-          &:nth-child(3){position: sticky; z-index: 1; left: 165px}
-          &:nth-child(4){position: sticky; z-index: 1; left: calc(165px + 200px)}
-          &:nth-child(5){position: sticky; z-index: 1; left: calc(165px + 200px + 100px)}
+          &:nth-child(3){position: sticky; z-index: 1; left: calc(25px + 200px)}
+          &:nth-child(4){position: sticky; z-index: 1; left: calc(25px + 200px + 200px)}
+          &:nth-child(5){position: sticky; z-index: 1; left: calc(25px + 200px + 200px + 100px)}
 
           text-align: left;
           font-weight: normal;
@@ -741,6 +742,17 @@ export default {
           &.sorted {
             font-weight: bold;
             background: #eee;
+          }
+         }
+
+         &.externalUser {
+
+          > th {
+            &:nth-child(1){position: sticky; z-index: 1; left: 0}
+            &:nth-child(2){position: sticky; z-index: 1; left: 25px}
+            &:nth-child(3){position: sticky; z-index: 1; left: calc(25px + 200px); display: none}
+            &:nth-child(4){position: sticky; z-index: 1; left: calc(25px + 200px)}
+            &:nth-child(5){position: sticky; z-index: 1; left: calc(25px + 200px + 100px)}
           }
          }
       }

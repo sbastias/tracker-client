@@ -1,5 +1,5 @@
 <template>
-<tbody class="contact-container" :saving="saving" :active="active" :class="{highlighted, hasPending: contact.hasPending}">
+<tbody class="contact-container" :saving="saving" :active="active" :class="{highlighted, hasPending: contact.hasPending, externalUser: $parent.externalUser}">
 
   <tr class="contact-row">
 
@@ -11,8 +11,8 @@
 
       <td class="name ellipses">
         <div>
-          <a :href="sfLink(contact.Id, 'Contact')" target="_blank" v-if="contact.FirstName != 'Open'">{{contact.FirstName}} {{contact.LastName}}</a>
-          <span style="font-style: italic" v-else>{{contact.FirstName}} {{contact.LastName}}</span>
+          <a :href="sfLink(contact.Id, 'Contact')" target="_blank" v-if="!$parent.externalUser && contact.FirstName != 'Open'">{{contact.FirstName}} {{contact.LastName}}</a>
+          <span style="white-space: nowrap;" v-else>{{contact.FirstName}} {{contact.LastName}}</span>
         </div>
       </td>
       
@@ -210,11 +210,21 @@ export default {
     background: inherit;
     z-index: 3!important;
   }
+
+
   td.documents{left: 0}
   td.name{left: 25px}
-  td.Email{left: 165px}
-  td.LastModifiedDate{left: calc(165px + 200px)}
-  td.Primary_Occupation__c{left: calc(165px + 200px + 100px)}
+  td.Email{left: calc(25px + 200px)}
+  td.LastModifiedDate{left: calc(25px + 200px + 200px)}
+  td.Primary_Occupation__c{left: calc(25px + 200px + 200px + 100px)}
+  &.externalUser {
+    td.documents{left: 0}
+    td.name{left: 25px}
+    td.Email{left: calc(25px + 200px); display: none;}
+    td.LastModifiedDate{left: calc(25px + 200px);}
+    td.Primary_Occupation__c{left: calc(25px + 200px + 100px)}
+  }
+
 
   &[saving] {
     cursor:wait;
