@@ -3,13 +3,13 @@
 
   <tr class="contact-row">
 
-      <td class="documents">
-        <div @click="$emit('documents', contact)" style="height: 100%;">
-          <Icon name="documents" />
+      <td class="documents" :style="{width: activeColumns[0].width + 'px','max-width': activeColumns[0].width + 'px', position: relative, padding: 0}">
+        <div @click="$emit('documents', contact)" :style="{height: (activeColumns[0].width - 5) + 'px', 'max-height': (activeColumns[0].width - 5) + 'px', position: 'relative'}">
+          <Icon name="documents" :width="activeColumns[0].width + 'px'" />
         </div>
       </td>
 
-      <td class="name ellipses">
+      <td class="name ellipses" :style="{width: activeColumns[1].width + 'px', position: relative}">
         <div>
           <a :href="sfLink(contact.Id, 'Contact')" target="_blank" v-if="!$parent.externalUser && contact.FirstName != 'Open'">{{contact.FirstName}} {{contact.LastName}}</a>
           <span style="white-space: nowrap;" v-else>{{contact.FirstName}} {{contact.LastName}}</span>
@@ -212,8 +212,8 @@ export default {
   }
 
 
-  td.documents{left: 0}
-  td.name{left: 25px}
+  td.documents{left: 0; overflow: hidden;}
+  td.name{left: 25px; overflow: hidden;}
   td.Email{left: calc(25px + 200px)}
   td.LastModifiedDate{left: calc(25px + 200px + 200px)}
   td.Primary_Occupation__c{left: calc(25px + 200px + 200px + 100px)}

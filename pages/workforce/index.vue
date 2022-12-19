@@ -97,7 +97,7 @@
         <table id="contacts-table" v-show="contacts.length" cellspacing="0">
           <thead>
             <tr :class="{externalUser}">
-              <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="[{sortable: col.sortable, sorted: sortedBy == col.field}]" :key="`col-${idx}`" :style="{width: col.width + 'px'}">
+              <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="[{sortable: col.sortable, sorted: sortedBy == col.field}]" :key="`col-${idx}`" :width="col.width" :style="{width: col.width + 'px', 'max-width': col.width + 'px'}">
                 {{col.label}}
                 <Sort v-if="col.sortable" :direction="sortedBy == col.field && (ascending && 'asc' || 'desc')" />
               </th>
@@ -244,12 +244,12 @@ export default {
 
     },
     activeColumns () {
-      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
+      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle && (this.externalUser && !el.internalOnly)).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
 
       return columns
     },
     toggleableColumns () {
-      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1)
+      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (this.externalUser && !el.internalOnly))
     },
     contacts () {
 

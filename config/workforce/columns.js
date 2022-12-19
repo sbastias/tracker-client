@@ -7,7 +7,7 @@ export default {
     },
     {
       label: 'Candidate Name',
-      width: 140,
+      width: 200,
       orderIdx: 20
     },
     {
@@ -113,7 +113,8 @@ export default {
       sortable: true,
       toggle: true,
       width: 160,
-      orderIdx: 160
+      orderIdx: 160,
+      internalOnly: true
     },
 
     {
@@ -123,7 +124,8 @@ export default {
       toggle: true,
       width: 160,
       editable: true,
-      orderIdx: 170
+      orderIdx: 170,
+      internalOnly: true
     },
     
     {
@@ -133,7 +135,8 @@ export default {
       toggle: true,
       width: 250,
       editable: true,
-      orderIdx: 180
+      orderIdx: 180,
+      internalOnly: true
     },
 
     {

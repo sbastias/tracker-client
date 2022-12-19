@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="position: relative; max-height: 100%;height: 100%;margin: auto;">
  <svg
     v-if="name == 'email'"
     id="email-icon"
@@ -24,7 +24,7 @@
     c0-5.5,4.5-10,10.1-10C17,8,19.9,9.5,21.7,11.9"/>
   </svg>
 
-  <svg v-if="name == 'documents'" id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.79 25.06">
+  <svg v-if="name == 'documents'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.79 25.06">
     <rect x="9.34" y="11.57" width="7.46" height="1.28" />
     <rect x="9.34" y="14.57" width="7.46" height="1.28" />
     <rect x="9.34" y="17.57" width="7.46" height="1.28" />
@@ -37,11 +37,15 @@
 
 <script>
 export default {
-  props: ['name']
+  props: ['name','width']
 }
 </script>
 
 <style lang="scss">
+svg {
+  position: relative;
+  height: 100%;
+}
 #email-icon {
   
   width: 100%;
