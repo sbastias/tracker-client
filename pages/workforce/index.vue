@@ -244,12 +244,12 @@ export default {
 
     },
     activeColumns () {
-      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle && (this.externalUser && !el.internalOnly)).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
+      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle && (!this.externalUser || (this.externalUser && !el.internalOnly))).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
 
       return columns
     },
     toggleableColumns () {
-      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (this.externalUser && !el.internalOnly))
+      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (!this.externalUser || (this.externalUser && !el.internalOnly)))
     },
     contacts () {
 
