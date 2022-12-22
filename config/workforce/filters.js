@@ -5,19 +5,15 @@ export default [
     values: []
   },
   {
-    label: 'Location',
-    field: 'Starting_Work_Location__c',
-    values: []
-  },
-  {
     label: 'Status',
     field: 'AVTRRT__Candidate_Status__c',
     values: []
   },
   {
     label: 'Recruiter',
+    internalOnly: true,
     field: 'Recruiter',
-    values: []
+    values: [],
   },
   /*
   {

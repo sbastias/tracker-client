@@ -3,13 +3,13 @@
 
   <tr class="contact-row">
 
-      <td class="documents" :style="{width: activeColumns[0].width + 'px','max-width': activeColumns[0].width + 'px', position: relative, padding: 0}">
+      <td class="documents" :style="{width: activeColumns[0].width + 'px','max-width': activeColumns[0].width + 'px', padding: 0}">
         <div @click="$emit('documents', contact)" :style="{height: (activeColumns[0].width - 5) + 'px', 'max-height': (activeColumns[0].width - 5) + 'px', position: 'relative'}">
           <Icon name="documents" :width="activeColumns[0].width + 'px'" />
         </div>
       </td>
 
-      <td class="name ellipses" :style="{width: activeColumns[1].width + 'px', position: relative}">
+      <td class="name ellipses" :style="{width: activeColumns[1].width + 'px'}">
         <div>
           <a :href="sfLink(contact.Id, 'Contact')" target="_blank" v-if="!$parent.externalUser && contact.FirstName != 'Open'">{{contact.FirstName}} {{contact.LastName}}</a>
           <span style="white-space: nowrap;" v-else>{{contact.FirstName}} {{contact.LastName}}</span>
@@ -53,7 +53,7 @@
               <option v-for="(status, idx) in $bus.candidateStatuses" :key="`status-opt-${idx}`" :value="status">{{status}}</option>
             </select>
             <select 
-              v-if="column.field == 'Handler'"
+              v-if="column.field == 'Handler' && !$parent.externalUser"
               id="editing-field"
               v-model="contact.Handler__c"
               @keyup.esc="editing = false"

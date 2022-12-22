@@ -6,7 +6,6 @@
         
       <div v-for="(filter, idx) in filters" :key="`filter-${idx}`">
         <h5>{{filter.label}}</h5>
-
         <a @click="filter.deselectAll()" v-if="filter.allSelected()">Deselect All</a>
         <a @click="filter.selectAll()" v-else>Select All</a>
         
@@ -55,14 +54,15 @@ export default {
     flex-direction: row;
     margin-top: 10px;
     background: #eee;
-    
+    gap: 50px;
 
     
     > div {
       //width: max-content;
-      flex: 1;
+      width: max-content;
+
       overflow: hidden;
-      margin-right: 5px;
+      
       h5 {
         font-size: .6rem;
       }

@@ -95,14 +95,17 @@
       <section id="contacts" ref="contacts" :class="{disabled: loadingData}">
 
         <table id="contacts-table" v-show="contacts.length" cellspacing="0">
-          <thead>
+          
+          
+          <thead v-if="!!contacts">
             <tr :class="{externalUser}">
               <th @click="sortBy" :data-sort="col.field" v-for="(col, idx) in activeColumns" :class="[{sortable: col.sortable, sorted: sortedBy == col.field}]" :key="`col-${idx}`" :width="col.width" :style="{width: col.width + 'px', 'max-width': col.width + 'px'}">
-                {{col.label}}
+                {{col.label || '&nbsp;'}}
                 <Sort v-if="col.sortable" :direction="sortedBy == col.field && (ascending && 'asc' || 'desc')" />
               </th>
             </tr>
           </thead>
+        
           
           <WorkforceRow 
             v-for="(contact, idx) in contacts" 
@@ -244,12 +247,12 @@ export default {
 
     },
     activeColumns () {
-      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle && (!this.externalUser || (this.externalUser && !el.internalOnly))).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
-
+      let columns = this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') == -1 || el.toggle).filter(el => this.externalUser ? !el.internalOnly : true).sort((a,b) => a.orderIdx > b.orderIdx ? 1 : -1)
+      console.log(columns, '<< activeColumns')
       return columns
     },
     toggleableColumns () {
-      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (!this.externalUser || (this.externalUser && !el.internalOnly)))
+      return this.workforceColumnsConfig.filter(el => Object.keys(el).indexOf('toggle') > -1 && (this.externalUser ? !el.internalOnly : true))
     },
     contacts () {
 
@@ -362,7 +365,7 @@ export default {
     },
     generateFilters () {
       
-      this.params.filters = workforceFiltersConfig.map(el => new filterObj(el.label, el.field))
+      this.params.filters = workforceFiltersConfig.filter(el => this.externalUser ? !el.internalOnly : true).map(el => new filterObj(el.label, el.field))
 
       for(let filter of this.params.filters) {
 

@@ -47,14 +47,7 @@ export default {
       width: 90,
       orderIdx: 70
     },
-    {
-      label: 'Location',
-      field: 'Starting_Work_Location__c',
-      sortable: true,
-      toggle: true,
-      width: 110,
-      orderIdx: 80
-    },
+    
     {
       label: 'Department',
       field: 'Department__c',
@@ -63,18 +56,26 @@ export default {
       orderIdx: 90
     },
     {
+      label: 'Province',
+      field: 'MailingState',
+      toggle: true,
+      width: 150,
+      orderIdx: 110
+    },
+    {
       label: 'Notes & Comments',
       field: 'AVTRRT__Notes_and_Comments__c',
       toggle: true,
       width: 300,
-      orderIdx: 100
+      orderIdx: 120,
+      internalOnly: true
     },
     {
       label: 'Job Title',
       field: 'AVTRRT__Job_Title__c',
       toggle: true,
       width: 350,
-      orderIdx: 120
+      orderIdx: 130
     },
     
     {
@@ -84,7 +85,7 @@ export default {
       toggle: true,
       width: 160,
       editable: true,
-      orderIdx: 130
+      orderIdx: 140
     },
 
     {
@@ -94,7 +95,7 @@ export default {
       toggle: true,
       width: 105,
       editable: true,
-      orderIdx: 140
+      orderIdx: 150
     },
 
     {
@@ -104,7 +105,7 @@ export default {
       toggle: true,
       width: 200,
       editable: true,
-      orderIdx: 150
+      orderIdx: 160
     },
 
     {
@@ -113,7 +114,7 @@ export default {
       sortable: true,
       toggle: true,
       width: 160,
-      orderIdx: 160,
+      orderIdx: 170,
       internalOnly: true
     },
 
@@ -124,7 +125,7 @@ export default {
       toggle: true,
       width: 160,
       editable: true,
-      orderIdx: 170,
+      orderIdx: 180,
       internalOnly: true
     },
     
@@ -135,17 +136,11 @@ export default {
       toggle: true,
       width: 250,
       editable: true,
-      orderIdx: 180,
+      orderIdx: 190,
       internalOnly: true
     },
 
-    {
-      label: 'City',
-      field: 'MailingCity',
-      toggle: true,
-      width: 150,
-      orderIdx: 190
-    },
+    
 
     {
       label: 'Cognibox',
