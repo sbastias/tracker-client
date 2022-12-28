@@ -403,6 +403,9 @@ export default {
       //console.log(this.$axios.defaults.baseURL)
       //console.log(this.$axios.defaults.headers.common['Authorization'])
       this.$bus.log('loading data...')
+
+      this.params.reportingDepartments = this.externalUser && this.externalUser.Reporting_Departments__c
+      
       await this.$axios.post(`/workforce/contacts/load`, this.params)
       .then(({data}) => {
         //console.log(data)
