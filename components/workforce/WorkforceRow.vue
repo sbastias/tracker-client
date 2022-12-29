@@ -277,6 +277,12 @@ export default {
       &:first-child {
         //padding-left: 20px;
       }
+
+      &.ellipses {
+        >div:not(.editing)>:where(a,div){
+          text-overflow: ellipsis;
+        }
+      }
       
      
 
@@ -290,7 +296,7 @@ export default {
         &:not(.editing) {
           > a, > div {
             width: 100%;
-            text-overflow: ellipsis;
+            //text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
             font-size: .9em;
