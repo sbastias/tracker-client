@@ -7,6 +7,7 @@ export default [
   {
     label: 'Status',
     field: 'AVTRRT__Candidate_Status__c',
+    internalOnly: true,
     values: []
   },
   {

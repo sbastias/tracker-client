@@ -218,6 +218,7 @@ export default {
         account: ''
       },
       metadata: false,
+      skippedStatuses: false,
       unfilteredContacts: [],
       textSearch: '',
       activatedContact: false,
@@ -381,10 +382,12 @@ export default {
 
         //console.log(uniqueFilterValues)
 
+        // UNCHECK indicateed filter options
         for (let val of uniqueFilterValues) {
           switch (filter.field) {
-            case 'Internal_Status__c':
-              this.$set(filter.values, val, ['Client Cancelled', 'Not Filled'].indexOf(val) == -1) 
+
+            case 'AVTRRT__Candidate_Status__c':
+              this.$set(filter.values, val, this.skippedStatuses.indexOf(val) == -1 && !val.match(/quit/i)) 
               break
             default:
               this.$set(filter.values, val, true)
@@ -405,7 +408,7 @@ export default {
       this.$bus.log('loading data...')
 
       this.params.reportingDepartments = this.externalUser && this.externalUser.Reporting_Departments__c
-      
+
       await this.$axios.post(`/workforce/contacts/load`, this.params)
       .then(({data}) => {
         //console.log(data)
@@ -429,6 +432,9 @@ export default {
         this.$bus.accounts = data.accounts
         this.$bus.users = data.users
         this.$bus.metadata = data.metadata
+
+        this.skippedStatuses = data.skippedStatuses
+
         try {
           this.generateFilters()
         } catch (e) {
