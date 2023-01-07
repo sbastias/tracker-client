@@ -16,10 +16,10 @@ const URLS = (env => {
       payrollSocketURL: 'https://sockets.starla.bullittstaffing.com'
     }
   }
-})(process.env.SETTINGS)
+})(process.env.SETTINGS || 'production') 
 
 console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} environment.`)
-console.log(`\n\nRunning in ${process.env.SETTINGS.toUpperCase()} mode.`)
+console.log(`\n\nRunning in ${process.env.SETTINGS && process.env.SETTINGS.toUpperCase() || 'PRODUCTION'} mode.`)
 console.log(`Default Server URL: ${URLS.baseURL}\n`)
 console.log(`Payroll Socket Server URL: ${URLS.payrollSocketURL}\n`)
 console.log(`Tracker Socket Server URL: ${URLS.trackerSocketURL}\n`)
