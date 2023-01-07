@@ -92,13 +92,14 @@ export default {
     },
     initiateComms () {
 
-      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+      this.$axios.defaults.baseURL = this.$bus.servers[process.env.SETTINGS].payroll
+      //console.log(this.$axios.defaults.baseURL, '<< initiateComms baseURL')
 
       try {
-        this.createSocket(this.$parent.supplier)
+        this.createSocket()
       } catch (e) {throw e}
 
-      setTimeout(() => this.$axios.post(`/console/io?supplier=${ this.$parent.supplier }`)
+      setTimeout(() => this.$axios.post(`${this.$bus.servers[process.env.SETTINGS].payroll}/console/io?supplier=${ this.$parent.supplier }`)
       .then(({data}) => console.log(data, this.$parent.supplier)), 1000)
     },
     resizeMain () {
@@ -133,12 +134,16 @@ export default {
         }
       }, 1000)
     },
-    createSocket (supplier) {
+    createSocket () {
+
+      let path = `${ process.env.SETTINGS == 'testing' && '/test/' || '/'}ws/`
+
+      console.log(path, '<< sockets path')
       
       this.socket = this.$nuxtSocket({
         name: 'payroll',
         transports: ['websocket'],
-        path: '/ws/'
+        path
       })
       this.socket.on('statusUpdate', update => {
         this.$bus.log('Received UPDATE emission!', update)

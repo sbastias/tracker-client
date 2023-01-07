@@ -1,19 +1,35 @@
-let baseURL = (env => {
+const URLS = (env => {
   switch (env) {
-    case 'development': return 'http://localhost:3333/'
-    case 'testing': return 'https://payroll.starla.bullittstaffing.com/test/'
-    case 'production': return 'https://payroll.starla.bullittstaffing.com/'
+    case 'development': return {
+      baseURL: 'http://localhost:3333',
+      trackerSocketURL: 'ws://localhost:8013',
+      payrollSocketURL: 'ws://localhost:8012'
+    }
+    case 'testing': return {
+      baseURL: 'https://payroll.starla.bullittstaffing.com/test',
+      trackerSocketURL: 'https://tracker-server.thebullittgroup.com',
+      payrollSocketURL: 'https://sockets.starla.bullittstaffing.com'
+    }
+    case 'production': return {
+      baseURL: 'https://payroll.starla.bullittstaffing.com',
+      trackerSocketURL: 'https://tracker-server.thebullittgroup.com',
+      payrollSocketURL: 'https://sockets.starla.bullittstaffing.com'
+    }
   }
-})(process.env.NODE_ENV)
+})(process.env.SETTINGS)
 
-console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} mode.`)
-console.log(`Default Server URL: ${baseURL}\n`)
+console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} environment.`)
+console.log(`\n\nRunning in ${process.env.SETTINGS.toUpperCase()} mode.`)
+console.log(`Default Server URL: ${URLS.baseURL}\n`)
+console.log(`Payroll Socket Server URL: ${URLS.payrollSocketURL}\n`)
+console.log(`Tracker Socket Server URL: ${URLS.trackerSocketURL}\n`)
 
 const ALLOWED_ORIGINS = ['http://localhost:3000','https://starla.thebullittgroup.com','https://starla.bullittstaffing.com']
 
 export default {
   env: {
-    NODE_ENV: process.env.NODE_ENV
+    NODE_ENV: process.env.NODE_ENV,
+    SETTINGS: process.env.SETTINGS
   },
   ssr: true,
   /*
@@ -68,7 +84,7 @@ export default {
     sockets: [
       {
         name: 'starla-staff',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8013' || 'https://tracker-server.thebullittgroup.com',
+        url: URLS.trackerSocketURL,
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
@@ -79,7 +95,7 @@ export default {
       },
       {
         name: 'payroll',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://sockets.starla.bullittstaffing.com/',
+        url: URLS.payrollSocketURL,
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {
@@ -95,7 +111,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.NODE_ENV == 'development' && 'http://localhost:8011' || 'https://starla-server.thebullittgroup.com'
+    baseURL: URLS.baseURL
     //baseURL:'https://mgmt-server.thebullittgroup.com'
   },
   /*

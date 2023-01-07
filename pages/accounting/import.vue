@@ -560,7 +560,7 @@ export default {
     company (val) {
 
 
-      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+      //this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
       //alert(this.$axios.defaults.baseURL)
       console.log(this.$axios.defaults.baseURL, '<< server URL')
 
