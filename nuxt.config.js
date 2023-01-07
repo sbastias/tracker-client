@@ -29,7 +29,7 @@ const ALLOWED_ORIGINS = ['http://localhost:3000','https://starla.thebullittgroup
 export default {
   env: {
     NODE_ENV: process.env.NODE_ENV,
-    SETTINGS: process.env.SETTINGS
+    SETTINGS: process.env.SETTINGS || 'production'
   },
   ssr: true,
   /*
