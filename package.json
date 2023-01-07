@@ -10,13 +10,13 @@
     "prod": "NODE_ENV=production nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate --openssl-legacy-provider"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/dotenv": "^1.4.0",
     "moment": "^2.29.4",
-    "node-sass": "^7.0.1",
+    "node-sass": "^8.0.0",
     "nuxt": "^2.0.0",
     "nuxt-socket-io": "^2.0.3",
     "sass-loader": "10",
