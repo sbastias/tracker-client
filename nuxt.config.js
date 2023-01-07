@@ -1,15 +1,15 @@
 let baseURL = (env => {
   switch (env) {
-    case 'development': return 'http://localhost:8009/'
-    case 'testing': return 'https://qbwc.thebullittgroup.com/test/ysg/'
-    case 'production': return 'https://qbwc.thebullittgroup.com/ysg/'
+    case 'development': return 'http://localhost:3333/'
+    case 'testing': return 'https://payroll.starla.bullittstaffing.com/test/'
+    case 'production': return 'https://payroll.starla.bullittstaffing.com/'
   }
 })(process.env.NODE_ENV)
 
 console.log(`\n\nRunning in ${process.env.NODE_ENV.toUpperCase()} mode.`)
 console.log(`Default Server URL: ${baseURL}\n`)
 
-const ALLOWED_ORIGINS = ['http://localhost:3000','https://starla.thebullittgroup.com']
+const ALLOWED_ORIGINS = ['http://localhost:3000','https://starla.thebullittgroup.com','https://starla.bullittstaffing.com']
 
 export default {
   env: {
@@ -78,19 +78,8 @@ export default {
         path: '/ws/'
       },
       {
-        name: 'payroll-YORK',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://york.payroll-server.thebullittgroup.com',
-        //url:'https://mgmt-server.thebullittgroup.com',
-        server: {
-          cors: {
-            origin: ALLOWED_ORIGINS
-          }
-        },
-        path: '/ws/'    
-      },
-      {
-        name: 'payroll-QAJAQ',
-        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8014' || 'https://qajaq.payroll-server.thebullittgroup.com',
+        name: 'payroll',
+        url: process.env.NODE_ENV == 'development' && 'ws://localhost:8012' || 'https://sockets.starla.bullittstaffing.com/',
         //url:'https://mgmt-server.thebullittgroup.com',
         server: {
           cors: {

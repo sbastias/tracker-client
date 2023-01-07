@@ -32,15 +32,15 @@ export default ({store}) => {
       servers () {
         return {
           development: {
-            payroll: 'http://localhost:8009',
+            payroll: 'http://localhost:3333',
             tracker: 'http://localhost:8011'
           },
           testing: {
-            payroll: `https://qbwc.thebullittgroup.com/test/${store.getters.storedSupplier == 'QAJAQ' && 'qajaq' || 'ysg'}/`,
+            payroll: `https://payroll.starla.bullittstaffing.com/test/`,
             tracker: 'https://starla-server.thebullittgroup.com'
           },
           production: {
-            payroll: `https://qbwc.thebullittgroup.com/${store.getters.storedSupplier == 'QAJAQ' && 'qajaq' || 'ysg'}/`,
+            payroll: `https://payroll.starla.bullittstaffing.com/`,
             tracker: 'https://starla-server.thebullittgroup.com'
           }
         }

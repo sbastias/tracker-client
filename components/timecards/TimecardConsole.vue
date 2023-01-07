@@ -59,7 +59,9 @@ export default {
     return {
       moment,
       reconnectInterval: false,
-      statusStack: []
+      statusStack: [],
+      socket: false,
+      socketConnected: false
     }
   },
   mounted () {
@@ -96,19 +98,20 @@ export default {
         this.createSocket(this.$parent.supplier)
       } catch (e) {throw e}
 
-      setTimeout(() => this.$axios.post('/console/io')
+      setTimeout(() => this.$axios.post(`/console/io?supplier=${ this.$parent.supplier }`)
       .then(({data}) => console.log(data, this.$parent.supplier)), 1000)
     },
     resizeMain () {
 
-      this.$nextTick(() => {
+      
+      setTimeout(() => {
         let containerHeight = document.getElementById('console-timecard').getBoundingClientRect().height
         let headerHeight = document.getElementById('console-timecard__header').getBoundingClientRect().height
 
         let scrollingArea = this.$refs['scrolling-area']
 
         scrollingArea.style.height = `${containerHeight - headerHeight - 20}px`
-      })
+      },200)
       
     },
     async clearConsole () {
@@ -133,7 +136,7 @@ export default {
     createSocket (supplier) {
       
       this.socket = this.$nuxtSocket({
-        name: 'payroll-' + supplier,
+        name: 'payroll',
         transports: ['websocket'],
         path: '/ws/'
       })
@@ -154,10 +157,15 @@ export default {
           }
         }
       })
+
+      this.socket.on('connect', () => {
+        this.socketConnected = true
+      })
       //this.socket.on('reconnection', () => alert('Reconnected!'))
       this.socket.on('disconnect', reason => {
         this.$bus.log('Disconnected?', reason)
 
+        this.socketConnected = false
         this.tryToReconnect()
         
       })
@@ -166,9 +174,10 @@ export default {
   watch: {
     '$parent.supplier' (val) {
 
+      if (!this.socketConnected) return
+
       console.log('SUPPLIER CHANGE IN CONSOLE:', val)
       this.statusStack.push({timestamp: Date.now(), content: {status: 'info', message: 'Changing Supplier... please hold...'}})
-
       this.socket.disconnect()//triggers initiateComms
       //this.createSocket(val)
 

@@ -20,6 +20,7 @@
               <option value="">Select Company</option>
               <option value="YORK">YORK Search Group</option>
               <option value="QAJAQ">QAJAQ Northern Builders</option>
+              <option value="BSNI">Bullitt Staffing Nunavut Inc.</option>
             </select>
           </li>
           <!--li v-if="company">
@@ -422,7 +423,7 @@ export default {
 
           console.log('Retrieving QB data...')
 
-          return await this.$axios.post('/import/qb/data', {employeeOnly: activity.indexOf('employee-only') > -1})
+          return await this.$axios.post('/import/qb/data', {employeeOnly: activity.indexOf('employee-only') > -1, supplier: this.company})
           .then(({data}) => {
             if(this.activityCancelled) return
             //console.log(data)
@@ -442,7 +443,7 @@ export default {
 
           console.log('Starting QB > SF Import')          
 
-          return this.$axios.post('/salesforce/from/qb', {opts: this.sfImportOptions})
+          return this.$axios.post('/salesforce/from/qb', {opts: this.sfImportOptions, supplier: this.company})
           .then(({data}) => {
             if(this.activityCancelled) return
             console.log(data)
@@ -462,7 +463,7 @@ export default {
 
           console.log('Retrieving SF data...')
 
-          return this.$axios.post('/salesforce/import/data', {weekending: this.weekending, opts: this.qbImportOptions},{signal: this.controller})
+          return this.$axios.post('/salesforce/import/data', {weekending: this.weekending, opts: this.qbImportOptions, supplier: this.company},{signal: this.controller})
           .then(({data}) => {
             if(this.activityCancelled) return
             console.log(data)
@@ -481,7 +482,7 @@ export default {
 
           console.log('Executing QB Modifications...')
 
-          return await this.$axios.post('/quickbooks/modifications/execute')
+          return await this.$axios.post('/quickbooks/modifications/execute', {supplier: this.company})
           .then(({data}) => {
             if(this.activityCancelled) return
             console.log(data)
@@ -504,7 +505,7 @@ export default {
           //this.haltActivity({success: 'just testing'})
           //return
 
-          return await this.$axios.post('/quickbooks/additions/execute', {selected: this.selectedItems})
+          return await this.$axios.post('/quickbooks/additions/execute', {selected: this.selectedItems, supplier: this.company})
           .then(({data}) => {
             if(this.activityCancelled) return
             console.log(data)
@@ -558,22 +559,8 @@ export default {
     },
     company (val) {
 
-      let serverUrls = {
-        development: {
-          'YORK': 'http://localhost:8009',
-          'QAJAQ': 'http://localhost:8009'
-        },
-        testing: {
-          'YORK': 'https://qbwc.thebullittgroup.com/test/ysg',
-          'QAJAQ': 'https://qbwc.thebullittgroup.com/test/qajaq'
-        },
-        production: {
-          'YORK': 'https://qbwc.thebullittgroup.com/ysg',
-          'QAJAQ': 'https://qbwc.thebullittgroup.com/qajaq'
-        }
-      }
 
-      this.$axios.defaults.baseURL = serverUrls[this.environment][val || 'YORK']
+      this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
       //alert(this.$axios.defaults.baseURL)
       console.log(this.$axios.defaults.baseURL, '<< server URL')
 

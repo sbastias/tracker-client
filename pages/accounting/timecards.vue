@@ -13,6 +13,7 @@
         <div>
           <select v-model="supplier">
             <option value="">Select Company</option>
+            <option value="BSNI">Bullitt Staffing Nunavut Inc</option>
             <option value="YORK">York Search Group</option>
             <option value="QAJAQ">Qajaq Northern Builders</option>
           </select>

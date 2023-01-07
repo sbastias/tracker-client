@@ -134,12 +134,12 @@
         Pay Rate: ${{ payRate }} OT Rate: ${{ OTRate }}
       </div>
       <div>
-        Reg: ${{totals.Regular.amount}} ({{totals.Regular.hours}}) 
-        OT: ${{totals.OT.amount}}  ({{totals.OT.hours}}) 
-        SB: ${{totals['Stand By'].amount}}  ({{totals['Stand By'].hours}}) 
+        Reg: ${{totals.Regular.amount.toFixed(2)}} ({{totals.Regular.hours}}) 
+        OT: ${{totals.OT.amount.toFixed(2)}}  ({{totals.OT.hours}}) 
+        SB: ${{totals['Stand By'].amount.toFixed(2)}}  ({{totals['Stand By'].hours}}) 
       </div>
       <div>
-        <b>TOTAL: ${{totals.total.amount}}({{totals.total.hours}}) </b>
+        <b>TOTAL: ${{totals.total.amount.toFixed(2)}}({{totals.total.hours}}) </b>
       </div>
     </div>
     <div class="totals-rows external" v-else>

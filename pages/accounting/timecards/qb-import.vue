@@ -2,7 +2,12 @@
   <section id="qbwv-import">
 
     <div id="tally-summary">
-      <div v-if="startingTally">Records to create: {{ startingTally.toCreate.length }} ... Records to update: {{ startingTally.toUpdate.length }} ... Records to delete: {{ startingTally.toDelete.length }} ...</div>
+      
+      <template v-if="startingTally">
+        <div>Records to create: {{ startingTally.toCreate.length }} ... Records to update: {{ startingTally.toUpdate.length }} ... Records to delete: {{ startingTally.toDelete.length }} ...</div>
+      </template>
+      
+
       <button @click="getCurrentCompanyFileData">Refresh Company File Data</button>
       <button @click="compareSFtoQB">Compare Current Salesforce/Quickbooks Data</button>
       <button @click="generateModificationRequests" :disabled="totalMods == 0">Queue Modification Requests for WebConnector</button>
@@ -44,7 +49,7 @@ export default {
   },  
   data () {
     return {
-      local: process.client && location.href.indexOf('localhost:3000') > -1,
+      local: false,
       activityId: false,
       payrateMods: [],
       billrateMods: []
@@ -73,6 +78,8 @@ export default {
   mounted () {
 
     this.resizeMain()
+
+    this.local = process.client && location.href.indexOf('localhost:3000') > -1
     
   
   },
@@ -124,12 +131,16 @@ export default {
     },
     resizeMain () {
     
-      let topBoundary = document.getElementById('tally-summary').getBoundingClientRect().top + document.getElementById('tally-summary').getBoundingClientRect().height
+      setTimeout(() => {
+        let topBoundary = document.getElementById('tally-summary').getBoundingClientRect().bottom// + document.getElementById('tally-summary').getBoundingClientRect().height
 
-      let consoleContainer = document.getElementById('timecard-console-container')
-      let consoleHeight = window.innerHeight - topBoundary - 30
+        console.log(topBoundary, '<< qb-import topBoundary')
 
-      consoleContainer.style.height = `${ consoleHeight }px`
+        let consoleContainer = document.getElementById('timecard-console-container')
+        let consoleHeight = window.innerHeight - (topBoundary + 30)
+
+        consoleContainer.style.height = `${ consoleHeight }px`
+      }, 100)
       
     },
     async doNotSyncAll () {
