@@ -20,6 +20,7 @@
         <div class="form-cell">
           <label>Supplier</label>
           <select v-model="placement.Supplier__c">
+            <option value="BSNI">BSNI</option>
             <option value="YORK">YORK</option>
             <option value="QAJAQ">QAJAQ</option>
           </select>
