@@ -32,10 +32,14 @@ export default ({store}) => {
       servers () {
         return {
           development: {
+            payroll: 'http://localhost:3332',
+            tracker: 'http://localhost:8011'
+          },
+          localtest: {
             payroll: 'http://localhost:3333',
             tracker: 'http://localhost:8011'
           },
-          testing: {
+          remotetest: {
             payroll: `https://payroll.starla.bullittstaffing.com/test/`,
             tracker: 'https://starla-server.thebullittgroup.com'
           },

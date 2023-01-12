@@ -93,7 +93,7 @@ export default {
     initiateComms () {
 
       this.$axios.defaults.baseURL = this.$bus.servers[process.env.SETTINGS].payroll
-      //console.log(this.$axios.defaults.baseURL, '<< initiateComms baseURL')
+      console.log(this.$axios.defaults.baseURL, '<< initiateComms baseURL')
 
       try {
         this.createSocket()

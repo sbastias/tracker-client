@@ -147,7 +147,8 @@ export default {
     this.supplier = this.storedSupplier || 'YORK'
     //alert(this.$axios.defaults.baseURL)
     console.log(process.env.NODE_ENV)
-    this.$axios.defaults.baseURL = this.$bus.servers[process.env.NODE_ENV].payroll
+    
+    this.$axios.defaults.baseURL = this.$bus.servers[process.env.SETTINGS].payroll
 
     //if (!this.storedWeekending && this.$route.name != 'payroll-timecards') this.$router.push({name: 'payroll-timecards'})
     //else this.weekendingOrDay = new Date(this.storedWeekending)

@@ -1,11 +1,16 @@
 const URLS = (env => {
   switch (env) {
     case 'development': return {
+      baseURL: 'http://localhost:3332',
+      trackerSocketURL: 'ws://localhost:8013',
+      payrollSocketURL: 'ws://localhost:8111'
+    }
+    case 'localtest': return {
       baseURL: 'http://localhost:3333',
       trackerSocketURL: 'ws://localhost:8013',
-      payrollSocketURL: 'ws://localhost:8012'
+      payrollSocketURL: 'ws://localhost:8111'
     }
-    case 'testing': return {
+    case 'remotetest': return {
       baseURL: 'https://payroll.starla.bullittstaffing.com/test',
       trackerSocketURL: 'https://tracker-server.thebullittgroup.com',
       payrollSocketURL: 'https://sockets.starla.bullittstaffing.com'
@@ -37,8 +42,8 @@ export default {
   */
   target: 'static',
   head: {
-    title: 'Starla | The Bullitt Group',
-    titleTemplate: '%s | Starla | The Bullitt Group',
+    title: 'Starla | Bullitt Staffing Inc.',
+    titleTemplate: '%s | Starla | Bullitt Staffing Inc.',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

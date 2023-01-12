@@ -137,7 +137,7 @@ export default {
       if (!process.client) return 
       console.log('Connecting...')
       this.socket = this.$nuxtSocket({
-        name: `payroll-${this.supplier}`,
+        name: `payroll`,
         transports: ['websocket'],
         path: '/ws/'
       })
